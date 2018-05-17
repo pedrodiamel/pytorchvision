@@ -1,2 +1,0 @@
-# pytvision
-pytorch vision library
