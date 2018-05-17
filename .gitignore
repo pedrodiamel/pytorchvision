@@ -1,5 +1,13 @@
 # Folders
 out
+build/
+dist/
+torchvision.egg-info/
+*/**/__pycache__
+*/**/*.pyc
+*/**/*~
+*~
+docs/build
 
 
 # Byte-compiled / optimized / DLL files

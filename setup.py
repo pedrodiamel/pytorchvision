@@ -30,7 +30,6 @@ VERSION = find_version('pytvision', '__init__.py')
 
 requirements = [
     'numpy',
-    'opencv',
     'six',
     'torch',
     'tqdm'

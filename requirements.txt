@@ -1,7 +1,5 @@
 
 matplotlib
 opencv-python
-scikit-image
 graphviz
-opencv
 
