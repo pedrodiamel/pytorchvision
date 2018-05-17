@@ -33,13 +33,13 @@ test-all:
 	tox
 
 coverage:
-	coverage run --source tf_unet setup.py test
+	coverage run --source pytvision setup.py test
 	coverage report -m
 	coverage html
 	open htmlcov/index.html
 
 docs:
-	sphinx-apidoc -o docs/ tf_unet
+	sphinx-apidoc -o docs/ pytvision
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 	open docs/_build/html/index.html
