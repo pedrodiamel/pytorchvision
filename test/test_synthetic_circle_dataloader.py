@@ -60,7 +60,6 @@ data = SyntethicCircleDataset(
               mtrans.RandomElasticTensorDistort( size_grid=10, deform=0.05 ),
               
               ## normalization
-
               mtrans.ToNormalization(),
               #mtrans.ToWhiteNormalization(),
               #mtrans.ToMeanNormalization(
@@ -80,9 +79,9 @@ for i_batch, sample_batched in enumerate(dataloader):
           sample_batched['weight'].size()    
          )
     
-    image = sample_batched['image'][0,:,...]
-    label = sample_batched['label'][0,1,...]
-    weight = sample_batched['weight'][0,0,...]
+    image = sample_batched['image']
+    label = sample_batched['label'] 
+    weight = sample_batched['weight'] 
     
     print(torch.min(image), torch.max(image), image.shape )
     print(torch.min(label), torch.max(label), image.shape )
@@ -91,15 +90,20 @@ for i_batch, sample_batched in enumerate(dataloader):
     print(image.shape)
     print(np.unique(label))
     print(image.min(), image.max())
-        
+    
+    image = image.permute(2,3,1,0)[:,:,:,0].squeeze() 
+    label = label.permute(2,3,1,0)[:,:,:,0].squeeze() 
+    weight = weight.permute(2,3,1,0)[:,:,:,0].squeeze() 
+
+
     plt.figure( figsize=(15,15) )
     plt.subplot(131)
-    plt.imshow( image.permute(1,2,0).squeeze()  ) #, cmap='gray' 
+    plt.imshow( image ) 
     plt.axis('off')
     plt.ioff()
 
     plt.subplot(132)
-    plt.imshow( label ) #cmap='gray'
+    plt.imshow( label )  
     plt.axis('off')
     plt.ioff()
 
@@ -108,7 +112,9 @@ for i_batch, sample_batched in enumerate(dataloader):
     plt.axis('off')
 
     plt.ioff()       
-    plt.show()        
+    plt.show()      
+
+    
 
     # observe 4th batch and stop.
     if i_batch == 3: 
