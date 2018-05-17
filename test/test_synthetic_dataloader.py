@@ -1,28 +1,28 @@
 import os
 import sys
-import torch
-import pandas as pd
-from skimage import io, transform
+
+
 import numpy as np
 import matplotlib.pyplot as plt
+
+import torch
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, utils
-import csv
-from skimage import color
+
 import scipy.misc
 import cv2
 
 sys.path.append('../')
-from torchlib.datasets.syntheticdata import SynteticCircleDataset
-from torchlib.datasets import imageutl as imutl
-from torchlib.datasets import utility as utl
-from torchlib.transforms import transforms as mtrans
-from torchlib import visualization as view
+from pytvision.datasets.syntheticdata import SyntethicCircleDataset
+from pytvision.datasets import imageutl as imutl
+from pytvision.datasets import utility as utl
+from pytvision.transforms import transforms as mtrans
+from pytvision import visualization as view
 
 
-data = SynteticCircleDataset(
+data = SyntethicCircleDataset(
         count=100,
-        generate=SynteticCircleDataset.generate_image_mask_and_weight,
+        generate=SyntethicCircleDataset.generate_image_mask_and_weight,
         imsize=(512,512),
         sigma=0.01,
         bdraw_grid=True,
@@ -62,7 +62,7 @@ data = SynteticCircleDataset(
               ## tensor 
               
               mtrans.ToTensor(),
-              #mtrans.RandomElasticTensorDistort( size_grid=10, deform=0.05 ),
+              mtrans.RandomElasticTensorDistort( size_grid=10, deform=0.05 ),
               
               ## normalization
 
