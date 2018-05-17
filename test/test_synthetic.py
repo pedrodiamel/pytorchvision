@@ -2,7 +2,10 @@
 
 import numpy as np 
 import matplotlib.pyplot as plt
-from torchlib.datasets.render import CircleRender, EllipseRender
+
+
+sys.path.append('../')
+from pytvision.datasets.render import CircleRender, EllipseRender
 
 
 

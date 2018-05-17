@@ -461,7 +461,7 @@ def resize_image( img, height, width,
 
     if resize_mode is None:
         resize_mode = 'squash'
-    if resize_mode not in ['crop', 'squash', 'fill', 'half_crop']:
+    if resize_mode not in ['crop', 'squash', 'fill', 'half_crop', 'asp']:
         raise ValueError('resize_mode "%s" not supported' % resize_mode)
 
     # convert to array
@@ -480,6 +480,18 @@ def resize_image( img, height, width,
     height_ratio = float(image.shape[0]) / height
     if resize_mode == 'squash' or width_ratio == height_ratio:
         image = cv2.resize(image, (width, height) , interpolation = interpolate_mode)
+        image = cunsqueeze(image)
+        return image
+
+    elif resize_mode == 'asp':
+        # resize to smallest of ratios (relatively larger image), keeping aspect ratio
+        if width_ratio > height_ratio:
+            resize_height = height
+            resize_width = int(round(image.shape[1] / height_ratio))
+        else:
+            resize_width = width
+            resize_height = int(round(image.shape[0] / width_ratio))
+        image = cv2.resize(image, (resize_width, resize_height) , interpolation = interpolate_mode) 
         image = cunsqueeze(image)
         return image
         
