@@ -87,7 +87,6 @@ def tranform_image_and_mask_performs(image, mask, transform, num_transform=4, bs
 
 random.seed( 1 )
 ren = ColorCheckerRender()
-
 image_back = to_rgb(np.ones( (500,500,1), dtype=np.uint8 )*128)
 image, mask = ren.generate_for_segmentation_mask( image_back, num=5 )  
 #obj = ObjectImageAndMaskTransform( image, mask  )

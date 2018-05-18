@@ -529,8 +529,6 @@ class RandomGeometricalTranform(ToTransform):
                 return obj
         return obj
 
-
-
 class RandomElasticDistort(ToTransform):
     """ Random Elastic Distort
     """
