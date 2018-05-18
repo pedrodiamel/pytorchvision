@@ -118,7 +118,7 @@ class ToGaussianBlur(ToTransform):
 class RandomBrightness(ToTransform):
     """Random Brightness.
     """
-    def __init__(self, factor=0.1 ):        
+    def __init__(self, factor=0.5 ):        
         """Initialization
         Args:
             @factor: factor
@@ -133,22 +133,23 @@ class RandomBrightness(ToTransform):
 class RandomBrightnessShift(ToTransform):
     """Random Brightness Shift.
     """
-    def __init__(self, factor=0.01 ):        
+    def __init__(self, factor=0.125, scale_value=100 ):        
         """Initialization
         Args:
             @factor: factor
         """
         self.factor = factor
+        self.scale_value = scale_value
 
     def __call__(self, obj):
-        alpha = 1.0 + self.factor*random.uniform(-1, 1)
-        obj.brightness_shift(alpha)
+        alpha = 1.0 + (self.factor)*random.uniform(-1, 1)
+        obj.brightness_shift(alpha, self.scale_value)
         return obj
 
 class RandomContrast(ToTransform):
     """Random Contrast.
     """
-    def __init__(self, factor=0.1 ):        
+    def __init__(self, factor=0.3 ):        
         """Initialization
         Args:
             @factor: factor
@@ -157,13 +158,13 @@ class RandomContrast(ToTransform):
 
     def __call__(self, obj):
         alpha = 1.0 + self.factor*random.uniform(-1, 1)
-        obj.brightness_shift(alpha)
+        obj.contrast(alpha)
         return obj
 
 class RandomSaturation(ToTransform):
     """Random Saturation.
     """
-    def __init__(self, factor=0.1 ):        
+    def __init__(self, factor=0.75 ):        
         """Initialization
         Args:
             @factor: factor
@@ -235,7 +236,7 @@ class RandomRGBShift(ToTransform):
 class RandomGamma(ToTransform):
     """Random Gamma.
     """
-    def __init__(self, factor=0.5, limit=0.1 ):        
+    def __init__(self, factor=0.5 ):        
         """Initialization
         Args:
             @factor: factor
@@ -244,7 +245,7 @@ class RandomGamma(ToTransform):
 
     def __call__(self, obj):
         alpha = 1.0 + self.factor*random.uniform(-1, 1)
-        obj.brightness_shift(alpha)
+        obj.gamma_correction(alpha)
         return obj
 
 class ToGrayscale(ToTransform):
@@ -286,7 +287,7 @@ class RandomRGBPermutation(ToTransform):
 class CLAHE(ToTransform):
     """CLAHE ecualization.
     """
-    def __init__(self, clipLimit=2.0, tileGridSize=(8, 8) ):        
+    def __init__(self, clipfactor=2.0, tileGridSize=(8, 8) ):        
         """Initialization
         Args:
             @factor: factor
@@ -358,7 +359,6 @@ class ToResize(ToTransform):
         obj.resize( self.imsize, self.resize_mode )
         return obj
 
-
 class ToResizeUNetFoV(ToTransform):
     """Resize to unet fov
     """
@@ -425,7 +425,6 @@ class RandomCrop(ToTransform):
 
         return self.centecrop(obj)
 
-
 class RandomScale(ToTransform):
     """ SRandom Scale.
     """
@@ -444,7 +443,6 @@ class RandomScale(ToTransform):
         factor =  1.0 + self.factor*random.uniform(-1.0, 1.0)
         obj.scale( factor, self.padding_mode )
         return obj
-
 
 class HFlip(ToTransform):
     """ Horizontal Flip.
@@ -466,7 +464,7 @@ class VFlip(ToTransform):
         """
         pass
 
-    def __call_(self, obj):
+    def __call__(self, obj):
         obj.vflip()
         return obj
 
@@ -478,8 +476,8 @@ class Rotate90(ToTransform):
         """
         pass
 
-    def __call_(self, obj):
-        obj.Rotate90()
+    def __call__(self, obj):
+        obj.rotate90()
         return obj
     
 class Rotate180(ToTransform):
@@ -490,8 +488,8 @@ class Rotate180(ToTransform):
         """
         pass
 
-    def __call_(self, obj):
-        obj.Rotate180()
+    def __call__(self, obj):
+        obj.rotate180()
         return obj
 
 class Rotate270(ToTransform):
@@ -502,8 +500,8 @@ class Rotate270(ToTransform):
         """
         pass
 
-    def __call_(self, obj):
-        obj.Rotate270()
+    def __call__(self, obj):
+        obj.rotate270()
         return obj
 
 class RandomGeometricalTranform(ToTransform):

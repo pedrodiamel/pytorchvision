@@ -57,16 +57,16 @@ class ObjectTransform(object):
         self.image = img
 
     ### brightness shift
-    def brightness_shift(self, alpha):
-        img = self.image
+    def brightness_shift(self, alpha, scale_value):
+        img = np.copy( self.image )
         maxval = np.max(img[..., :3])
         dtype = img.dtype
-        img[..., :3] = F.clip(alpha * 255 + img[...,:3].astype(np.float32), dtype, maxval)
+        img[..., :3] = F.clip(alpha * scale_value + img[...,:3].astype(np.float32), dtype, maxval)
         self.image = img
 
     ### contrast
     def contrast(self, alpha):
-        img = self.image
+        img = np.copy( self.image )
         gray = cv2.cvtColor(img[:, :, :3], cv2.COLOR_RGB2GRAY).astype(np.float32)
         gray = (3.0 * (1.0 - alpha) / gray.size) * np.sum(gray)
         maxval = np.max(img[..., :3])
@@ -77,7 +77,7 @@ class ObjectTransform(object):
     ### saturation
     #REVIEW!!!!
     def saturation(self, alpha):
-        img = self.image
+        img = np.copy( self.image )
         maxval = np.max(img[..., :3])
         dtype = img.dtype
         gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
@@ -88,7 +88,7 @@ class ObjectTransform(object):
 
     ### hue saturation shift
     def hue_saturation_shift(self, alpha):
-        image = self.image
+        image = np.copy( self.image )
         h   = int(alpha*180)
         hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
         hsv[:, :, 0] = (hsv[:, :, 0].astype(int) + h) % 170
@@ -97,7 +97,7 @@ class ObjectTransform(object):
 
     ### hue saturation
     def hue_saturation(self, hue_shift, sat_shift, val_shift):
-        image = self.image
+        image = np.copy( self.image )
         image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
         h, s, v = cv2.split(image)
         h = cv2.add(h, hue_shift)
@@ -109,7 +109,7 @@ class ObjectTransform(object):
 
     ### rgb shift
     def rgbshift(self, r_shift, g_shift, b_shift):
-        image = self.image        
+        image = np.copy( self.image )       
         r,g,b = cv2.split(image)
         r = cv2.add(r, r_shift)
         g = cv2.add(g, g_shift)
@@ -119,7 +119,7 @@ class ObjectTransform(object):
 
     ### gamma correction
     def gamma_correction(self, gamma):   
-        image = self.image
+        image = np.copy( self.image )
         table = np.array([((i / 255.0) ** (1.0 / gamma)) * 255 
                 for i in np.arange(0, 256)]).astype("uint8")
         image = cv2.LUT(image, table) # apply gamma correction using the lookup table  
@@ -127,20 +127,23 @@ class ObjectTransform(object):
 
     ### to gray
     def to_gray(self):
-        grayimage = cv2.cvtColor(self.image, cv2.COLOR_RGB2GRAY)
+        image = np.copy( self.image )
+        grayimage = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
         self.image = cv2.cvtColor(grayimage, cv2.COLOR_GRAY2RGB)
 
     ### to negative
     def to_negative(self):
-        self.image = 255 - self.image
+        image = np.copy( self.image )
+        self.image = 255 - image
 
     ### rgb chanels permutation
     def rgbpermutation(self, indexs):
-        self.image =  self.image[:,:, indexs ]
+        image = np.copy( self.image )
+        self.image =  image[:,:, indexs ]
 
     ### histogram ecualization
     def clahe(self, clipLimit, tileGridSize):
-        image = self.image
+        im = np.copy( self.image )
         img_yuv = cv2.cvtColor(im, cv2.COLOR_RGB2YUV)
         clahe = cv2.createCLAHE(clipLimit=clipLimit, tileGridSize=tileGridSize)
         img_yuv[:, :, 0] = clahe.apply(img_yuv[:, :, 0])
@@ -193,7 +196,7 @@ class ObjectTransform(object):
     def rotate180(self):
         self.image = F.rotate180( self.image )
 
-    def rotate279(self):
+    def rotate270(self):
         self.image = F.rotate270( self.image )
 
     def applay_geometrical_transform(self, mat_r, mat_t, mat_w, padding_mode = cv2.BORDER_CONSTANT ):        
@@ -228,7 +231,8 @@ class ObjectTransform(object):
     # Aux function for debug
 
     def _draw_grid(self, grid_size=50, color=(255,0,0), thickness=1):
-        self.image = F.draw_grid(self.image, grid_size, color, thickness)        
+        image = np.copy( self.image )
+        self.image = F.draw_grid(image, grid_size, color, thickness)        
 
 
 
@@ -318,7 +322,7 @@ class ObjectImageAndMaskTransform(ObjectTransform):
         self.image = F.rotate180( self.image )
         self.mask = F.rotate180( self.mask )
 
-    def rotate279(self):
+    def rotate270(self):
         self.image = F.rotate270( self.image )
         self.mask = F.rotate270( self.mask )
 
@@ -449,7 +453,7 @@ class ObjectImageMaskAndWeightTransform(ObjectImageAndMaskTransform):
         self.mask = F.rotate180( self.mask )
         self.weight = F.rotate180( self.weight )
 
-    def rotate279(self):
+    def rotate270(self):
         self.image = F.rotate270( self.image )
         self.mask = F.rotate270( self.mask )
         self.weight = F.rotate270( self.weight )
