@@ -21,7 +21,7 @@ from pytvision import visualization as view
 
 
 data = SyntethicCircleDataset(
-        count=100,
+        count=300,
         generate=SyntethicCircleDataset.generate_image_mask_and_weight,
         imsize=(512,512),
         sigma=0.01,
@@ -31,27 +31,28 @@ data = SyntethicCircleDataset(
               ## resize and crop                           
               mtrans.ToResize( (400,400), resize_mode='asp' ) ,
               #mtrans.CenterCrop( (200,200) ),
-              mtrans.RandomCrop( (255,255), limit=50, padding_mode=cv2.BORDER_REFLECT_101  ),
+              #mtrans.RandomCrop( (255,255), limit=50, padding_mode=cv2.BORDER_REFLECT_101  ),
               #mtrans.ToResizeUNetFoV(388, cv2.BORDER_REFLECT_101),              
               
               ## color 
-              #mtrans.RandomSaturation(),
-              #mtrans.RandomHueSaturationShift(),
-              #mtrans.RandomHueSaturation(),
+              mtrans.RandomSaturation(),
+              mtrans.RandomHueSaturationShift(),
+              mtrans.RandomHueSaturation(),
               #mtrans.RandomRGBShift(),
               #mtrans.ToNegative(),
               #mtrans.RandomRGBPermutation(),
-              #mtrans.ToGrayscale(),
+              #mtrans.ToRandomTransform( mtrans.ToGrayscale(), prob=0.5 ),
+              mtrans.ToGrayscale(),
 
               ## blur
               #mtrans.ToRandomTransform( mtrans.ToLinealMotionBlur( lmax=1 ), prob=0.5 ),
               #mtrans.ToRandomTransform( mtrans.ToMotionBlur( ), prob=0.5 ),
-              mtrans.ToRandomTransform( mtrans.ToGaussianBlur(), prob=0.5 ),
+              mtrans.ToRandomTransform( mtrans.ToGaussianBlur(), prob=0.75 ),
               
               ## geometrical 
               #mtrans.ToRandomTransform( mtrans.HFlip(), prob=0.5 )
               #mtrans.ToRandomTransform( mtrans.VFlip(), prob=0.5 )
-              #mtrans.RandomScale(factor=0.2, padding_mode=cv2.BORDER_REFLECT101 ),
+              mtrans.RandomScale(factor=0.2, padding_mode=cv2.BORDER_REFLECT101 ),
               #mtrans.RandomGeometricalTranform( angle=360, translation=0.2, warp=0.02, padding_mode=cv2.BORDER_REFLECT101),
               #mtrans.RandomElasticDistort( size_grid=50, padding_mode=cv2.BORDER_REFLECT101 ),
               
@@ -96,27 +97,33 @@ for i_batch, sample_batched in enumerate(dataloader):
     weight = weight.permute(2,3,1,0)[:,:,:,0].squeeze() 
 
 
-    plt.figure( figsize=(15,15) )
+    plt.figure( figsize=(16,4) )
     plt.subplot(131)
     plt.imshow( image ) 
+    plt.title('image + [grid]')
     plt.axis('off')
     plt.ioff()
 
     plt.subplot(132)
     plt.imshow( label )  
+    plt.title('gt')
     plt.axis('off')
     plt.ioff()
 
     plt.subplot(133)
     plt.imshow( weight )
+    plt.title('weight map')
     plt.axis('off')
+    plt.ioff()   
 
-    plt.ioff()       
-    plt.show()      
+    print('save figure ...')
+    plt.savefig('../out/image_{}.png'.format(i_batch) )
 
-    
+    #plt.show()      
+
+
 
     # observe 4th batch and stop.
-    if i_batch == 3: 
+    if i_batch == 100: 
         break        
 

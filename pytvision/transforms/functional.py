@@ -57,7 +57,7 @@ def scale(image, factor, mode, padding_mode ):
     padyT = int(np.floor( borderX ))
     padyB = int(np.ceil(  borderX ))
 
-    if sxy < 1:  img = cv2.copyMakeBorder(img, padxL, padxR, padyT, padyB, borderType=padding_mode)
+    if factor < 1:  img = cv2.copyMakeBorder(img, padxL, padxR, padyT, padyB, borderType=padding_mode)
     else: img = img[ padyT:padyT+h, padxL:padxL+w, : ]
 
     img = cunsqueeze(img)    
