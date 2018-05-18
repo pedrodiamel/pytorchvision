@@ -48,6 +48,7 @@ class ToTensor(object):
         obj.to_tensor()
         return obj
 
+# Blur transformation
 
 class ToLinealMotionBlur(ToTransform):
     """Lineal Blur randomly.
@@ -64,7 +65,6 @@ class ToLinealMotionBlur(ToTransform):
         obj.lineal_blur(self.gen)
         return obj
 
-
 class ToMotionBlur(ToTransform):
     """Motion Blur randomly.
     """
@@ -74,7 +74,8 @@ class ToMotionBlur(ToTransform):
         maxTotalLength=64,
         anxiety=0.005,
         numT=2000,
-        texp=0.75, ):        
+        texp=0.75, 
+        ):        
         """Initialization
         Args:
             @pSFsize: kernel size (psf)
@@ -88,8 +89,6 @@ class ToMotionBlur(ToTransform):
     def __call__(self, obj):
         obj.motion_blur(self.gen)
         return obj
-
-
 
 class ToGaussianBlur(ToTransform):
     """Gaussian Blur randomly.
@@ -130,7 +129,6 @@ class RandomBrightness(ToTransform):
         alpha = 1.0 + self.factor*random.uniform(-1, 1)
         obj.brightness(alpha)
         return obj
-
 
 class RandomBrightnessShift(ToTransform):
     """Random Brightness Shift.
@@ -177,7 +175,6 @@ class RandomSaturation(ToTransform):
         obj.saturation(alpha)
         return obj
 
-
 class RandomHueSaturationShift(ToTransform):
     """Random Hue Saturation Shift.
     """
@@ -192,7 +189,6 @@ class RandomHueSaturationShift(ToTransform):
         alpha = 1.0 + random.uniform(-self.factor, self.factor)
         obj.hue_saturation_shift(alpha)
         return obj
-
 
 class RandomHueSaturation(ToTransform):
     """Random Hue Saturation.
@@ -235,7 +231,6 @@ class RandomRGBShift(ToTransform):
         b_shift = random.uniform(self.b_shift_limit[0], self.b_shift_limit[1])
         obj.rgbshift(r_shift, g_shift, b_shift)
         return obj
-
 
 class RandomGamma(ToTransform):
     """Random Gamma.
@@ -288,7 +283,6 @@ class RandomRGBPermutation(ToTransform):
         obj.rgbpermutation( self.indexs )
         return obj
 
-
 class CLAHE(ToTransform):
     """CLAHE ecualization.
     """
@@ -303,7 +297,6 @@ class CLAHE(ToTransform):
     def __call__(self, obj):
         obj.clahe( self.clipfactor,  self.tileGridSize )
         return obj
-
 
 class ToMeanNormalization(ToTransform):
     """To mean normalization 

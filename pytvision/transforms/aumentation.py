@@ -18,11 +18,11 @@ class ObjectTransform(object):
     
     ### lineal blur transform
     def lineal_blur(self, gen):        
-        self.image, reg = gen.generatelineal( self.image ) 
+        self.image, _ = gen.generatelineal( self.image ) 
     
     ### motion blur transform
     def motion_blur(self, gen):        
-        self.image, reg = gen.generate( self.image ) 
+        self.image, _, _ = gen.generatecurve( self.image ) 
 
     ### gaussian blur
     def gaussian_blur(self, wnd):
@@ -50,7 +50,7 @@ class ObjectTransform(object):
 
     ### brightness
     def brightness(self, alpha):
-        img = self.image
+        img = np.copy( self.image )
         maxval = np.max(img[..., :3])
         dtype = img.dtype
         img[..., :3] = F.clip(alpha * img[...,:3].astype(np.float32), dtype, maxval)

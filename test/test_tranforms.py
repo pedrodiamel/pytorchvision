@@ -71,9 +71,36 @@ num_transform = 10
 bshow=True
 bsave=False
 
+
+## blur + noise
+#transform = mtrans.ToLinealMotionBlur( lmax=1 )
+#transform = mtrans.ToMotionBlur( ) 
+#transform =  mtrans.ToGaussianBlur() 
+
+## color
+transform = mtrans.RandomBrightness( factor=0.5 )
+# transform = mtrans.RandomBrightnessShift()
+# transform = mtrans.RandomContrast()
+# transform = mtrans.RandomSaturation()
+# transform = mtrans.RandomHueSaturationShift()
+# transform = mtrans.RandomHueSaturation()
+# transform = mtrans.RandomRGBShift()
+# transform = mtrans.RandomGamma()
+# transform = mtrans.RandomRGBPermutation()
+# transform = mtrans.ToRandomTransform(mtrans.ToGrayscale())
+# transform = mtrans.ToRandomTransform(mtrans.ToNegative())
+# transform = mtrans.ToRandomTransform(mtrans.CLAHE())
+
+
+
+
+
+
+
+
 #transform = mtrans.RandomScale(factor=0.5, padding_mode=cv2.BORDER_REFLECT101 )
 #transform = mtrans.RandomGeometricalTranform( angle=360, translation=0.2, warp=0.02, padding_mode=cv2.BORDER_CONSTANT)
-transform = mtrans.RandomCrop( (255,255), limit=100, padding_mode=cv2.BORDER_CONSTANT  )
+#transform = mtrans.RandomCrop( (255,255), limit=100, padding_mode=cv2.BORDER_CONSTANT  )
 
 
 tranform_image_performs(image, transform, num_transform, bsave, bshow)
