@@ -504,8 +504,8 @@ class Rotate270(ToTransform):
         obj.rotate270()
         return obj
 
-class RandomGeometricalTranform(ToTransform):
-    """ Random Geometrical Tranform
+class RandomGeometricalTransform(ToTransform):
+    """ Random Geometrical Transform
     """
 
     def __init__(self, angle=360, translation=0.2, warp=0.0, padding_mode=cv2.BORDER_CONSTANT ):        
