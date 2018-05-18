@@ -21,16 +21,16 @@ import skfmm
 #tranformations 
 
 def isrgb( image ):
-    return len(image.shape)==2 or (image.shape==3 and image.shape[2]==1)
+    return len(image.shape)==3 and image.shape[2]==3 
 
 def to_rgb( image ):
     #to rgb
-    if isrgb( image ):
+    if not isrgb( image ):
         image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
     return image
 
 def to_gray( image ):
-    if not isrgb( image ):
+    if isrgb( image ):
         image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
     return image
 

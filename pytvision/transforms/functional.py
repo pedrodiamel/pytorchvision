@@ -46,12 +46,15 @@ def relabel( mask ):
 def scale(image, factor, mode, padding_mode ): 
 
     img = np.copy(image)
+
     h,w = img.shape[:2]
     img = cv2.resize(img, None, fx=factor, fy=factor, interpolation=mode ) 
     img = cunsqueeze(img)
     hn, wn = img.shape[:2]
+    
     borderX = float( abs(wn-w) )/2.0
     borderY = float( abs(hn-h) )/2.0
+
     padxL = int(np.floor( borderY ))
     padxR = int(np.ceil(  borderY ))  
     padyT = int(np.floor( borderX ))
@@ -61,7 +64,7 @@ def scale(image, factor, mode, padding_mode ):
     else: img = img[ padyT:padyT+h, padxL:padxL+w, : ]
 
     img = cunsqueeze(img)    
-    return image
+    return img
 
 def hflip( x ): 
     return cv2.flip(x,1)
