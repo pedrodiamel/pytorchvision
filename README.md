@@ -14,9 +14,7 @@ From source:
 The backend transforms using opencv
 
 
-### Color tranformations
-
-##### Brightness
+### Color transformation
 
     transform = mtrans.RandomBrightness( factor=0.75 )
     transform = mtrans.RandomBrightnessShift( factor=0.5 )
@@ -38,7 +36,7 @@ Examples:
 ![Saturation](rec/RandomSaturation.gif)
 
 
-### Blur + Noise
+### Blur + Noise transformation
 
     transform = mtrans.ToLinealMotionBlur( lmax=1 )
     transform = mtrans.ToMotionBlur( ) 
