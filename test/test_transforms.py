@@ -99,6 +99,7 @@ def tranform_image_and_mask_performs(image, mask, transform, num_transform=4, bs
             plt.figure( figsize=(14,4) )
             plt.imshow( frame )
             plt.title( 'Transform: +[{} ({:0.4f}sec)]'.format(transform, t) )
+            plt.show()
 
     if bsave:
         filename = '../rec/{}'.format( transform )
@@ -116,9 +117,9 @@ image, mask = ren.generate_for_segmentation_mask( image_back, num=5 )
 # plt.show()
 
 # Transformation
-num_transform = 100
-bshow=False
-bsave=True
+num_transform = 1
+bshow=True
+bsave=False
 bgrid=False
 
 
