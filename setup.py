@@ -24,7 +24,7 @@ def find_version(*file_paths):
     raise RuntimeError("Unable to find version string.")
 
 
-readme = open('README.rst').read()
+readme = open('README.md').read()
 
 VERSION = find_version('pytvision', '__init__.py')
 

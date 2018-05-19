@@ -1,16 +1,8 @@
 
-
-
 import os
-
-import torch
-from torch.utils.data import Dataset, DataLoader
-from torchvision import transforms, utils
-
 import numpy as np
 from collections import namedtuple
 from skimage import io, transform
-from skimage import color
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -56,7 +48,7 @@ class CTECHDataset(object):
         self.num_channels = num_channels
 
     def __len__(self):
-        return self.count #len(self.data)
+        return self.count
 
     def __getitem__(self, idx):   
 
