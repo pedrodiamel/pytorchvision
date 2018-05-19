@@ -7,15 +7,11 @@ import matplotlib.pyplot as plt
 
 import torch
 from torch.utils.data import Dataset, DataLoader
-from torchvision import transforms, utils
-
-import scipy.misc
+from torchvision import transforms
 import cv2
 
 sys.path.append('../')
 from pytvision.datasets.syntheticdata import SyntethicCircleDataset
-from pytvision.datasets import imageutl as imutl
-from pytvision.datasets import utility as utl
 from pytvision.transforms import transforms as mtrans
 from pytvision import visualization as view
 
@@ -120,8 +116,6 @@ for i_batch, sample_batched in enumerate(dataloader):
     plt.savefig('../out/image_{}.png'.format(i_batch) )
 
     #plt.show()      
-
-
 
     # observe 4th batch and stop.
     if i_batch == 100: 

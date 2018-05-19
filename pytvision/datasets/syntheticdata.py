@@ -1,8 +1,9 @@
 import os
 
-import torch
-from torch.utils.data import Dataset
-from torchvision import transforms, utils
+# import torch
+# from torch.utils.data import Dataset
+# from torchvision import transforms, utils
+
 import numpy as np
 import cv2
 
@@ -19,7 +20,7 @@ from . import utility
 
 
 
-class SyntheticColorCheckerDataset(Dataset):
+class SyntheticColorCheckerDataset(object):
     '''
     Mnagement for Synthetic Color Checker dataset
     '''
@@ -83,7 +84,7 @@ class SyntheticColorCheckerDataset(Dataset):
 
 
 
-class SyntheticColorCheckerExDataset(Dataset):
+class SyntheticColorCheckerExDataset(object):
     '''
     Mnagement for Synthetic Color Checker dataset
     '''
@@ -157,7 +158,7 @@ class SyntheticColorCheckerExDataset(Dataset):
 
         return obj.to_output()
 
-class SyntethicCircleDataset(Dataset):
+class SyntethicCircleDataset(object):
     '''
     Mnagement for Synthetic Circle dataset
     '''

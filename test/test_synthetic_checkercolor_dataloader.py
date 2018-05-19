@@ -1,21 +1,17 @@
 import os
 import sys
-
+import cv2
 
 import numpy as np
 import matplotlib.pyplot as plt
 
 import torch
 from torch.utils.data import Dataset, DataLoader
-from torchvision import transforms, utils
+from torchvision import transforms
 
-import scipy.misc
-import cv2
 
 sys.path.append('../')
 from pytvision.datasets.syntheticdata import SyntheticColorCheckerExDataset
-from pytvision.datasets import imageutl as imutl
-from pytvision.datasets import utility as utl
 from pytvision.transforms import transforms as mtrans
 from pytvision import visualization as view
 
@@ -46,7 +42,7 @@ data = SyntheticColorCheckerExDataset(
               ## geometrical 
               #mtrans.ToRandomTransform( mtrans.HFlip(), prob=0.5 )
               #mtrans.ToRandomTransform( mtrans.VFlip(), prob=0.5 )
-              #mtrans.RandomScale(factor=0.2, padding_mode=cv2.BORDER_REFLECT101 ),
+              mtrans.RandomScale(factor=0.2, padding_mode=cv2.BORDER_REFLECT101 ),
               #mtrans.RandomGeometricalTranform( angle=360, translation=0.2, warp=0.02, padding_mode=cv2.BORDER_REFLECT101),
               #mtrans.RandomElasticDistort( size_grid=50, padding_mode=cv2.BORDER_REFLECT101 ),
               

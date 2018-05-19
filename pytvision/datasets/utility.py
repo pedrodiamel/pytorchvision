@@ -1,17 +1,8 @@
-
-
 import os
 import sys
 import numpy as np
-import PIL.Image
-import scipy.misc
-
 import cv2
-import skimage.color as skcolor
-import skimage.util as skutl
-import random
-import csv
-import h5py
+
 
 from skimage import io, transform, morphology, filters
 from scipy import ndimage
