@@ -271,7 +271,7 @@ class ObjectImageAndLabelTransform(ObjectTransform):
             @image
             @label
         """
-        super(ObjectImageTransform, self).__init__(image)
+        super(ObjectImageAndLabelTransform, self).__init__(image)
         self.label = label
 
     #pytorch transform
