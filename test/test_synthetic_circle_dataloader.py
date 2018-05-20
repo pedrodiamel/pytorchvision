@@ -19,13 +19,13 @@ from pytvision import visualization as view
 data = SyntethicCircleDataset(
         count=300,
         generate=SyntethicCircleDataset.generate_image_mask_and_weight,
-        imsize=(512,512),
+        imsize=(512,612),
         sigma=0.01,
         bdraw_grid=True,
         transform=transforms.Compose([
 
               ## resize and crop                           
-              mtrans.ToResize( (400,400), resize_mode='asp' ) ,
+              mtrans.ToResize( (400,400), resize_mode='square', padding_mode=cv2.BORDER_REFLECT_101 ) ,
               #mtrans.CenterCrop( (200,200) ),
               #mtrans.RandomCrop( (255,255), limit=50, padding_mode=cv2.BORDER_REFLECT_101  ),
               #mtrans.ToResizeUNetFoV(388, cv2.BORDER_REFLECT_101),              
@@ -49,7 +49,7 @@ data = SyntethicCircleDataset(
               #mtrans.ToRandomTransform( mtrans.HFlip(), prob=0.5 )
               #mtrans.ToRandomTransform( mtrans.VFlip(), prob=0.5 )
               mtrans.RandomScale(factor=0.2, padding_mode=cv2.BORDER_REFLECT101 ),
-              #mtrans.RandomGeometricalTranform( angle=360, translation=0.2, warp=0.02, padding_mode=cv2.BORDER_REFLECT101),
+              #mtrans.RandomGeometricalTransform( angle=360, translation=0.2, warp=0.02, padding_mode=cv2.BORDER_REFLECT101),
               #mtrans.RandomElasticDistort( size_grid=50, padding_mode=cv2.BORDER_REFLECT101 ),
               
               ## tensor               
@@ -112,12 +112,12 @@ for i_batch, sample_batched in enumerate(dataloader):
     plt.axis('off')
     plt.ioff()   
 
-    print('save figure ...')
-    plt.savefig('../out/image_{}.png'.format(i_batch) )
+    #print('save figure ...')
+    #plt.savefig('../out/image_{}.png'.format(i_batch) )
 
-    #plt.show()      
+    plt.show()      
 
     # observe 4th batch and stop.
-    if i_batch == 100: 
+    if i_batch == 5: 
         break        
 

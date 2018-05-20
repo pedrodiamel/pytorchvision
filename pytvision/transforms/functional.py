@@ -447,6 +447,7 @@ def image_to_array(image, channels=None):
 
 def resize_image( img, height, width,
                  resize_mode=None,
+                 padding_mode=cv2.BORDER_CONSTANT,
                  interpolate_mode=cv2.INTER_LINEAR, 
                  ):
     """
@@ -464,7 +465,7 @@ def resize_image( img, height, width,
 
     if resize_mode is None:
         resize_mode = 'squash'
-    if resize_mode not in ['crop', 'squash', 'fill', 'half_crop', 'asp']:
+    if resize_mode not in ['crop', 'squash', 'fill', 'half_crop', 'asp', 'square']:
         raise ValueError('resize_mode "%s" not supported' % resize_mode)
 
     # convert to array
@@ -498,6 +499,22 @@ def resize_image( img, height, width,
         image = cunsqueeze(image)
         return image
         
+    elif resize_mode == 'square':        
+        w, h, channels = image.shape; 
+        if w == h: return image  
+        if w>h:        
+            padxL = int(np.floor( (w-h) / 2.0));
+            padxR = int(np.ceil( (w-h) / 2.0)) ;
+            padyT, padyB = 0,0 
+        else:
+            padxL, padxR = 0,0;
+            padyT = int(np.floor( (h-w) / 2.0));
+            padyB = int(np.ceil( (h-w) / 2.0));
+        image = cv2.copyMakeBorder(image, padxL, padxR, padyT, padyB, borderType=padding_mode)
+        image = cv2.resize(image, (width, height) , interpolation = interpolate_mode)  
+        image = cunsqueeze(image)
+        return image
+
     elif resize_mode == 'crop':
         # resize to smallest of ratios (relatively larger image), keeping aspect ratio
         if width_ratio > height_ratio:

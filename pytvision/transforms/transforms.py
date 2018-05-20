@@ -346,7 +346,7 @@ class ToResize(ToTransform):
     """Resize to unet fov
     """
     
-    def __init__(self, imsize, resize_mode=None ):
+    def __init__(self, imsize, resize_mode=None, padding_mode=cv2.BORDER_CONSTANT ):
         """Initialization
         Args:
             @imsize: size input layer resize (w,h)
@@ -354,9 +354,10 @@ class ToResize(ToTransform):
         """
         self.imsize = imsize
         self.resize_mode = resize_mode
+        self.padding_mode = padding_mode
 
     def __call__(self, obj):
-        obj.resize( self.imsize, self.resize_mode )
+        obj.resize( self.imsize, self.resize_mode, self.padding_mode )
         return obj
 
 class ToResizeUNetFoV(ToTransform):

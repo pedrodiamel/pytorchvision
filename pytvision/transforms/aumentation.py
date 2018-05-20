@@ -211,8 +211,8 @@ class ObjectTransform(object):
         self.image = grid_sample(tensor, grid ).data[0,...]  
 
     ### resize
-    def resize(self, imsize, resize_mode):
-        self.image = F.resize_image(self.image, imsize[1], imsize[0], resize_mode, interpolate_mode=cv2.INTER_LINEAR ) 
+    def resize(self, imsize, resize_mode, padding_mode):
+        self.image = F.resize_image(self.image, imsize[1], imsize[0], resize_mode, padding_mode, interpolate_mode=cv2.INTER_LINEAR ) 
 
 
     ### resize unet input
@@ -224,12 +224,13 @@ class ObjectTransform(object):
         pass
 
     ### interface of output
-    def to_output(self):
+    def to_dict(self):
         pass
 
+    def to_value(self):
+        pass
 
     # Aux function for debug
-
     def _draw_grid(self, grid_size=50, color=(255,0,0), thickness=1):
         image = np.copy( self.image )
         self.image = F.draw_grid(image, grid_size, color, thickness)        
@@ -238,6 +239,32 @@ class ObjectTransform(object):
 
 
 class ObjectImageTransform(ObjectTransform):
+    def __init__(self, image ):
+        """
+        Arg:
+            @image
+        """
+        super(ObjectImageTransform, self).__init__(image)
+
+    #pytorch transform
+    def to_tensor(self):
+        image  = self.image
+        # swap color axis because
+        # numpy image: H x W x C
+        # torch image: C X H X W
+        image = image.transpose((2, 0, 1))
+        image = torch.from_numpy(image).float()
+        self.image = image
+
+    ##interface of output
+    def to_dict(self):
+        return { 'image': self.image }
+
+    def to_value(self):
+        return self.image
+
+
+class ObjectImageAndLabelTransform(ObjectTransform):
     def __init__(self, image, label ):
         """
         Arg:
@@ -263,16 +290,15 @@ class ObjectImageTransform(ObjectTransform):
         self.image = image
         self.label = label
 
-
     ##interface of output
-    def to_output(self):
-        image  = self.image
-        label  = self.label
+    def to_dict(self):
         return { 
-            'image': image, 
-            'label': label 
+            'image': self.image, 
+            'label': self.label 
              }
-
+    
+    def to_value(self):
+        return self.image, self.label 
 
 
 class ObjectImageAndMaskTransform(ObjectTransform):
@@ -287,7 +313,6 @@ class ObjectImageAndMaskTransform(ObjectTransform):
 
 
    #Geometric transforms
-
     def crop( self, box, padding_mode):
         """Crop: return if validate crop
         """
@@ -335,12 +360,9 @@ class ObjectImageAndMaskTransform(ObjectTransform):
         self.image  = cv2.remap(self.image,  mapx, mapy, cv2.INTER_LINEAR, borderMode=padding_mode)
         self.mask  = cv2.remap(self.mask,  mapx, mapy, cv2.INTER_NEAREST, borderMode=padding_mode)
 
-
     def applay_elastic_tensor_transform(self, grid):
         self.image = grid_sample( torch.unsqueeze( self.image, dim=0 ), grid ).data[0,...]
         self.mask = grid_sample( torch.unsqueeze( self.mask, dim=0 ), grid ).round().data[0,...]
-
-
     
     #pytorch transform
     def to_tensor(self):
@@ -356,29 +378,25 @@ class ObjectImageAndMaskTransform(ObjectTransform):
         self.image = torch.from_numpy(image).float()
         self.mask  = torch.from_numpy(mask).float()
 
-
     ### resize
-    def resize(self, imsize, resize_mode):
-        self.image = F.resize_image(self.image, imsize[1], imsize[0],  resize_mode, interpolate_mode=cv2.INTER_LINEAR ) 
-        self.mask  = F.resize_image(self.mask, imsize[1], imsize[0],  resize_mode, interpolate_mode=cv2.INTER_NEAREST ) 
-
+    def resize(self, imsize, resize_mode, padding_mode):
+        self.image = F.resize_image(self.image, imsize[1], imsize[0],  resize_mode, padding_mode, interpolate_mode=cv2.INTER_LINEAR ) 
+        self.mask  = F.resize_image(self.mask, imsize[1], imsize[0],  resize_mode, padding_mode, interpolate_mode=cv2.INTER_NEAREST ) 
 
     #geometric transformation
     def resize_unet_input( self, fov_size=388, padding_mode = cv2.BORDER_CONSTANT ):
         self.image = F.resize_unet_transform(self.image, fov_size, cv2.INTER_LINEAR,  padding_mode)
         self.mask  = F.resize_unet_transform(self.mask , fov_size, cv2.INTER_NEAREST, padding_mode)
 
-
     ##interface of output
-    def to_output(self):
-        image  = self.image
-        mask   = self.mask
+    def to_dict(self):
         return { 
-            'image': image, 
-            'label': mask 
+            'image': self.image, 
+            'label': self.mask 
              }
         
-
+    def to_value(self):
+        return self.image, self.mask
 
 class ObjectImageMaskAndWeightTransform(ObjectImageAndMaskTransform):
     def __init__(self, image, mask, weight ):
@@ -474,27 +492,24 @@ class ObjectImageMaskAndWeightTransform(ObjectImageAndMaskTransform):
         self.mask = grid_sample( torch.unsqueeze( self.mask, dim=0 ), grid ).round().data[0,...]
         self.weight = grid_sample( torch.unsqueeze( self.weight, dim=0 ), grid ).data[0,...]
 
-
     ### resize
-    def resize(self, imsize, resize_mode):
-        self.image = F.resize_image(self.image, imsize[1], imsize[0],  resize_mode, interpolate_mode=cv2.INTER_LINEAR ) 
-        self.mask  = F.resize_image(self.mask, imsize[1], imsize[0],  resize_mode, interpolate_mode=cv2.INTER_NEAREST ) 
-        self.weight = F.resize_image(self.weight, imsize[1], imsize[0],  resize_mode, interpolate_mode=cv2.INTER_LINEAR )
-
+    def resize(self, imsize, resize_mode, padding_mode):
+        self.image = F.resize_image(self.image, imsize[1], imsize[0],  resize_mode, padding_mode, interpolate_mode=cv2.INTER_LINEAR ) 
+        self.mask  = F.resize_image(self.mask, imsize[1], imsize[0],  resize_mode, padding_mode, interpolate_mode=cv2.INTER_NEAREST ) 
+        self.weight = F.resize_image(self.weight, imsize[1], imsize[0],  resize_mode, padding_mode, interpolate_mode=cv2.INTER_LINEAR )
 
     def resize_unet_input( self, fov_size=388, padding_mode = cv2.BORDER_CONSTANT ):
         super(ObjectImageMaskAndWeightTransform, self).resize_unet_input(fov_size, padding_mode)
         self.weight = F.resize_unet_transform(self.weight, fov_size, cv2.INTER_LINEAR,  padding_mode)
 
-
     ##interface of output
-    def to_output(self):
-        image  = self.image
-        mask   = self.mask
-        weight = self.weight
-
+    def to_dict(self):
         return { 
-            'image': image, 
-            'label': mask,
-            'weight': weight,
+            'image': self.image, 
+            'label': self.mask,
+            'weight': self.weight,
              }
+
+    def to_value(self):
+        return self.image, self.mask, self.weight
+    

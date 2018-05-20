@@ -17,7 +17,7 @@ import time
 sys.path.append('../')
 from pytvision.transforms import transforms as mtrans
 from pytvision.transforms.render import ColorCheckerRender
-from pytvision.transforms.aumentation import ObjectImageMaskAndWeightTransform, ObjectImageTransform, ObjectImageAndMaskTransform, ObjectTransform
+from pytvision.transforms.aumentation import ObjectImageMaskAndWeightTransform, ObjectImageTransform, ObjectImageAndMaskTransform
 from pytvision.datasets.utility import to_rgb
 
 
@@ -42,7 +42,7 @@ def tranform_image_performs(image, transform, num_transform=4, bsave=False, bsho
     frames = []
     for i in range(num_transform):
         
-        obj = ObjectTransform( image )
+        obj = ObjectImageTransform( image )
         if bgrid: obj._draw_grid(50,(255,255,255))
 
         start = time.time()
@@ -117,7 +117,7 @@ image, mask = ren.generate_for_segmentation_mask( image_back, num=5 )
 # plt.show()
 
 # Transformation
-num_transform = 1
+num_transform = 5
 bshow=True
 bsave=False
 bgrid=False
@@ -160,8 +160,8 @@ transform =  mtrans.ToGaussianBlur()
 # transform = mtrans.ToRandomTransform(mtrans.ToNormalization(), prob=0.5)
 
 
-#tranform_image_performs(image, transform, num_transform, bsave, bshow, bgrid)
-tranform_image_and_mask_performs(image, mask, transform, num_transform, bsave, bshow, bgrid)
+tranform_image_performs(image, transform, num_transform, bsave, bshow, bgrid)
+# tranform_image_and_mask_performs(image, mask, transform, num_transform, bsave, bshow, bgrid)
 
 
 

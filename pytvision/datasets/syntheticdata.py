@@ -11,7 +11,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 from ..transforms.render import ColorCheckerRender, CircleRender, EllipseRender
-from ..transforms.aumentation import ObjectImageMaskAndWeightTransform, ObjectImageTransform, ObjectImageAndMaskTransform, ObjectTransform
+from ..transforms.aumentation import ObjectImageMaskAndWeightTransform, ObjectImageTransform, ObjectImageAndLabelTransform, ObjectImageAndMaskTransform
 from ..transforms import functional as F
 
 from . import imageutl as imutl
@@ -66,7 +66,7 @@ class SyntheticColorCheckerDataset(object):
         weight_t = weight[:,:,np.newaxis] 
 
         if self.generate == 'image':
-            obj = ObjectTransform( image_t  )
+            obj = ObjectImageTransform( image_t  )
         elif self.generate == 'image_and_mask':
             obj = ObjectImageAndMaskTransform( image_t, label_t  )
         elif self.generate == 'image_mask_and_weight':
@@ -80,7 +80,7 @@ class SyntheticColorCheckerDataset(object):
         if self.transform: 
             sample = self.transform( obj )
 
-        return obj.to_output()
+        return obj.to_dict()
 
 
 
@@ -142,7 +142,7 @@ class SyntheticColorCheckerExDataset(object):
 
 
         if self.generate == 'image':
-            obj = ObjectTransform( image_t  )
+            obj = ObjectImageTransform( image_t  )
         elif self.generate == 'image_and_mask':
             obj = ObjectImageAndMaskTransform( image_t, label_t  )
         elif self.generate == 'image_mask_and_weight':
@@ -156,7 +156,7 @@ class SyntheticColorCheckerExDataset(object):
         if self.transform: 
             sample = self.transform( obj )
 
-        return obj.to_output()
+        return obj.to_dict()
 
 class SyntethicCircleDataset(object):
     '''
@@ -231,7 +231,7 @@ class SyntethicCircleDataset(object):
         weight_t = weight[:,:,np.newaxis] 
 
         if self.generate == 'image':
-            obj = ObjectTransform( image_t  )
+            obj = ObjectImageTransform( image_t  )
         elif self.generate == 'image_and_mask':
             obj = ObjectImageAndMaskTransform( image_t, label_t  )
         elif self.generate == 'image_mask_and_weight':
@@ -245,5 +245,5 @@ class SyntethicCircleDataset(object):
         if self.transform: 
             sample = self.transform( obj )
 
-        return obj.to_output()
+        return obj.to_dict()
 
