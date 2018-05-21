@@ -125,6 +125,16 @@ bgrid=False
 
 
 ## color
+
+transform = mtrans.ToRandomChoiceTransform( [
+    mtrans.RandomBrightness( factor=0.75 ),
+    mtrans.RandomContrast( factor=0.5 ),
+    mtrans.RandomSaturation( factor=0.75 ),
+    mtrans.RandomGamma( factor=0.75  ),
+    mtrans.ToRandomTransform(mtrans.ToGrayscale(), prob=0.5),
+    mtrans.RandomRGBPermutation(),
+    ] )
+
 # transform = mtrans.RandomBrightness( factor=0.75 )
 # transform = mtrans.RandomBrightnessShift( factor=0.5 )
 # transform = mtrans.RandomContrast( factor=0.5 )
@@ -141,7 +151,7 @@ bgrid=False
 ## blur + noise
 # transform = mtrans.ToLinealMotionBlur( lmax=1 )
 # transform = mtrans.ToMotionBlur( ) 
-transform =  mtrans.ToGaussianBlur() 
+# transform =  mtrans.ToGaussianBlur() 
 
 ## geometrical transforms
 # transform = mtrans.ToRandomTransform(mtrans.ToResize( (255,255) ), prob=0.85)

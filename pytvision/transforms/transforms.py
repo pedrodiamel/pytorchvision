@@ -41,6 +41,26 @@ class ToRandomTransform(ToTransform):
         return obj
     
 
+class ToRandomChoiceTransform(ToTransform):
+    """Random choice transform: 
+    """
+    
+    def __init__(self, listtran):
+        """Initialization
+        Args:
+            @listtran: list of the transforms  
+        """
+        assert(len(listtran))
+        self.listtran=listtran
+        
+        
+    def __call__(self,obj):
+        tran = random.choice( self.listtran )
+        obj = tran( obj )
+        return obj
+    
+
+
 class ToTensor(object):
     """Convert ndarrays in sample to Tensors."""
 

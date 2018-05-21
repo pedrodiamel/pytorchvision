@@ -31,14 +31,16 @@ data = SyntethicCircleDataset(
               #mtrans.ToResizeUNetFoV(388, cv2.BORDER_REFLECT_101),              
               
               ## color 
-              mtrans.RandomSaturation(),
-              mtrans.RandomHueSaturationShift(),
-              mtrans.RandomHueSaturation(),
-              #mtrans.RandomRGBShift(),
-              #mtrans.ToNegative(),
-              #mtrans.RandomRGBPermutation(),
-              #mtrans.ToRandomTransform( mtrans.ToGrayscale(), prob=0.5 ),
-              mtrans.ToGrayscale(),
+              mtrans.ToRandomChoiceTransform( [
+                mtrans.RandomSaturation(),
+                mtrans.RandomHueSaturationShift(),
+                mtrans.RandomHueSaturation(),
+                #mtrans.RandomRGBShift(),
+                #mtrans.ToNegative(),
+                #mtrans.RandomRGBPermutation(),
+                #mtrans.ToRandomTransform( mtrans.ToGrayscale(), prob=0.5 ),
+                mtrans.ToGrayscale(),
+              ]),
 
               ## blur
               #mtrans.ToRandomTransform( mtrans.ToLinealMotionBlur( lmax=1 ), prob=0.5 ),
