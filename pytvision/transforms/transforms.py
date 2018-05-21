@@ -2,6 +2,7 @@
 import random
 import numpy as np
 import cv2
+import types
 
 from .renderblur import BlurRender
 from .aumentation import ObjectTransform
@@ -15,6 +16,10 @@ class ToTransform(object):
     
     def __init__(self):
         pass        
+    
+    def __call__(self, *args, **kwargs):
+        raise NotImplementedError()
+        
     
     def __str__(self):
         return self.__class__.__name__
@@ -45,20 +50,56 @@ class ToRandomChoiceTransform(ToTransform):
     """Random choice transform: 
     """
     
-    def __init__(self, listtran):
+    def __init__(self, transforms):
         """Initialization
         Args:
-            @listtran: list of the transforms  
+            @transforms: list of the transforms  
         """
-        assert(len(listtran))
-        self.listtran=listtran
+        assert(len(transforms))
+        self.transforms=transforms
         
         
     def __call__(self,obj):
-        tran = random.choice( self.listtran )
+        tran = random.choice( self.transforms )
         obj = tran( obj )
         return obj
+
+
+class ToRandomOrderTransform(ToTransform):
+    """Random order transform: 
+    """
     
+    def __init__(self, transforms):
+        """Initialization
+        Args:
+            @transforms: list of the transforms  
+        """
+        assert(len(transforms))
+        self.transforms=transforms
+        
+        
+    def __call__(self,obj):
+        order = list(range(len(self.transforms)))
+        random.shuffle(order)
+        for i in order:
+            obj = self.transforms[i](obj)
+        return obj
+    
+class ToLambdaTransform(ToTransform):
+    """Random lambda transform: 
+    """
+    
+    def __init__(self, lambd):
+        """Initialization
+        Args:
+            @lambd (function): Lambda/function to be used for transform.
+        """
+        assert isinstance(lambd, types.LambdaType)
+        self.lambd = lambds
+        
+    def __call__(self,obj):
+        return self.lambd(img)
+        
 
 
 class ToTensor(object):
