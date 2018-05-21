@@ -151,7 +151,7 @@ class ObjectTransform(object):
 
     ### mean normalization
     def mean_normalization(self,mean, std):
-        tensor = self.image
+        tensor = self.image/255
         result_tensor = []
         for t, m, s in zip(tensor, mean, std):
             result_tensor.append(t.sub_(m).div_(s))
