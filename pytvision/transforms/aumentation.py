@@ -150,16 +150,16 @@ class ObjectTransform(object):
         self.image = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2RGB)
 
     ### mean normalization
-    def mean_normalization(self,mean, std):
-        tensor = self.image/255
+    def mean_normalization(self, mean, std):
+        tensor = self.image.float()/255.0
         result_tensor = []
-        for t, m, s in zip(tensor, mean, std):
-            result_tensor.append(t.sub_(m).div_(s))
+        for t, m, s in zip(tensor, mean, std):  
+            result_tensor.append(t.sub_(m).div_(s))            
         self.image = torch.stack(result_tensor, 0)
 
     ### white normalization
     def white_normalization(self):        
-        tensor = self.image
+        tensor = self.image.float()
         new_tensor = []
         for t in tensor:
             t = t.sub_( t.min() )
@@ -169,7 +169,7 @@ class ObjectTransform(object):
 
     ### normalization
     def normalization(self):
-        self.image = self.image/255
+        self.image = self.image.float()/255.0
 
 
 
