@@ -75,7 +75,7 @@ class AbstractNeuralNet(object):
         self.criterion = None
         self.optimizer = None
         self.lrscheduler = None
-        self.vallosses = None
+        self.vallosses = 0
 
     def create(self, 
         arch, 
@@ -241,7 +241,7 @@ class AbstractNeuralNet(object):
         # update
         if self.s_lerning_rate_sch == 'fixed': lr = self.lr
         elif self.s_lerning_rate_sch == 'plateau':
-            self.lrscheduler.step( self.vallosses.val )
+            self.lrscheduler.step( self.vallosses )
             for param_group in self.optimizer.param_groups:
                 lr = float(param_group['lr'])
                 break            
