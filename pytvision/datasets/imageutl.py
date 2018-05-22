@@ -88,8 +88,9 @@ class imageProvide(dataProvide):
         pathname = os.path.join(self.path,self.fn_image, self.data[i]);        
         return np.array(self._loadimage(pathname));
     
-    def getid(self):
+    def getid(self,i):
         '''
-        Get current image name
+        Get image name
         '''
-        return self.data[self.index];
+        if i<0 and i>self.num: raise ValueError('Index outside range');
+        return self.data[i].split('.')[0];
