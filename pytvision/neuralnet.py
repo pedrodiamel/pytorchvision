@@ -1,22 +1,26 @@
+
+#STD MODULES
 import os
 import numpy as np
 import math
 import shutil
 
+#TORCH MODULES
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+#LOCAL MODULES
 from . import netlearningrate
 from . import graphic as gph
 from . import utils
 
 #----------------------------------------------------------------------------------------------
-# Abstract Neural Net
+# Neural Net Abstract Class
 
-class AbstractNeuralNet(object):
+class NeuralNetAbstract(object):
     """
-    Abstract Convolutional Neural Net 
+    Abstract Neural Net 
     """
 
     def __init__(self,
@@ -30,13 +34,14 @@ class AbstractNeuralNet(object):
         ):
         """
         Initialization
-            -patchproject (str): path project
-            -nameproject (str):  name project
-            -no_cuda (bool): system cuda (default is True)
-            -parallel (bool)
-            -seed (int)
-            -print_freq (int)
-            -gpu (int)
+        Args:
+            @patchproject (str): path project
+            @nameproject (str):  name project
+            @no_cuda (bool): system cuda (default is True)
+            @parallel (bool)
+            @seed (int)
+            @print_freq (int)
+            @gpu (int)
         """
 
         # cuda
@@ -44,21 +49,17 @@ class AbstractNeuralNet(object):
         self.parallel = not no_cuda and parallel
         torch.manual_seed(seed)
         if self.cuda:
-            torch.cuda.set_device(gpu)
+            torch.cuda.set_device( gpu )
             torch.cuda.manual_seed(seed)
 
-        # create project
+        # set project directory
         self.nameproject = nameproject
         self.pathproject = os.path.join(patchproject, nameproject)
-        self.pathmodels = os.path.join(self.pathproject, 'models')
-        if not os.path.exists(self.pathproject):
-            os.makedirs(self.pathproject)
-        if not os.path.exists(self.pathmodels):
-            os.makedirs(self.pathmodels)
 
         # Set the graphic visualization
         self.plotter = gph.VisdomLinePlotter(env_name=nameproject)
-
+        
+        # initialization var
         self.print_freq = print_freq
         self.num_input_channels = 0
         self.num_output_channels = 0
@@ -89,13 +90,14 @@ class AbstractNeuralNet(object):
         pretrained=False
         ):
         """
-        Create            
-            -arch (string): architecture
-            -loss (string):
-            -lr (float): learning rate
-            -optimizer (string) : 
-            -lrsch (string): scheduler learning rate
-            -pretrained (bool)
+        Create 
+        Args:
+            @arch (string): architecture
+            @loss (string):
+            @lr (float): learning rate
+            @optimizer (string) : 
+            @lrsch (string): scheduler learning rate
+            @pretrained (bool)
         """
                 
         self.s_arch = arch
@@ -103,6 +105,13 @@ class AbstractNeuralNet(object):
         self.s_lerning_rate_sch = lrsch
         self.s_loss = loss
 
+        # create project directory
+        self.pathmodels = os.path.join(self.pathproject, 'models')
+        if not os.path.exists(self.pathproject):
+            os.makedirs(self.pathproject)
+        if not os.path.exists(self.pathmodels):
+            os.makedirs(self.pathmodels)
+        
         self._create_model( arch, num_output_channels, num_input_channels, pretrained )
         self._create_loss( loss )
         self._create_optimizer( optimizer, lr, momentum )
@@ -160,36 +169,39 @@ class AbstractNeuralNet(object):
                 self.save(epoch, best_prec, is_best, 'chk{:06d}.pth.tar'.format(epoch))
                 return
 
-    def _to_beging_epoch(self, epoch, epochs, train_loader, val_loader):
+    def _to_beging_epoch(self, epoch, epochs, train_loader, val_loader, **kwargs):
         pass
 
-    def _to_end_epoch(self, epoch, epochs, train_loader, val_loader):
+    def _to_end_epoch(self, epoch, epochs, train_loader, val_loader, **kwargs):
         pass
 
 
     def _create_model(self, arch, num_output_channels, num_input_channels, pretrained):
         """
         Create model
-            -arch (string): select architecture
-            -num_classes (int)
-            -pretrained (bool)
-
+        Args:
+            @arch (string): select architecture
+            @num_output_channels (int)
+            @num_input_channels (int)
+            @pretrained (bool)
         """    
         pass
 
     def _create_loss(self, loss):
         """
         Create loss
-            -loss (string): select loss function
+        Args:
+            @loss (string): select loss function
         """
         pass
 
     def _create_optimizer(self, optimizer='adam', lr=0.0001, momentum=0.99):
         """
         Create optimizer
-            -optimizer (string): select optimizer function
-            -lr (float): learning rate
-            -momentum (float): momentum
+        Args:
+            @optimizer (string): select optimizer function
+            @lr (float): learning rate
+            @momentum (float): momentum
         """
         
         self.optimizer = None
