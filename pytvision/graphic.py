@@ -61,7 +61,7 @@ class VisdomScatter(object):
 class HeatMapVisdom(object):
     """Heat Map to Visdom"""
     
-    def __init__(self, env_name='main', heatsize=(100,100) ):
+    def __init__(self, env_name='main', heatsize=None ):
         self.vis = Visdom()
         self.env = env_name
         self.hmaps = {}
@@ -69,26 +69,27 @@ class HeatMapVisdom(object):
     
     def show(self, title, image):
         
-        image = cv2.resize(image, self.heatsize, interpolation = cv2.INTER_LINEAR)
+        if self.heatsize:
+            image = cv2.resize(image, self.heatsize, interpolation = cv2.INTER_LINEAR)
 
         if title not in self.hmaps:
             self.hmaps[title] = self.vis.heatmap(
                 image, 
                 env=self.env, 
-                opts=dict(title=title
-            ))
+                opts=dict(title=title)
+            )
         else:
             self.vis.heatmap(
                 image,
                 env=self.env, 
                 win=self.hmaps[title], 
-                opts=dict(title=title
-            ))
+                opts=dict(title=title)
+            )
             
 class ImageVisdom(object):
     """Images to Visdom"""
     
-    def __init__(self, env_name='main', imsize=(100,100)):
+    def __init__(self, env_name='main', imsize=None):
         self.vis = Visdom()
         self.env = env_name
         self.images = {}
@@ -96,18 +97,19 @@ class ImageVisdom(object):
     
     def show(self, title, image):
         
-        image = cv2.resize(image, self.imsize, interpolation = cv2.INTER_LINEAR)
+        if self.imsize:
+            image = cv2.resize(image, self.imsize, interpolation = cv2.INTER_LINEAR)
 
         if title not in self.images:
             self.images[title] = self.vis.image(
                 image, 
                 env=self.env, 
-                opts=dict(title=title
-            ))
+                opts=dict(title=title)
+            )
         else:
             self.vis.image(
                 image,
                 env=self.env, 
                 win=self.images[title], 
-                opts=dict(title=title
-            ))
+                opts=dict(title=title)
+            )
