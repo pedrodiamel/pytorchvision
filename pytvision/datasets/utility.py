@@ -35,11 +35,8 @@ def to_channels( image, ch ):
     return image
 
 def to_one_hot( x, nc ):    
-    if isinstance(x, int): # to one hot
-        y = np.zeros((nc,1))
-        y[x] = 1.0
-        return y
-    return x
+    y = np.zeros((nc,1)); y[ int(x) ] = 1.0
+    return y
 
 def tolabel( x ):
     return (np.max(x,axis=0)>0) 
