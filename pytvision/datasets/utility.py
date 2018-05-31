@@ -35,7 +35,7 @@ def to_channels( image, ch ):
     return image
 
 def to_one_hot( x, nc ):
-    if x.shape[0] == nc:
+    if len(x) == nc: # if to one hot
         return x
     y = np.zeros((nc,1)); y[x] = 1.0
     return y

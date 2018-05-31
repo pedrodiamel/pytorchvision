@@ -171,7 +171,9 @@ class ObjectTransform(object):
     def normalization(self):
         self.image = self.image.float()/255.0
 
-
+    ### equalization
+    def eq_normalization(self, A, A_pinv):    
+        self.image = F.equalization( self.image, A, A_pinv  )
 
     #Geometric transforms
 
@@ -209,6 +211,9 @@ class ObjectTransform(object):
     def applay_elastic_tensor_transform(self, grid):
         tensor = torch.unsqueeze( self.image, dim=0 )
         self.image = grid_sample(tensor, grid ).data[0,...]  
+
+
+
 
     ### resize
     def resize(self, imsize, resize_mode, padding_mode):

@@ -123,17 +123,15 @@ bsave=False
 bgrid=False
 
 
-
 ## color
-
-transform = mtrans.ToRandomChoiceTransform( [
-    mtrans.RandomBrightness( factor=0.75 ),
-    mtrans.RandomContrast( factor=0.5 ),
-    mtrans.RandomSaturation( factor=0.75 ),
-    mtrans.RandomGamma( factor=0.75  ),
-    mtrans.ToRandomTransform(mtrans.ToGrayscale(), prob=0.5),
-    mtrans.RandomRGBPermutation(),
-    ] )
+# transform = mtrans.ToRandomChoiceTransform( [
+#     mtrans.RandomBrightness( factor=0.75 ),
+#     mtrans.RandomContrast( factor=0.5 ),
+#     mtrans.RandomSaturation( factor=0.75 ),
+#     mtrans.RandomGamma( factor=0.75  ),
+#     mtrans.ToRandomTransform(mtrans.ToGrayscale(), prob=0.5),
+#     mtrans.RandomRGBPermutation(),
+#     ] )
 
 # transform = mtrans.RandomBrightness( factor=0.75 )
 # transform = mtrans.RandomBrightnessShift( factor=0.5 )
@@ -163,6 +161,8 @@ transform = mtrans.ToRandomChoiceTransform( [
 # transform = mtrans.RandomGeometricalTransform( angle=360, translation=0.5, warp=0.02, padding_mode=cv2.BORDER_CONSTANT)
 # transform = mtrans.RandomElasticDistort( size_grid=50, deform=15, padding_mode=cv2.BORDER_REFLECT_101)
 
+
+transform = mtrans.ToRandomTransform( mtrans.ToEqNormalization( (500,500) ), prob=1.0)
 
 ## to tensor
 # transform = mtrans.ToRandomTransform(mtrans.ToMeanNormalization(mean=[0.5,0.5,0.5],std=[0.5,0.5,0.5]), prob=0.5)

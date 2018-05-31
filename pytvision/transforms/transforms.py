@@ -98,7 +98,7 @@ class ToLambdaTransform(ToTransform):
         self.lambd = lambds
         
     def __call__(self,obj):
-        return self.lambd(img)
+        return self.lambd(obj)
         
 
 
@@ -399,6 +399,17 @@ class ToNormalization(ToTransform):
         obj.normalization()
         return obj
 
+class ToEqNormalization(ToTransform):
+    """To equalization normalization 
+    """
+    def __init__(self, imsize ):
+        """Initialization
+        """
+        self.A, self.A_pinv = F.compute_norm_mat( imsize[0], imsize[1] )
+
+    def __call__(self, obj):
+        obj.eq_normalization(self.A, self.A_pinv)
+        return obj
 
 # geometrical transforms
 
