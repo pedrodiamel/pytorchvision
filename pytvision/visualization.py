@@ -148,7 +148,7 @@ def drawmanifold( images, x, S=2000, s=50, Ntake = 100, freq_print=100 ):
 # Helper function to show a batch
 def show_limage_batch(sample_batched, nrow=8, labels=None):
     """Show image for a batch of samples."""
-    images_batch, label_batch = sample_batched['image'], sample_batched['labels']
+    images_batch, label_batch = sample_batched['image'], sample_batched['label']
     batch_size = len(images_batch)
     im_size = images_batch.size(2)
     rows = np.min( (images_batch.shape[0]//nrow + 1, 64 )  )
