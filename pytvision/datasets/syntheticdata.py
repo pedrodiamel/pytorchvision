@@ -6,12 +6,14 @@ import os
 
 import numpy as np
 import cv2
+from sklearn import datasets
+
 
 import warnings
 warnings.filterwarnings("ignore")
 
 from ..transforms.render import ColorCheckerRender, CircleRender, EllipseRender
-from ..transforms.aumentation import ObjectImageMaskAndWeightTransform, ObjectImageTransform, ObjectImageAndLabelTransform, ObjectImageAndMaskTransform
+from ..transforms.aumentation import ObjectImageMaskAndWeightTransform, ObjectImageTransform, ObjectImageAndLabelTransform, ObjectImageAndMaskTransform, ObjectRegressionTransform
 from ..transforms import functional as F
 
 from . import imageutl as imutl
@@ -19,10 +21,9 @@ from . import weightmaps as wmap
 from . import utility
 
 
-
 class SyntheticColorCheckerDataset(object):
     '''
-    Mnagement for Synthetic Color Checker dataset
+    Management for Synthetic Color Checker dataset
     '''
 
     generate_image = 'image'
@@ -78,15 +79,13 @@ class SyntheticColorCheckerDataset(object):
             obj._draw_grid( grid_size=50 )
 
         if self.transform: 
-            sample = self.transform( obj )
+            obj = self.transform( obj )
 
         return obj.to_dict()
 
-
-
 class SyntheticColorCheckerExDataset(object):
     '''
-    Mnagement for Synthetic Color Checker dataset
+    Management for Synthetic Color Checker dataset
     '''
 
     generate_image = 'image'
@@ -154,13 +153,13 @@ class SyntheticColorCheckerExDataset(object):
             obj._draw_grid( grid_size=50 )
 
         if self.transform: 
-            sample = self.transform( obj )
+            obj = self.transform( obj )
 
         return obj.to_dict()
 
 class SyntethicCircleDataset(object):
     '''
-    Mnagement for Synthetic Circle dataset
+    Management for Synthetic Circle dataset
     '''
 
     generate_image = 'image'
@@ -243,7 +242,82 @@ class SyntethicCircleDataset(object):
             obj._draw_grid( grid_size=50 )
 
         if self.transform: 
-            sample = self.transform( obj )
+            obj = self.transform( obj )
 
         return obj.to_dict()
 
+
+class ToyDataset(object):
+    
+    circle='circle'
+    moons='moons'
+    gauss_2d='gauss_2d'
+    gauss_3d='gauss_3d'
+
+
+    def __init__(self, 
+        name='circle',
+        count=100,     
+        transform=None,   
+        ):
+        """Initialization
+        Args:
+            @name: name type toy dataset 
+            @count: for batch size         
+        """   
+        self.count = count
+        self.name = name 
+        self.x = []
+        self.y = []
+
+        self._create_data()
+        self.transform=transform
+
+
+    def __len__(self):
+        return self.count
+
+    def __getitem__(self, idx):          
+        x,y = self.x[idx], self.y[idx]
+        obj = ObjectRegressionTransform( x, y )
+        if self.transform: 
+            obj = self.transform( obj )
+        return obj.to_value()
+
+
+
+    def _create_data(self):
+        
+        name = self.name
+        count = self.count
+
+        if name == 'circle':
+            xc, yc = datasets.make_circles(n_samples=count, factor=.5, noise=.05)
+        elif name == 'moons':
+            xc, yc = datasets.make_moons(n_samples=count, noise=.05) 
+        elif name == 'gauss_2d':
+            n1 = count//2; n2 = count - n1
+            x1 = np.random.multivariate_normal([-2.0, -1.0], [[1, 0],[0, 1]], n1)
+            x2 = np.random.multivariate_normal([2.0, 1.0], [[1.0, 0.0],[0.0, 1.0]], n2)
+            xc = np.concatenate((x1,x2))
+            yc = np.concatenate((np.zeros(n1),np.ones(n2)))
+        elif name == 'gauss_3d':
+            count = count//8
+            x1 = np.random.multivariate_normal([ 10.0, 0.0,  0.0], [[10, 0, 0],[0, 10, 0],[0, 0, 10]], count)
+            x2 = np.random.multivariate_normal([ 0.0,  0.0,  0.0], [[1, 0, 0],[0, 1, 0],[0, 0, 1]], count)
+            x3 = np.random.multivariate_normal([ 0.0,  0.0, 5.0], [[0.1, 0, 0],[0, 0.1, 0],[0, 0, 0.1]], count)
+            x4 = np.random.multivariate_normal([ 10.0,  10.0,  0.0], [[1, 0, 0],[0, 1, 0],[0, 0, 1]], count)
+            x5 = np.random.multivariate_normal([ 0.0,  5.0,  5.0], [[1, 0, 0],[0, 1, 0],[0, 0, 1]], count)
+            x6 = np.random.multivariate_normal([ 5.0,  0.0,  5.0], [[1, 0, 0],[0, 1, 0],[0, 0, 1]], count)
+            x7 = np.random.multivariate_normal([ 5.0,  5.0,  0.0], [[1, 0, 0],[0, 1, 0],[0, 0, 1]], count)
+            x8 = np.random.multivariate_normal([ 5.0,  5.0,  5.0], [[1, 0, 0],[0, 1, 0],[0, 0, 1]], count)
+            xc = np.concatenate((x1,x2,x3,x4,x5,x6,x7,x8))    
+            yc = np.zeros(count)
+            for i in range( 7 ):
+                yc = np.concatenate((yc,np.ones(count)*(i+1))) 
+            self.count = count*8            
+        else:
+            assert(False)
+
+        self.x = xc 
+        self.y = yc

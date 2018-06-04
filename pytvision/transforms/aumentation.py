@@ -8,7 +8,50 @@ from .grid.tps_grid_gen import TPSGridGen
 
 from . import functional as F
 
+
 class ObjectTransform(object):
+    def __init__(self ):
+        pass
+
+    def size(self):
+        pass
+
+    #pytorch transform
+    def to_tensor(self):
+        pass
+
+    ##interface of dict output
+    def to_dict(self):
+        pass
+
+    ##interface of value/tupla output 
+    def to_value(self):
+        pass
+
+class ObjectRegressionTransform( ObjectTransform ):
+    def __init__(self, x, y ):
+        self.x = x
+        self.y = y
+
+    def size(self):
+        return x.shape[0]
+
+    #pytorch transform
+    def to_tensor(self):        
+        x = np.array( self.x )
+        y = np.array( self.y )
+        self.x = torch.from_numpy( x ).float()
+        self.y = torch.from_numpy( y ).float()
+
+    ##interface of dict output
+    def to_dict(self):
+        return { 'x':x, 'y':y }
+
+    ##interface of value/tupla output 
+    def to_value(self):
+        return self.x, self.y
+
+class ObjectImageTransform( ObjectTransform ):
     def __init__(self, image ):
         self.image = image
 
@@ -212,44 +255,13 @@ class ObjectTransform(object):
         tensor = torch.unsqueeze( self.image, dim=0 )
         self.image = grid_sample(tensor, grid ).data[0,...]  
 
-
-
-
     ### resize
     def resize(self, imsize, resize_mode, padding_mode):
         self.image = F.resize_image(self.image, imsize[1], imsize[0], resize_mode, padding_mode, interpolate_mode=cv2.INTER_LINEAR ) 
 
-
     ### resize unet input
     def resize_unet_input( self, fov_size=388, padding_mode = cv2.BORDER_CONSTANT ):
         self.image = F.resize_unet_transform(self.image, fov_size, cv2.INTER_LINEAR,  padding_mode)
-
-    ### tensor transform
-    def to_tensor(self):
-        pass
-
-    ### interface of output
-    def to_dict(self):
-        pass
-
-    def to_value(self):
-        pass
-
-    # Aux function for debug
-    def _draw_grid(self, grid_size=50, color=(255,0,0), thickness=1):
-        image = np.copy( self.image )
-        self.image = F.draw_grid(image, grid_size, color, thickness)        
-
-
-
-
-class ObjectImageTransform(ObjectTransform):
-    def __init__(self, image ):
-        """
-        Arg:
-            @image
-        """
-        super(ObjectImageTransform, self).__init__(image)
 
     #pytorch transform
     def to_tensor(self):
@@ -261,15 +273,20 @@ class ObjectImageTransform(ObjectTransform):
         image = torch.from_numpy(image).float()
         self.image = image
 
-    ##interface of output
+    ##interface of dict output
     def to_dict(self):
         return { 'image': self.image }
 
+    ##interface of value/tupla output 
     def to_value(self):
         return self.image
 
+    # Aux function for debug
+    def _draw_grid(self, grid_size=50, color=(255,0,0), thickness=1):
+        image = np.copy( self.image )
+        self.image = F.draw_grid(image, grid_size, color, thickness)        
 
-class ObjectImageAndLabelTransform(ObjectTransform):
+class ObjectImageAndLabelTransform( ObjectImageTransform ):
     def __init__(self, image, label ):
         """
         Arg:
@@ -305,8 +322,7 @@ class ObjectImageAndLabelTransform(ObjectTransform):
     def to_value(self):
         return self.image, self.label 
 
-
-class ObjectImageAndMaskTransform(ObjectTransform):
+class ObjectImageAndMaskTransform( ObjectImageTransform ):
     def __init__(self, image, mask ):
         """
         Arg:
@@ -518,3 +534,5 @@ class ObjectImageMaskAndWeightTransform(ObjectImageAndMaskTransform):
     def to_value(self):
         return self.image, self.mask, self.weight
     
+
+

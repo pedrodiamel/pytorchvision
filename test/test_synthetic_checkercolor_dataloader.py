@@ -9,7 +9,6 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 
-
 sys.path.append('../')
 from pytvision.datasets.syntheticdata import SyntheticColorCheckerExDataset
 from pytvision.transforms import transforms as mtrans
