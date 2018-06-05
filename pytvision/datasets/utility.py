@@ -35,7 +35,7 @@ def to_channels( image, ch ):
     return image
 
 def to_one_hot( x, nc ):    
-    y = np.zeros((nc,1)); y[ int(x) ] = 1.0
+    y = np.zeros((nc)); y[ int(x) ] = 1.0
     return y
 
 def tolabel( x ):
