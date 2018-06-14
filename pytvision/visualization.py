@@ -75,7 +75,7 @@ def makeimagecell(image, labels, alphaback=0.3, alphaedge=0.3):
             
     return imagecell
 
-def display_samplas(dataloader, row=3,col=3, alphaback=0.3, alphaedge=0.2):
+def display_samples(dataloader, row=3,col=3, alphaback=0.3, alphaedge=0.2):
     """
     Display random data from dataset
     For debug only
