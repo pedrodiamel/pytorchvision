@@ -3,6 +3,12 @@
 
 The pytvision package consists of my datasets, models, and image transformations methods for computer vision projects. This package also containing the synthetic render methods.
 
+## Installation
+
+From source:
+
+    python setup.py install
+
 ## Transforms
 
 The backend transforms using opencv
