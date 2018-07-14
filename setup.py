@@ -33,6 +33,8 @@ requirements = [
     'six',
     'torch',
     'tqdm'
+    'scipy', 
+    'opencv-python'
 ]
 
 setup(
@@ -48,7 +50,6 @@ setup(
 
     # Package info
     packages=find_packages(exclude=('test',)),
-
     zip_safe=True,
     install_requires=requirements,
 )
