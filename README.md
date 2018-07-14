@@ -41,7 +41,8 @@ The backend transforms using opencv
     transform = mtrans.ToRandomTransform(mtrans.Rotate270(), prob=0.85)
     transform = mtrans.RandomGeometricalTranform( angle=360, translation=0.5, warp=0.02, padding_mode=cv2.BORDER_CONSTANT)
 
-
+## Documentation
+The full documentation is available at [doc](https://pytorchvision.readthedocs.io/en/latest/)
 
 ## Building the documentation
 1. Go to `docs/` directory
