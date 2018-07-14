@@ -1,8 +1,7 @@
 # PyTVision
-[![Documentation Status](//readthedocs.org/projects/pytorchvision/badge/?version=latest)](https://pytorchvision.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/pytorchvision/badge/?version=latest)](https://pytorchvision.readthedocs.io/en/latest/?badge=latest)
 
 The pytvision package consists of my datasets, models, and image transformations methods for computer vision projects. This package also containing the synthetic render methods.
-
 
 ## Transforms
 
