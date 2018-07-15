@@ -38,7 +38,6 @@ def stand( image, imsize=(250,250) ):
 
 def tranform_image_performs(image, transform, num_transform=4, bsave=False, bshow=True, bgrid=False):
     
-
     frames = []
     for i in range(num_transform):
         
@@ -73,7 +72,6 @@ def tranform_image_performs(image, transform, num_transform=4, bsave=False, bsho
 
 def tranform_image_and_mask_performs(image, mask, transform, num_transform=4, bsave=False, bshow=True, bgrid=False):
     
-
     frames = []
     for i in range(num_transform):
         
