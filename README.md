@@ -14,9 +14,13 @@ From source:
 - [Example transformation](https://github.com/pedrodiamel/pytorchvision/blob/master/books/example_transforms.ipynb)
 - [Example transformation for pytorch](https://github.com/pedrodiamel/pytorchvision/blob/master/books/example_tranforms_pytorch.ipynb)
 
+## Projects
+
+- [kaggle-datasciencebowl-2018](https://github.com/pedrodiamel/kaggle-datasciencebowl-2018)
+
+
 ## Documentation
 The full documentation is available at [doc](https://pytorchvision.readthedocs.io/en/latest/)
-
 
 ## Transforms
 
