@@ -3,14 +3,27 @@
 
 The pytvision package consists of my datasets, models, and image transformations methods for computer vision projects. This package also containing the synthetic render methods.
 
+## Installation
+
+From source:
+
+    python setup.py install
+
 ## Books
 
 - [Example transformation]
 - [Example transformation for pytorch]
 
+## Documentation
+The full documentation is available at [doc](https://pytorchvision.readthedocs.io/en/latest/)
+
+
 ## Transforms
 
 The backend transforms using opencv
+
+![Transformation](rec/syntetic_transformations.gif)
+
 
 ### Color transformation
 
@@ -44,6 +57,7 @@ The backend transforms using opencv
     transform = mtrans.ToRandomTransform(mtrans.HFlip(), prob=0.85)
     transform = mtrans.ToRandomTransform(mtrans.Rotate270(), prob=0.85)
     transform = mtrans.RandomGeometricalTranform( angle=360, translation=0.5, warp=0.02, padding_mode=cv2.BORDER_CONSTANT)
+
 
 
 ## Building the documentation
