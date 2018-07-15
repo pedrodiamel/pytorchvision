@@ -22,6 +22,21 @@ From source:
 ## Documentation
 The full documentation is available at [doc](https://pytorchvision.readthedocs.io/en/latest/)
 
+## Data
+
+- cars169 
+- cub2011
+- StanfordOnlineProducts
+- fer+
+
+## Models
+
+- inception_v4
+- nasnetalarge
+- dexpression
+- unet
+- pspnet
+
 ## Transforms
 
 The backend transforms using opencv
