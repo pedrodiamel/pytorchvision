@@ -11,8 +11,8 @@ From source:
 
 ## Books
 
-- [Example transformation]
-- [Example transformation for pytorch]
+- [Example transformation](https://github.com/pedrodiamel/pytorchvision/blob/master/books/example_transforms.ipynb)
+- [Example transformation for pytorch](https://github.com/pedrodiamel/pytorchvision/blob/master/books/example_tranforms_pytorch.ipynb)
 
 ## Documentation
 The full documentation is available at [doc](https://pytorchvision.readthedocs.io/en/latest/)
