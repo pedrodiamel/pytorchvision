@@ -27,7 +27,6 @@ The backend transforms using opencv
     transform = mtrans.ToRandomTransform(mtrans.ToNegative(), prob=0.5)
     transform = mtrans.ToRandomTransform(mtrans.CLAHE(), prob=0.5) 
 
-
 ### Blur + Noise transformation
 
     transform = mtrans.ToLinealMotionBlur( lmax=1 )
@@ -45,7 +44,6 @@ The backend transforms using opencv
     transform = mtrans.ToRandomTransform(mtrans.HFlip(), prob=0.85)
     transform = mtrans.ToRandomTransform(mtrans.Rotate270(), prob=0.85)
     transform = mtrans.RandomGeometricalTranform( angle=360, translation=0.5, warp=0.02, padding_mode=cv2.BORDER_CONSTANT)
-
 
 
 ## Building the documentation
