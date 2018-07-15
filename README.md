@@ -17,6 +17,7 @@ From source:
 ## Projects
 
 - [kaggle-datasciencebowl-2018](https://github.com/pedrodiamel/kaggle-datasciencebowl-2018)
+- [kaggle-imaterialist](https://github.com/pedrodiamel/kaggle-imaterialist)
 
 
 ## Documentation
