@@ -1,7 +1,7 @@
 import torch.nn as nn
 import torch.utils.model_zoo as model_zoo
 import math
-from torchlib.netmodels import utility as utl
+from . import utility as utl
 
 
 __all__ = [

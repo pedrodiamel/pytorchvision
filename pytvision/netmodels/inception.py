@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.utils.model_zoo as model_zoo
-from torchlib.netmodels import utility as utl
+from . import utility as utl
 
 __all__ = ['Inception3', 'inception_v3']
 

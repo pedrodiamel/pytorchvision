@@ -4,7 +4,7 @@ import torch.utils.model_zoo as model_zoo
 import os
 import sys
 
-from torchlib.netmodels import utility as utl
+from . import utility as utl
 
 __all__ = ['InceptionV4', 'inception_v4']
 

@@ -5,7 +5,7 @@ import torch.utils.model_zoo as model_zoo
 from collections import OrderedDict
 
 
-from torchlib.netmodels import utility as utl
+from . import utility as utl
 
 __all__ = ['DenseNet', 'densenet121', 'densenet169', 'densenet201', 'densenet161']
 

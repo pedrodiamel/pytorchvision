@@ -32,7 +32,7 @@ requirements = [
     'numpy',
     'six',
     'torch',
-    'tqdm'
+    'tqdm',
     'scipy', 
     'opencv-python'
 ]
