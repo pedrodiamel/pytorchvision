@@ -24,8 +24,6 @@ class ToTransform(object):
     def __str__(self):
         return self.__class__.__name__
 
-
-
 class ToRandomTransform(ToTransform):
     """Random transform: 
     """
@@ -44,7 +42,6 @@ class ToRandomTransform(ToTransform):
         if random.random() < self.prob:
             obj = self.tran( obj )
         return obj
-    
 
 class ToRandomChoiceTransform(ToTransform):
     """Random choice transform: 
@@ -63,7 +60,6 @@ class ToRandomChoiceTransform(ToTransform):
         tran = random.choice( self.transforms )
         obj = tran( obj )
         return obj
-
 
 class ToRandomOrderTransform(ToTransform):
     """Random order transform: 
@@ -99,8 +95,6 @@ class ToLambdaTransform(ToTransform):
         
     def __call__(self,obj):
         return self.lambd(obj)
-        
-
 
 class ToTensor(object):
     """Convert ndarrays in sample to Tensors."""
@@ -172,7 +166,6 @@ class ToGaussianBlur(ToTransform):
         wnd = random.randint(1,3) * 2 + 1
         obj.gaussian_blur(wnd)
         return obj
-
 
 # Color tranformations
 
@@ -412,7 +405,6 @@ class ToEqNormalization(ToTransform):
         return obj
 
 # geometrical transforms
-
 
 class ToResize(ToTransform):
     """Resize to unet fov
