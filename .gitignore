@@ -17,6 +17,7 @@ __pycache__/
 
 # C extensions
 *.so
+compute_overlap.c
 
 # Distribution / packaging
 .Python

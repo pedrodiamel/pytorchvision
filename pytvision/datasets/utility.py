@@ -31,7 +31,7 @@ headers = {
 }
 
 
-#tranformations 
+
 
 def isrgb( image ):
     return len(image.shape)==3 and image.shape[2]==3 
@@ -114,8 +114,6 @@ def get_center(img):
 
 def get_distance(x):
     return skfmm.distance((x).astype('float32') - 0.5) 
-
-
 
 
 def download_images( pack ):

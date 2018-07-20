@@ -286,6 +286,44 @@ class ObjectImageTransform( ObjectTransform ):
         image = np.copy( self.image )
         self.image = F.draw_grid(image, grid_size, color, thickness)        
 
+
+class ObjectImageAndAnnotations( ObjectImageTransform ):
+    def __init__(self, image, annotations ):
+        """
+        Arg:
+            @image
+            @annotations
+        """
+        super(ObjectImageAndAnnotations, self).__init__(image)
+        self.annotations = annotations
+
+    #pytorch transform
+    def to_tensor(self):
+
+        image  = self.image
+        annotations  = self.annotations
+
+        # swap color axis because
+        # numpy image: H x W x C
+        # torch image: C X H X W
+        image       = image.transpose((2, 0, 1))
+        image       = torch.from_numpy(image).float()
+        annotations = torch.from_numpy( annotations ).float()
+
+        self.image = image
+        self.annotations = annotations
+
+    ##interface of output
+    def to_dict(self):
+        return { 
+            'image': self.image, 
+            'annotations': self.annotations 
+             }
+    
+    def to_value(self):
+        return self.image, self.annotations 
+
+
 class ObjectImageAndLabelTransform( ObjectImageTransform ):
     def __init__(self, image, label ):
         """

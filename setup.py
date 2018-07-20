@@ -4,7 +4,21 @@ import io
 import re
 import shutil
 import sys
+
+import setuptools
 from setuptools import setup, find_packages
+from setuptools.extension import Extension
+
+from Cython.Build import cythonize
+import numpy as np
+
+extensions = [
+    Extension(
+        'pytvision.utils.compute_overlap',
+        ['pytvision/utils/compute_overlap.pyx'],
+        include_dirs=[np.get_include()]
+    ),
+]
 
 
 def read(*names, **kwargs):
@@ -25,17 +39,8 @@ def find_version(*file_paths):
 
 
 readme = open('README.md').read()
-
 VERSION = find_version('pytvision', '__init__.py')
-
-requirements = [
-    'numpy',
-    'six',
-    'torch',
-    'tqdm',
-    'scipy', 
-    'opencv-python'
-]
+requirements = open('requirements.txt').read() 
 
 setup(
     # Metadata
@@ -52,5 +57,6 @@ setup(
     packages=find_packages(exclude=('test',)),
     zip_safe=True,
     install_requires=requirements,
+    ext_modules = cythonize(extensions),
 )
 

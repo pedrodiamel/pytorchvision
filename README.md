@@ -7,6 +7,7 @@ The pytvision package consists of my datasets, models, and image transformations
 
 From source:
 
+    python setup.py build_ext --inplace
     python setup.py install
 
 ## Books

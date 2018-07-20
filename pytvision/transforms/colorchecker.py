@@ -2,7 +2,7 @@
 
 import numpy as np
 from skimage import color
-from . import renderutility as utl
+from . import colorchecker_utility as utl
 
 class ColorChecker(object):
     """ColorChecker Classic model"""
