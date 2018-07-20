@@ -247,7 +247,7 @@ class ColorCheckerRender(object):
         alpha = np.pi/4, 
         beta  = np.pi/4, 
         gamma = np.pi,
-        itype = 1,    
+        itype = 2,    
         ):
         "Generate multi chart in the image"
         
@@ -269,7 +269,7 @@ class ColorCheckerRender(object):
         for i in range(num):
             
             #itype = itype
-            #itype = random.randint(1,2);
+            itype = random.randint(1,itype)
             #itype = 1;
 
             rx = t_alpha/2 - t_alpha*random.random();
@@ -346,6 +346,27 @@ class ColorCheckerRender(object):
             
         return im, labels;
 
+
+    @staticmethod
+    def generate_image_annotations(im, num = 5):
+        '''
+        Generate for image   
+        '''           
+        
+        label_to_classes = {'classic':0, 'digitalsg':1 } 
+        im, cc = ColorCheckerRender().getsyntheticmultcharcolorimage(im, num);
+        annotations = list();
+        for c in cc:              
+            gt = DetectionGT();
+            gt.assignment(c); 
+            bbox = gt.bbox
+
+            # x1,y1,x2,y2,c
+            annotation = [ bbox[0,0], bbox[0,1], bbox[1,0], bbox[1,1], label_to_classes[gt.stype] ]
+            annotations.append( annotation );
+        
+        annotations = np.stack( annotations )
+        return im, annotations;
 
     @staticmethod
     def generate_for_segmentation_mask(im, num = 5):
