@@ -53,7 +53,7 @@ class SyntheticColorCheckerDataset(object):
     def __getitem__(self, idx):   
 
 
-        image = self.data[ (dx)%len(self.data)  ]
+        image = self.data[ (idx)%len(self.data)  ]
         image = F.resize_image(image, 640, 1024, resize_mode='crop', interpolate_mode=cv2.INTER_LINEAR);
 
         image = utility.to_channels(image, self.num_channels)   
@@ -118,15 +118,13 @@ class SyntheticColorCheckerExDataset(object):
     def __len__(self):
         return self.count
 
-    def __getitem__(self, idx):   
-
+    def __getitem__(self, idx):
 
         if self.bbackimage:
-            image = self.data[ (dx)%len(self.data)  ]
+            image = self.data[ (idx)%len(self.data)  ]
             image = F.resize_image(image, 640, 1024, resize_mode='crop', interpolate_mode=cv2.INTER_LINEAR);
         else:
             image = np.ones( (640,1024,3), dtype=np.uint8 )*255
-
 
         #to rgb
         image = utility.to_channels(image, self.num_channels) 
@@ -138,7 +136,6 @@ class SyntheticColorCheckerExDataset(object):
         label_t[:,:,0] = (mask <= 0).astype( np.uint8 )
         label_t[:,:,1] = (mask > 0).astype( np.uint8 )
         weight_t = weight[:,:,np.newaxis] 
-
 
         if self.generate == 'image':
             obj = ObjectImageTransform( image_t  )

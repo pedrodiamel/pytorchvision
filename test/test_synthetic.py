@@ -3,9 +3,9 @@
 import numpy as np 
 import matplotlib.pyplot as plt
 
-
+import sys
 sys.path.append('../')
-from pytvision.datasets.render import CircleRender, EllipseRender
+from pytvision.transforms.render import CircleRender, EllipseRender
 
 n = 512; m = 512; cnt = 5;
 rmin = 5; rmax = 50;

@@ -104,7 +104,7 @@ def tranform_image_and_mask_performs( data, name, num_transform=4, bsave=False, 
             plt.show()
 
     if bsave:
-        filename = '../rec/{}'.format( name )
+        filename = 'rec/{}'.format( name )
         create_gif( filename, frames, duration=0.5)
         print('save: ', filename)
 
@@ -158,7 +158,7 @@ def transform_aug():
 
 
 # Transformation
-num_transform = 50
+num_transform = 10
 bshow=False
 bsave=True
 bgrid=True

@@ -6,7 +6,7 @@ import torch.nn.functional as F
 import torch.utils.model_zoo as model_zoo
 from torch.autograd import Variable
 
-from torchlib.netmodels import utility as utl
+from . import utility as utl
 
 __all__ = ['NASNetALarge', 'nasnetalarge']
 
