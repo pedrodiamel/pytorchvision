@@ -131,6 +131,9 @@ class DetectionGT:
         assert(len(result) is self.lmdb_format_length())
         return result
 
+
+
+
 class ColorCheckerModel(object):
     "Color Checker Model for mcc generator result"
 
@@ -146,7 +149,7 @@ class ColorCheckerModel(object):
 class ColorCheckerRender(object):
     
    
-    def __init__(self):
+    def __init__(self ):
         pass
 
     # function cc = chartcolorboard( K, R, T )
@@ -234,25 +237,39 @@ class ColorCheckerRender(object):
         return im, cc
 
     @staticmethod
-    def getsyntheticmultcharcolorimage(im, num=5):
+    def getsyntheticmultcharcolorimage(
+        im, 
+        num=5,
+        front = 2,
+        depth = 45,
+        x = 80, y = 40,
+        fx = 100, fy = 100, 
+        alpha = np.pi/4, 
+        beta  = np.pi/4, 
+        gamma = np.pi,
+        itype = 1,    
+        ):
         "Generate multi chart in the image"
-
-        t_front = 2;
-        t_depth = 45;
-        t_x = 80;
-        t_y = 40;
-        fx, fy = 100, 100
-        t_alpha, t_beta, t_gamma =  np.pi/4, np.pi/4, np.pi 
+        
+        t_front = front
+        t_depth = depth
+        t_x     = x
+        t_y     = y
+        fx      = fx 
+        fy      = fy 
+        t_alpha = alpha
+        t_beta  = beta
+        t_gamma = gamma 
 
         imsize = im.shape;
         K = np.array([[fx, 0, (imsize[1]-1)/2],[0, fy, (imsize[0]-1)/2],[0, 0, 1]]);
-
 
         k = 0;
         ccs = []; 
         for i in range(num):
             
-            itype = random.randint(1,2);
+            #itype = itype
+            #itype = random.randint(1,2);
             #itype = 1;
 
             rx = t_alpha/2 - t_alpha*random.random();

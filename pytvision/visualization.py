@@ -9,6 +9,130 @@ from torchvision import transforms, utils
 from graphviz import Digraph
 
 
+import PIL.Image as Image
+import PIL.ImageColor as ImageColor
+import PIL.ImageDraw as ImageDraw
+import PIL.ImageFont as ImageFont
+
+
+STANDARD_COLORS = [
+    'AliceBlue', 'Chartreuse', 'Aqua', 'Aquamarine', 'Azure', 'Beige', 'Bisque',
+    'BlanchedAlmond', 'BlueViolet', 'BurlyWood', 'CadetBlue', 'AntiqueWhite',
+    'Chocolate', 'Coral', 'CornflowerBlue', 'Cornsilk', 'Crimson', 'Cyan',
+    'DarkCyan', 'DarkGoldenRod', 'DarkGrey', 'DarkKhaki', 'DarkOrange',
+    'DarkOrchid', 'DarkSalmon', 'DarkSeaGreen', 'DarkTurquoise', 'DarkViolet',
+    'DeepPink', 'DeepSkyBlue', 'DodgerBlue', 'FireBrick', 'FloralWhite',
+    'ForestGreen', 'Fuchsia', 'Gainsboro', 'GhostWhite', 'Gold', 'GoldenRod',
+    'Salmon', 'Tan', 'HoneyDew', 'HotPink', 'IndianRed', 'Ivory', 'Khaki',
+    'Lavender', 'LavenderBlush', 'LawnGreen', 'LemonChiffon', 'LightBlue',
+    'LightCoral', 'LightCyan', 'LightGoldenRodYellow', 'LightGray', 'LightGrey',
+    'LightGreen', 'LightPink', 'LightSalmon', 'LightSeaGreen', 'LightSkyBlue',
+    'LightSlateGray', 'LightSlateGrey', 'LightSteelBlue', 'LightYellow', 'Lime',
+    'LimeGreen', 'Linen', 'Magenta', 'MediumAquaMarine', 'MediumOrchid',
+    'MediumPurple', 'MediumSeaGreen', 'MediumSlateBlue', 'MediumSpringGreen',
+    'MediumTurquoise', 'MediumVioletRed', 'MintCream', 'MistyRose', 'Moccasin',
+    'NavajoWhite', 'OldLace', 'Olive', 'OliveDrab', 'Orange', 'OrangeRed',
+    'Orchid', 'PaleGoldenRod', 'PaleGreen', 'PaleTurquoise', 'PaleVioletRed',
+    'PapayaWhip', 'PeachPuff', 'Peru', 'Pink', 'Plum', 'PowderBlue', 'Purple',
+    'Red', 'RosyBrown', 'RoyalBlue', 'SaddleBrown', 'Green', 'SandyBrown',
+    'SeaGreen', 'SeaShell', 'Sienna', 'Silver', 'SkyBlue', 'SlateBlue',
+    'SlateGray', 'SlateGrey', 'Snow', 'SpringGreen', 'SteelBlue', 'GreenYellow',
+    'Teal', 'Thistle', 'Tomato', 'Turquoise', 'Violet', 'Wheat', 'White',
+    'WhiteSmoke', 'Yellow', 'YellowGreen'
+]
+
+def draw_bounding_box(image, label,  color='red', thickness=4):
+    
+    bbox = label.bbox;
+    image_pil = Image.fromarray(np.uint8(image)).convert('RGB') 
+    im_width, im_height = image_pil.size
+
+    draw = ImageDraw.Draw(image_pil)
+    xmin = bbox[0,0]; ymin = bbox[0,1];
+    xmax = bbox[1,0]; ymax = bbox[1,1];
+    (left, right, top, bottom) = (xmin, xmax, ymin, ymax)
+
+    draw.line([(left, top), (left, bottom), (right, bottom),
+             (right, top), (left, top)], width=thickness, fill=color)
+    
+    try:
+        font = ImageFont.truetype('/usr/share/fonts/truetype/ttf-bitstream-vera/Vera.ttf', 32) #'arial.ttf'
+    except IOError:
+        font = ImageFont.load_default()
+    
+    text_bottom = top
+    
+    # Reverse list and print from bottom to top.
+    #for display_str in display_str_list[::-1]:
+    
+    display_str = '{}  '.format(label.stype);
+    text_width, text_height = font.getsize(display_str)
+    margin = np.ceil(0.05 * text_height)
+    draw.rectangle(
+        [(left, text_bottom - text_height - 2 * margin), 
+        (left + text_width, text_bottom)],
+        fill=color)
+    
+    draw.text(
+        (left + margin, text_bottom - text_height - margin),
+        display_str,
+        fill='black',
+        font=font)
+    text_bottom -= text_height - 2 * margin
+    
+    np.copyto(image, np.array(image_pil))
+
+def draw_bounding_box_dic(image, label,  color='red', thickness=4):
+    
+    bbox = label['bbox'];
+    image_pil = Image.fromarray(np.uint8(image)).convert('RGB') 
+    im_width, im_height = image_pil.size
+
+    draw = ImageDraw.Draw(image_pil)
+    xmin = bbox[0,0]; ymin = bbox[0,1];
+    xmax = bbox[1,0]; ymax = bbox[1,1];
+    (left, right, top, bottom) = (xmin, xmax, ymin, ymax)
+
+    draw.line([(left, top), (left, bottom), (right, bottom),
+             (right, top), (left, top)], width=thickness, fill=color)
+    
+    try:
+        font = ImageFont.truetype('/usr/share/fonts/truetype/ttf-bitstream-vera/Vera.ttf', 32) #'arial.ttf'
+    except IOError:
+        font = ImageFont.load_default()
+    
+    text_bottom = top
+    
+    # Reverse list and print from bottom to top.
+    #for display_str in display_str_list[::-1]:
+    
+    display_str = '{}  '.format(label['stype']);
+    text_width, text_height = font.getsize(display_str)
+    margin = np.ceil(0.05 * text_height)
+    draw.rectangle(
+        [(left, text_bottom - text_height - 2 * margin), 
+        (left + text_width, text_bottom)],
+        fill=color)
+    
+    draw.text(
+        (left + margin, text_bottom - text_height - margin),
+        display_str,
+        fill='black',
+        font=font)
+    text_bottom -= text_height - 2 * margin
+    
+    np.copyto(image, np.array(image_pil))
+
+
+def plotboxcv(image,bbox,color=(0,255,0)):
+    image1 = image.copy()
+    x = bbox[0,:]; y = bbox[1,:];
+    cv2.rectangle(image1,(int(bbox[0,0]),int(bbox[0,1])),(int(bbox[1,0]),int(bbox[1,1]) ),color,4)
+    return image1
+
+
+
+
 def torgb(im):
     if len(im.shape)==2:
         im = np.expand_dims(im, axis=2) 

@@ -7,14 +7,13 @@ from sklearn import datasets
 import warnings
 warnings.filterwarnings("ignore")
 
-from ..transforms.colorchacker_render import ColorCheckerRender, CircleRender, EllipseRender
+from ..transforms.colorchacker_render import ColorCheckerRender
 from ..transforms.aumentation import ObjectImageMaskAndWeightTransform, ObjectImageTransform, ObjectImageAndLabelTransform, ObjectImageAndMaskTransform, ObjectRegressionTransform
 from ..transforms import functional as F
 
 from . import imageutl as imutl
 from . import weightmaps as wmap
 from . import utility
-
 
 
 
