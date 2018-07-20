@@ -16,7 +16,7 @@ import time
 
 sys.path.append('../')
 from pytvision.transforms import transforms as mtrans
-from pytvision.datasets.syntheticdata import SyntethicCircleDataset
+from pytvision.datasets.ellipse_dataset import SyntethicCircleDataset
 from pytvision.transforms.aumentation import ObjectImageMaskAndWeightTransform, ObjectImageTransform, ObjectImageAndMaskTransform
 from pytvision.datasets.utility import to_rgb
 
@@ -157,25 +157,27 @@ def transform_aug():
             ])
 
 
-# Transformation
-num_transform = 10
-bshow=False
-bsave=True
-bgrid=True
-name = 'syntetic_transformations'
+def test_transform():
 
-random.seed( 1 )
-data = SyntethicCircleDataset(
-        count=300,
-        generate=SyntethicCircleDataset.generate_image_mask_and_weight,
-        imsize=(512,612),
-        sigma=0.01,
-        bdraw_grid=bgrid,
-        transform=transform_aug()
-        )
+    # Transformation
+    num_transform = 10
+    bshow=False
+    bsave=False
+    bgrid=True
+    name = 'syntetic_transformations'
+
+    random.seed( 1 )
+    data = SyntethicCircleDataset(
+            count=300,
+            generate=SyntethicCircleDataset.generate_image_mask_and_weight,
+            imsize=(512,612),
+            sigma=0.01,
+            bdraw_grid=bgrid,
+            transform=transform_aug()
+            )
 
 
-tranform_image_and_mask_performs(data, name, num_transform, bsave, bshow, bgrid)
+    tranform_image_and_mask_performs(data, name, num_transform, bsave, bshow, bgrid)
 
 
 
