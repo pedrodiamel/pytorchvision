@@ -51,7 +51,7 @@ def anchor_targets_bbox(
     negative_overlap=0.4,
     positive_overlap=0.5,
     **kwargs
-):
+    ):
     """ Generate anchor targets for bbox detection.
 
     Args
@@ -101,7 +101,6 @@ def anchor_targets_bbox(
 
     return labels, annotations, anchor_states
 
-
 def anchors_for_shape(
     image_shape,
     pyramid_levels=None,
@@ -109,8 +108,8 @@ def anchors_for_shape(
     scales=None,
     strides=None,
     sizes=None,
-    shapes_callback=None,
-):
+    shapes_callback=None, 
+    ):
     """ Generators anchors for a given shape.
 
     Args
@@ -149,7 +148,6 @@ def anchors_for_shape(
 
     return all_anchors
 
-
 def shift(shape, stride, anchors):
     """ Produce shifted anchors based on shape of the map and stride size.
 
@@ -178,7 +176,6 @@ def shift(shape, stride, anchors):
     all_anchors = all_anchors.reshape((K * A, 4))
 
     return all_anchors
-
 
 def generate_anchors(base_size=16, ratios=None, scales=None):
     """
@@ -245,7 +242,6 @@ def bbox_transform(anchors, gt_boxes, mean=None, std=None):
     targets = (targets - mean) / std
 
     return targets
-
 
 def guess_shapes(image_shape, pyramid_levels):
     """Guess shapes based on pyramid levels.

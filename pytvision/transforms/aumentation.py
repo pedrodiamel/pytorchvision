@@ -288,20 +288,23 @@ class ObjectImageTransform( ObjectTransform ):
 
 
 class ObjectImageAndAnnotations( ObjectImageTransform ):
-    def __init__(self, image, annotations ):
+    def __init__(self, image, annotations, labels ):
         """
         Arg:
             @image
             @annotations
+            @labels
         """
         super(ObjectImageAndAnnotations, self).__init__(image)
         self.annotations = annotations
+        self.labels = labels
 
     #pytorch transform
     def to_tensor(self):
 
-        image  = self.image
+        image        = self.image
         annotations  = self.annotations
+        labels       = self.labels
 
         # swap color axis because
         # numpy image: H x W x C
@@ -309,19 +312,22 @@ class ObjectImageAndAnnotations( ObjectImageTransform ):
         image       = image.transpose((2, 0, 1))
         image       = torch.from_numpy(image).float()
         annotations = torch.from_numpy( annotations ).float()
+        labels      = torch.from_numpy( labels ).float()
 
-        self.image = image
+        self.image       = image
         self.annotations = annotations
+        self.labels      = labels
 
     ##interface of output
     def to_dict(self):
         return { 
             'image': self.image, 
-            'annotations': self.annotations 
+            'annotations': self.annotations,
+            'labels': self.labels
              }
     
     def to_value(self):
-        return self.image, self.annotations 
+        return self.image, self.annotations, labels
 
 
 class ObjectImageAndLabelTransform( ObjectImageTransform ):

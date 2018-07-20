@@ -1,4 +1,11 @@
-
+numpy
 matplotlib
 opencv-python
 graphviz
+pycocotools
+cython
+cffi
+six
+torch
+tqdm
+scipy

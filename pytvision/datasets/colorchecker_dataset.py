@@ -113,11 +113,12 @@ class SyntheticColorCheckerExDataset(object):
         ):
         """Initialization           
         """            
-        
+              
         self.bbackimage = pathname != None
         self.data = None
         
         if self.bbackimage: 
+            pathname = os.path.expanduser( pathname )
             self.data = imutl.imageProvide(pathname, ext=ext);   
         
         self.num_classes=2
@@ -148,11 +149,9 @@ class SyntheticColorCheckerExDataset(object):
             obj = ObjectImageTransform( image_t  )
 
         elif self.generate == 'image_and_annotations':  
-            image, annotations = self.ren.generate_image_annotations( image, num=self.num )
-            annotations = self.compute_targets( image, annotations )
-
-            obj = ObjectImageAndAnnotations( image, np.array(annotations)  )
-            print(annotations)
+            image, annotations = self.ren.generate_image_annotations( image, num=self.num )            
+            annotations, labels = self.compute_targets( image, annotations )
+            obj = ObjectImageAndAnnotations( image, np.array(annotations), np.array(labels)  )
 
         elif self.generate == 'image_and_mask':            
             image, mask = self.ren.generate_for_segmentation_mask( image, num=self.num )
@@ -198,7 +197,7 @@ class SyntheticColorCheckerExDataset(object):
         labels     = np.empty((anchors.shape[0], self.num_classes + 1), dtype=float)
 
         # compute regression targets
-        labels[ :, :-1], annotations, labels[:, -1] = self.compute_anchor_targets(
+        labels[ :, :-1], annotations, labels[:, -1] = anchor_targets_bbox(
                 anchors,
                 annotations,
                 self.num_classes,
