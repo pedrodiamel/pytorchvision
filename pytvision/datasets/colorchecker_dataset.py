@@ -208,3 +208,5 @@ class SyntheticColorCheckerExDataset(object):
         regression[:, -1]  = labels[ :, -1]  # copy the anchor states to the regression batch
 
         return [regression, labels]
+
+

@@ -299,6 +299,22 @@ class ObjectImageAndAnnotations( ObjectImageTransform ):
         self.annotations = annotations
         self.labels = labels
 
+    ### resize
+    def resize(self, imsize, resize_mode, padding_mode):
+        imshape = self.image.shape
+        self.image = F.resize_image(self.image, imsize[1], imsize[0], resize_mode, padding_mode, interpolate_mode=cv2.INTER_LINEAR ) 
+       
+        # <<-- no sotport all resize_mode
+        imsize = self.image.shape
+        fx = imsize[0]/imshape[0]
+        fy = imsize[1]/imshape[1]
+        
+        self.annotations[0] *= fx
+        self.annotations[1] *= fy
+        self.annotations[2] *= fx
+        self.annotations[3] *= fy 
+
+
     #pytorch transform
     def to_tensor(self):
 
