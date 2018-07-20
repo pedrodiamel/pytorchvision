@@ -77,14 +77,13 @@ def test_colorchecker():
         image_x = image.permute(1,2,0).squeeze().numpy()
 
         plt.imshow( image_x  ) #, cmap='gray' 
-        for i in range( min(50 , annotations.shape[0]) ):
-            #ann = annotations[ np.random.randint( annotations.shape[0] ) ,:4]
-            ann = annotations[ i ,:4]
-            x1, y1, x2, y2 = ann
-            bbox = np.array([ [x1,y1], [x2,y1], [x2,y2], [x1,y2], [x1,y1]  ])
-            #image_x = view.plotboxcv(image_x, bbox)
-            plt.plot(bbox[:,0],bbox[:,1],'o-')   
-        
+        # # # for i in range( min(50 , annotations.shape[0]) ):
+        # # #     #ann = annotations[ np.random.randint( annotations.shape[0] ) ,:4]
+        # # #     ann = annotations[ i ,:4]
+        # # #     dx1, dy1, dx2, dy2 = ann
+        # # #     bbox = np.array([ [dx1,dy1], [dx2,dy1], [dx2,dy2], [dx1,dy2], [dx1,dy1]  ])
+        # # #     #image_x = view.plotboxcv(image_x, bbox)
+        # # #     plt.plot(bbox[:,0],bbox[:,1],'o-')           
         plt.axis('off')
         plt.ioff()
         plt.show()        
