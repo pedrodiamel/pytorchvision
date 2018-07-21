@@ -301,7 +301,9 @@ class ObjectImageAndAnnotations( ObjectImageTransform ):
 
     ### resize
     def resize(self, imsize, resize_mode, padding_mode):
+        
         imshape = self.image.shape
+        
         self.image = F.resize_image(self.image, imsize[1], imsize[0], resize_mode, padding_mode, interpolate_mode=cv2.INTER_LINEAR ) 
        
         # <<-- no sotport all resize_mode

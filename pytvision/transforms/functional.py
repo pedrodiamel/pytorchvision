@@ -681,3 +681,5 @@ def crop_img(img, roi, crop_width, crop_height, shift_x, shift_y, scale_x, scale
                                                   prefilter = False)
     return T_im
 
+
+# https://github.com/kuangliu/pytorch-retinanet/blob/master/transform.py

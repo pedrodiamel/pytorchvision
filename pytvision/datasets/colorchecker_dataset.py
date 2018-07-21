@@ -118,6 +118,33 @@ class SyntheticColorCheckerExDataset( data.Dataset ):
         return obj.to_dict()
 
 
+
+    # for object detection
+
+    def filter_boxes(self, image_group, boxs_group ):
+        """ Filter boxes by removing those that are outside of the image bounds or whose width/height < 0.
+        """
+        # test all annotations
+        boxs_group_filter = [] 
+        for index, (image, boxes) in enumerate(zip(image_group, boxs_group)):
+            assert(isinstance(boxes, torch.Tensor)), '\'load_annotations\' should return a list of numpy arrays, received: {}'.format(type(boxes))
+
+            # test x2 < x1 | y2 < y1 | x1 < 0 | y1 < 0 | x2 <= 0 | y2 <= 0 | x2 >= image.shape[1] | y2 >= image.shape[0]
+            invalid_indices = (
+                (boxes[:, 2] <= boxes[:, 0]) |
+                (boxes[:, 3] <= boxes[:, 1]) |
+                (boxes[:, 0] < 0) |
+                (boxes[:, 1] < 0) |
+                (boxes[:, 2] > image.shape[1]) |
+                (boxes[:, 3] > image.shape[0])
+            )
+
+            boxes = boxes[invalid_indices]
+            boxs_group_filter.append(boxes)
+
+        return boxs_group_filter
+
+
     def compute_targets(self, image, annotations):
         """ Compute target outputs for the network using images and their annotations.
         """
@@ -137,7 +164,6 @@ class SyntheticColorCheckerExDataset( data.Dataset ):
         pad_size = max(0, max_size - num)  
         boxes    = torch.nn.functional.pad(boxes,  ( 0, 0, 0, pad_size ), mode='constant', value=-1)
         labels   = torch.nn.functional.pad(labels, ( 0, pad_size), mode='constant', value=-1)
-
         return boxes, labels
         
 
@@ -160,6 +186,8 @@ class SyntheticColorCheckerExDataset( data.Dataset ):
         c,h,w, = input_size
         num_imgs = len(imgs)
         inputs = torch.zeros(num_imgs, c, h, w)
+
+        boxes = self.filter_boxes(imgs, boxes)
 
         loc_targets = []
         cls_targets = []

@@ -23,7 +23,7 @@ def test_colorchecker():
             generate=SyntheticColorCheckerExDataset.generate_image_and_annotations,
             transform=transforms.Compose([
                 ## resize and crop                           
-                #mtrans.ToResize( (500,500), resize_mode='asp' ) ,
+                mtrans.ToResize( (224,224), resize_mode='asp' ) ,
                 #mtrans.CenterCrop( (200,200) ),
                 #mtrans.RandomCrop( (255,255), limit=50, padding_mode=cv2.BORDER_REFLECT_101  ),
                 #mtrans.ToResizeUNetFoV(388, cv2.BORDER_REFLECT_101),     
@@ -79,7 +79,8 @@ def test_colorchecker():
             color = view.STANDARD_COLORS[i%10];
             x1, y1, x2, y2 = box
             bbox = np.array([ [x1,y1], [x2,y2] ])            
-            view.draw_bounding_box_dic( img, {'bbox':bbox, 'classe':labels[i].numpy(), 'score':100 }, color=color, thickness=4 )
+            classe = int(labels[i].numpy())
+            view.draw_bounding_box_dic( img, {'bbox':bbox, 'classe': classe, 'score':100.0 }, color=color, thickness=4 )
 
         plt.figure( figsize=(15,15) )
         plt.imshow( img/255  ) #, cmap='gray' 
