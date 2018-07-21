@@ -309,10 +309,10 @@ class ObjectImageAndAnnotations( ObjectImageTransform ):
         fx = imsize[0]/imshape[0]
         fy = imsize[1]/imshape[1]
         
-        self.annotations[0] *= fx
-        self.annotations[1] *= fy
-        self.annotations[2] *= fx
-        self.annotations[3] *= fy 
+        self.annotations[:,0] *= fx
+        self.annotations[:,1] *= fy
+        self.annotations[:,2] *= fx
+        self.annotations[:,3] *= fy 
 
 
     #pytorch transform

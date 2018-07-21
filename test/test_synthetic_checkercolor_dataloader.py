@@ -19,6 +19,7 @@ def test_colorchecker():
 
     data = SyntheticColorCheckerExDataset(
             pathname='~/.datasets/real/',
+            count=10,
             generate=SyntheticColorCheckerExDataset.generate_image_and_annotations,
             transform=transforms.Compose([
                 ## resize and crop                           
@@ -50,7 +51,7 @@ def test_colorchecker():
                 ])
             )
 
-    dataloader = DataLoader(data, batch_size=3, shuffle=True, num_workers=1 )
+    dataloader = DataLoader(data, batch_size=2, shuffle=False, num_workers=1, collate_fn=data.collate )
 
     label_batched = []
     for i_batch, sample_batched in enumerate(dataloader):
@@ -60,30 +61,28 @@ def test_colorchecker():
             )
         
         image = sample_batched['image'][0, ... ]
-        annotations = sample_batched['annotations'][0, ... ]
+        boxs = sample_batched['annotations'][0, ... ]
         labels = sample_batched['labels'][0, ... ]
 
-        print(image.shape)
-        print(annotations.shape)
-        print(labels.shape)
-        print(annotations[:1,:])
-        print(labels[:1,:])
+        # print(image.shape)
+        # print(boxs.shape)
+        # print(labels.shape)
+        # print(boxs[:1,:])
+        # print(labels[:1])
 
-        indices = annotations[ :, -1] == 1
-        annotations = annotations[indices, ...]
-        print( indices.sum() )
+        index = labels != -1
+        boxs = boxs[index, ...]
+        labels = labels[index]
+
+        img = image.permute(1,2,0).squeeze().numpy()  * 255      
+        for i, box in enumerate( boxs ):
+            color = view.STANDARD_COLORS[i%10];
+            x1, y1, x2, y2 = box
+            bbox = np.array([ [x1,y1], [x2,y2] ])            
+            view.draw_bounding_box_dic( img, {'bbox':bbox, 'classe':labels[i].numpy(), 'score':100 }, color=color, thickness=4 )
 
         plt.figure( figsize=(15,15) )
-        image_x = image.permute(1,2,0).squeeze().numpy()
-
-        plt.imshow( image_x  ) #, cmap='gray' 
-        # # # for i in range( min(50 , annotations.shape[0]) ):
-        # # #     #ann = annotations[ np.random.randint( annotations.shape[0] ) ,:4]
-        # # #     ann = annotations[ i ,:4]
-        # # #     dx1, dy1, dx2, dy2 = ann
-        # # #     bbox = np.array([ [dx1,dy1], [dx2,dy1], [dx2,dy2], [dx1,dy2], [dx1,dy1]  ])
-        # # #     #image_x = view.plotboxcv(image_x, bbox)
-        # # #     plt.plot(bbox[:,0],bbox[:,1],'o-')           
+        plt.imshow( img/255  ) #, cmap='gray' 
         plt.axis('off')
         plt.ioff()
         plt.show()        

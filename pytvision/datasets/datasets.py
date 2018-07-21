@@ -11,14 +11,6 @@ from pytvision.datasets import imageProvide
 from pytvision.transforms.aumentation import ObjectImageAndLabelTransform, ObjectImageTransform
 
 
-from .anchors import (
-    anchor_targets_bbox,
-    bbox_transform,
-    anchors_for_shape,
-    guess_shapes
-)
-
-
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -124,8 +116,8 @@ class ResampleDataset( object ):
             sample = self.transform( obj )
         return obj.to_dict()
 
-class OD_Dataset( object ):
-    """ Abstract generator class.
+class ODDataset( object ):
+    """ Abstract generator class for object detection.
     """
 
     def __init__(

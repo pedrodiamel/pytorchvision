@@ -65,7 +65,7 @@ def draw_bounding_box(image, label,  color='red', thickness=4):
     # Reverse list and print from bottom to top.
     #for display_str in display_str_list[::-1]:
     
-    display_str = '{}  '.format(label.stype);
+    display_str = '{}({})  '.format(label.classe, label.score);
     text_width, text_height = font.getsize(display_str)
     margin = np.ceil(0.05 * text_height)
     draw.rectangle(
@@ -106,7 +106,7 @@ def draw_bounding_box_dic(image, label,  color='red', thickness=4):
     # Reverse list and print from bottom to top.
     #for display_str in display_str_list[::-1]:
     
-    display_str = '{}  '.format(label['stype']);
+    display_str = '{}({})  '.format(label['classe'], label['score']);
     text_width, text_height = font.getsize(display_str)
     margin = np.ceil(0.05 * text_height)
     draw.rectangle(

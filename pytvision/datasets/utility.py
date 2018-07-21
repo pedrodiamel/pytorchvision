@@ -81,7 +81,6 @@ def get_label_mask(mask_img, border_img, seed_ths, threshold, seed_size=8, obj_s
     labels = watershed(mask_img, markers, mask=mask_img, watershed_line=True)
     return labels
 
-
 def get_edges( masks ):
     edges = np.array([ morph.binary_dilation(get_contour(x)) for x in masks ])
     return edges  
@@ -114,7 +113,6 @@ def get_center(img):
 
 def get_distance(x):
     return skfmm.distance((x).astype('float32') - 0.5) 
-
 
 def download_images( pack ):
     '''
@@ -210,7 +208,6 @@ def download_url(url, root, filename, md5):
                       ' Downloading ' + url + ' to ' + fpath)
                 urllib.request.urlretrieve(url, fpath)
 
-
 def list_dir(root, prefix=False):
     """List all directories at a given root
 
@@ -231,7 +228,6 @@ def list_dir(root, prefix=False):
         directories = [os.path.join(root, d) for d in directories]
 
     return directories
-
 
 def list_files(root, suffix, prefix=False):
     """List all files ending with a suffix at a given root
