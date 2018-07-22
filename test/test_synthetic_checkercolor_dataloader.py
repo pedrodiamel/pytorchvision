@@ -28,10 +28,10 @@ def test_colorchecker():
                 #mtrans.RandomCrop( (255,255), limit=50, padding_mode=cv2.BORDER_REFLECT_101  ),
                 #mtrans.ToResizeUNetFoV(388, cv2.BORDER_REFLECT_101),     
                 ## color 
-                mtrans.RandomSaturation(),
-                mtrans.RandomHueSaturationShift(),
-                mtrans.RandomHueSaturation(),
-                mtrans.RandomRGBShift(),
+                #mtrans.RandomSaturation(),
+                #mtrans.RandomHueSaturationShift(),
+                #mtrans.RandomHueSaturation(),
+                #mtrans.RandomRGBShift(),
                 #mtrans.ToNegative(),
                 #mtrans.RandomRGBPermutation(),
                 #mtrans.ToGrayscale(),
@@ -83,7 +83,7 @@ def test_colorchecker():
         plt.show()        
 
         # observe 4th batch and stop.
-        if i_batch == 0: 
+        if i_batch == 5: 
             break        
 
 
