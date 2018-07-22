@@ -354,8 +354,8 @@ class ColorCheckerRender(object):
         '''           
         
         label_to_classes = {'classic':0, 'digitalsg':1 } 
-        num = 0
-        while num == 0: 
+        num_obj = 0
+        while num_obj == 0: 
             im = img.copy()
             im, cc = ColorCheckerRender().getsyntheticmultcharcolorimage(im, num);
             annotations = list();
@@ -367,8 +367,8 @@ class ColorCheckerRender(object):
                 # x1,y1,x2,y2,c
                 annotation = [ bbox[0,0], bbox[0,1], bbox[1,0], bbox[1,1], label_to_classes[gt.stype] ]
                 annotations.append( annotation );
-            num = len(annotations)   
-            print('annotation', num, flush=True)
+           
+            num_obj = len(annotations)
             
         annotations = np.stack( annotations )        
         return im, annotations;

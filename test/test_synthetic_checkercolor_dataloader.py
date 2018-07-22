@@ -19,7 +19,7 @@ def test_colorchecker():
 
     data = SyntheticColorCheckerExDataset(
             pathname='~/.datasets/real/',
-            count=10,
+            count=50,
             generate=SyntheticColorCheckerExDataset.generate_image_and_annotations,
             transform=transforms.Compose([
                 ## resize and crop                           
@@ -51,7 +51,7 @@ def test_colorchecker():
                 ])
             )
 
-    dataloader = DataLoader(data, batch_size=2, shuffle=False, num_workers=1, collate_fn=data.collate )
+    dataloader = DataLoader(data, batch_size=4, shuffle=False, num_workers=1, collate_fn=data.collate )
 
     label_batched = []
     for i_batch, sample_batched in enumerate(dataloader):
@@ -68,23 +68,25 @@ def test_colorchecker():
         boxs = boxs[index, ...]
         labels = labels[index]
 
-        img = image.permute(1,2,0).squeeze().numpy()  * 255      
-        for i, box in enumerate( boxs ):
-            color = view.STANDARD_COLORS[i%10];
-            x1, y1, x2, y2 = box
-            bbox = np.array([ [x1,y1], [x2,y2] ])            
-            classe = int(labels[i].numpy())
-            view.draw_bounding_box_dic( img, {'bbox':bbox, 'classe': classe, 'score':100.0 }, color=color, thickness=4 )
+        
 
-        plt.figure( figsize=(15,15) )
-        plt.imshow( img/255  ) #, cmap='gray' 
-        plt.axis('off')
-        plt.ioff()
-        plt.show()        
+        # img = image.permute(1,2,0).squeeze().numpy()  * 255      
+        # for i, box in enumerate( boxs ):
+        #     color = view.STANDARD_COLORS[i%10];
+        #     x1, y1, x2, y2 = box
+        #     bbox = np.array([ [x1,y1], [x2,y2] ])            
+        #     classe = int(labels[i].numpy())
+        #     view.draw_bounding_box_dic( img, {'bbox':bbox, 'classe': classe, 'score':100.0 }, color=color, thickness=4 )
+
+        # plt.figure( figsize=(15,15) )
+        # plt.imshow( img/255  ) #, cmap='gray' 
+        # plt.axis('off')
+        # plt.ioff()
+        # plt.show()        
 
         # observe 4th batch and stop.
-        if i_batch == 0: 
-            break        
+        # if i_batch == 0: 
+        #     break        
 
 
 test_colorchecker()
