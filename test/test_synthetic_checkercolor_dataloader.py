@@ -51,7 +51,7 @@ def test_colorchecker():
                 ])
             )
 
-    dataloader = DataLoader(data, batch_size=4, shuffle=False, num_workers=1, collate_fn=data.collate )
+    dataloader = DataLoader(data, batch_size=5, shuffle=False, num_workers=1, collate_fn=data.collate )
 
     label_batched = []
     for i_batch, sample_batched in enumerate(dataloader):
