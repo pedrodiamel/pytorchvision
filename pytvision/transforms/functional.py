@@ -682,4 +682,114 @@ def crop_img(img, roi, crop_width, crop_height, shift_x, shift_y, scale_x, scale
     return T_im
 
 
-# https://github.com/kuangliu/pytorch-retinanet/blob/master/transform.py
+# Object transfrmation
+
+def resize_box(box, fx, fy):
+    box[:,0] *= fx
+    box[:,1] *= fy
+    box[:,2] *= fx
+    box[:,3] *= fy
+    return box
+
+def resize_image_box( 
+        img, 
+        boxs, 
+        height, width,
+        resize_mode=None,
+        padding_mode=cv2.BORDER_CONSTANT,
+        interpolate_mode=cv2.INTER_LINEAR, 
+        ):
+    """
+    Resizes an image and returns it as a np.array
+    
+    Arg:
+        image --  numpy.ndarray
+        box   --  numpy.array [x1, y1, x2, y2]
+        height -- height of new image
+        width -- width of new image
+
+    Keyword Arguments:
+    channels -- channels of new image (stays unchanged if not specified)
+    resize_mode -- can be crop, squash, fill or half_crop
+    """
+
+    if resize_mode is None:
+        resize_mode = 'squash'
+    if resize_mode not in ['crop', 'squash', 'fill', 'half_crop', 'asp', 'square']:
+        raise ValueError('resize_mode "%s" not supported' % resize_mode)
+
+    # convert to array
+    image = np.copy(img)
+    box   = np.copy(boxs)
+    h,w = image.shape[:2]
+    
+    # No need to resize
+    if h == height and w == width:
+        return image, box
+
+    fx = float(w) / width
+    fy = float(h) / height
+
+    if resize_mode == 'squash' or fx == fy:
+        
+        image = cv2.resize(image, (width, height) , interpolation = interpolate_mode)
+        image = cunsqueeze(image)
+        return image, resize_box(box, 1/fx, 1/fy)
+
+    elif resize_mode == 'asp':
+        # resize to smallest of ratios (relatively larger image), keeping aspect ratio
+        if fx > fy:
+            width  = int(round(w / fy))
+        else:
+            height = int(round(h / fy))
+        
+        image = cv2.resize(image, (width, height) , interpolation = interpolate_mode) 
+        image = cunsqueeze(image)        
+        fx = float(w) / width
+        fy = float(h) / height
+        return image, resize_box(box, 1/fx, 1/fy)
+
+        
+    elif resize_mode == 'square':        
+
+        if w != h: 
+
+            if w>h:        
+                padxL = int(np.floor( (w-h) / 2.0));
+                padxR = int(np.ceil( (w-h) / 2.0)) ;
+                padyT, padyB = 0,0 
+            else:
+                padxL, padxR = 0,0;
+                padyT = int(np.floor( (h-w) / 2.0));
+                padyB = int(np.ceil( (h-w) / 2.0));
+            image = cv2.copyMakeBorder(image, padxL, padxR, padyT, padyB, borderType=padding_mode)
+            image = cv2.resize(image, (width, height) , interpolation = interpolate_mode)  
+            image = cunsqueeze(image)
+
+        return image, resize_box(box, 1/fx, 1/fy)
+
+    elif resize_mode == 'crop':
+        # resize to smallest of ratios (relatively larger image), keeping aspect ratio
+        if width_ratio > height_ratio:
+            resize_height = height
+            resize_width = int(round(image.shape[1] / height_ratio))
+        else:
+            resize_width = width
+            resize_height = int(round(image.shape[0] / width_ratio))
+        
+        image = cv2.resize(image, (resize_width, resize_height) , interpolation = interpolate_mode) 
+        image = cunsqueeze(image)
+    
+        # chop off ends of dimension that is still too long
+        if fx > fy:
+            start = int(round((resize_width - width) / 2.0))
+            return image[:, start:start + width], resize_box(box, 1/fx, 1/fy)
+        else:
+            start = int(round((resize_height - height) / 2.0))
+            return image[start:start + height, :], resize_box(box, 1/fx, 1/fy)
+
+    else:
+        raise Exception('unrecognized resize_mode "%s"' % resize_mode)
+
+
+    return image, box
