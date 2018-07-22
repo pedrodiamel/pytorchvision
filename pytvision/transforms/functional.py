@@ -684,11 +684,11 @@ def crop_img(img, roi, crop_width, crop_height, shift_x, shift_y, scale_x, scale
 
 # Object transfrmation
 
-def resize_box(box, fx, fy):
-    box[:,0] *= fx
-    box[:,1] *= fy
-    box[:,2] *= fx
-    box[:,3] *= fy
+def resize_box(box, fx, fy, ofx=0, ofy=0):
+    box[:,0] = box[:,0]*fx + ofx
+    box[:,1] = box[:,1]*fy + ofy
+    box[:,2] = box[:,2]*fx + ofx
+    box[:,3] = box[:,3]*fy + ofy
     return box
 
 def resize_image_box( 
@@ -753,40 +753,49 @@ def resize_image_box(
     elif resize_mode == 'square':        
 
         if w != h: 
-
             if w>h:        
                 padxL = int(np.floor( (w-h) / 2.0));
                 padxR = int(np.ceil( (w-h) / 2.0)) ;
                 padyT, padyB = 0,0 
+                fy=fx
             else:
                 padxL, padxR = 0,0;
                 padyT = int(np.floor( (h-w) / 2.0));
                 padyB = int(np.ceil( (h-w) / 2.0));
+                fx=fy
+            
             image = cv2.copyMakeBorder(image, padxL, padxR, padyT, padyB, borderType=padding_mode)
             image = cv2.resize(image, (width, height) , interpolation = interpolate_mode)  
             image = cunsqueeze(image)
 
-        return image, resize_box(box, 1/fx, 1/fy)
+        box = resize_box(box, 1, 1, padyT, padxL)
+        box = resize_box(box, 1/fx, 1/fy, 0 , 0)       
+        return image, box
 
     elif resize_mode == 'crop':
         # resize to smallest of ratios (relatively larger image), keeping aspect ratio
-        if width_ratio > height_ratio:
+        if fx > fy:
             resize_height = height
-            resize_width = int(round(image.shape[1] / height_ratio))
+            resize_width = int(round(image.shape[1] / fy))
         else:
             resize_width = width
-            resize_height = int(round(image.shape[0] / width_ratio))
+            resize_height = int(round(image.shape[0] / fx))
         
         image = cv2.resize(image, (resize_width, resize_height) , interpolation = interpolate_mode) 
         image = cunsqueeze(image)
     
+
         # chop off ends of dimension that is still too long
         if fx > fy:
+            fx = float(w) / resize_width
+            fy = float(h) / resize_height
             start = int(round((resize_width - width) / 2.0))
-            return image[:, start:start + width], resize_box(box, 1/fx, 1/fy)
+            return image[:, start:start + width], resize_box(box, 1/fx, 1/fy, -start, 0  )
         else:
+            fx = float(w) / resize_width
+            fy = float(h) / resize_height
             start = int(round((resize_height - height) / 2.0))
-            return image[start:start + height, :], resize_box(box, 1/fx, 1/fy)
+            return image[start:start + height, :], resize_box(box, 1/fx, 1/fy, 0, -start  )
 
     else:
         raise Exception('unrecognized resize_mode "%s"' % resize_mode)

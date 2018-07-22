@@ -23,7 +23,7 @@ def test_colorchecker():
             generate=SyntheticColorCheckerExDataset.generate_image_and_annotations,
             transform=transforms.Compose([
                 ## resize and crop                           
-                mtrans.ToResize( (224,224), resize_mode='asp' ) ,
+                mtrans.ToResize( (224,224), resize_mode='square' ) ,
                 #mtrans.CenterCrop( (200,200) ),
                 #mtrans.RandomCrop( (255,255), limit=50, padding_mode=cv2.BORDER_REFLECT_101  ),
                 #mtrans.ToResizeUNetFoV(388, cv2.BORDER_REFLECT_101),     
@@ -83,7 +83,7 @@ def test_colorchecker():
         plt.show()        
 
         # observe 4th batch and stop.
-        if i_batch == 5: 
+        if i_batch == 0: 
             break        
 
 
