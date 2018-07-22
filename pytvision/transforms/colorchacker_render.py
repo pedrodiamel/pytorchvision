@@ -348,24 +348,29 @@ class ColorCheckerRender(object):
 
 
     @staticmethod
-    def generate_image_annotations(im, num = 5):
+    def generate_image_annotations(img, num = 5):
         '''
         Generate for image   
         '''           
         
         label_to_classes = {'classic':0, 'digitalsg':1 } 
-        im, cc = ColorCheckerRender().getsyntheticmultcharcolorimage(im, num);
-        annotations = list();
-        for c in cc:              
-            gt = DetectionGT();
-            gt.assignment(c); 
-            bbox = gt.bbox
+        num = 0
+        while num == 0: 
+            im = img.copy()
+            im, cc = ColorCheckerRender().getsyntheticmultcharcolorimage(im, num);
+            annotations = list();
+            for c in cc:              
+                gt = DetectionGT();
+                gt.assignment(c); 
+                bbox = gt.bbox
 
-            # x1,y1,x2,y2,c
-            annotation = [ bbox[0,0], bbox[0,1], bbox[1,0], bbox[1,1], label_to_classes[gt.stype] ]
-            annotations.append( annotation );
-        
-        annotations = np.stack( annotations )
+                # x1,y1,x2,y2,c
+                annotation = [ bbox[0,0], bbox[0,1], bbox[1,0], bbox[1,1], label_to_classes[gt.stype] ]
+                annotations.append( annotation );
+            num = len(annotations)   
+            print('annotation', num, flush=True)
+            
+        annotations = np.stack( annotations )        
         return im, annotations;
 
     @staticmethod
