@@ -28,10 +28,10 @@ def test_colorchecker():
                 #mtrans.RandomCrop( (255,255), limit=50, padding_mode=cv2.BORDER_REFLECT_101  ),
                 #mtrans.ToResizeUNetFoV(388, cv2.BORDER_REFLECT_101),     
                 ## color 
-                #mtrans.RandomSaturation(),
-                #mtrans.RandomHueSaturationShift(),
-                #mtrans.RandomHueSaturation(),
-                #mtrans.RandomRGBShift(),
+                mtrans.RandomSaturation(),
+                mtrans.RandomHueSaturationShift(),
+                mtrans.RandomHueSaturation(),
+                mtrans.RandomRGBShift(),
                 #mtrans.ToNegative(),
                 #mtrans.RandomRGBPermutation(),
                 #mtrans.ToGrayscale(),
@@ -63,12 +63,6 @@ def test_colorchecker():
         image = sample_batched['image'][0, ... ]
         boxs = sample_batched['annotations'][0, ... ]
         labels = sample_batched['labels'][0, ... ]
-
-        # print(image.shape)
-        # print(boxs.shape)
-        # print(labels.shape)
-        # print(boxs[:1,:])
-        # print(labels[:1])
 
         index = labels != -1
         boxs = boxs[index, ...]
