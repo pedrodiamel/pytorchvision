@@ -190,31 +190,42 @@ class ODDataset( object ):
         """
         raise NotImplementedError('load_annotations method not implemented')
 
-    def generate_anchors(self, image_shape):
-        return anchors_for_shape(image_shape, shapes_callback=self.compute_shapes)
+    def filter_boxes(self, image_group, boxs_group ):
+        """ Filter boxes by removing those that are outside of the image bounds or whose width/height < 0.
+        """
+        # test all annotations
+        boxs_group_filter = [] 
+        for index, (image, boxes) in enumerate(zip(image_group, boxs_group)):
+            assert(isinstance(boxes, torch.Tensor)), '\'load_annotations\' should return a list of numpy arrays, received: {}'.format(type(boxes))
+
+            # test x2 < x1 | y2 < y1 | x1 < 0 | y1 < 0 | x2 <= 0 | y2 <= 0 | x2 >= image.shape[1] | y2 >= image.shape[0]
+            invalid_indices = (
+                (boxes[:, 2] <= boxes[:, 0]) |
+                (boxes[:, 3] <= boxes[:, 1]) |
+                (boxes[:, 0] < 0) |
+                (boxes[:, 1] < 0) |
+                (boxes[:, 2] > image.shape[1]) |
+                (boxes[:, 3] > image.shape[0])
+            )
+
+            boxes = boxes[invalid_indices]
+            boxs_group_filter.append(boxes)
+
+        return boxs_group_filter
+
 
     def compute_targets(self, image, annotations):
         """ Compute target outputs for the network using images and their annotations.
         """
-        # get the max image shape
-        max_shape = image.shape
-        anchors   = self.generate_anchors(max_shape)
+        labels=[]
+        boxs=[]
+        for ann in annotations:
+            x1,y1,x2,y2,c = ann
+            boxs.append([float(x1), float(y1), float(x2), float(y2)])
+            labels.append(int(c))     
+        
+        return np.stack( boxs, 0 ), np.stack( labels, 0 )
 
-        regression = np.empty((anchors.shape[0], 4 + 1), dtype=float)
-        labels     = np.empty((anchors.shape[0], self.num_classes() + 1), dtype=float)
-
-        # compute regression targets
-        labels[ :, :-1], annotations, labels[:, -1] = self.compute_anchor_targets(
-                anchors,
-                annotations,
-                self.num_classes(),
-                mask_shape=image.shape,
-            )
-
-        regression[:, :-1] = bbox_transform(anchors, annotations)
-        regression[:, -1]  = labels[ :, -1]  # copy the anchor states to the regression batch
-
-        return [regression, labels]
 
 
 
