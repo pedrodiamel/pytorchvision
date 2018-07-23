@@ -94,7 +94,7 @@ def _open_for_csv(path):
         return open(path, 'r', newline='')
 
 
-class ODCSVDatset( OD_Dataset ):
+class ODCSVDatset( ODDataset ):
     """ Generate data for a custom CSV dataset.
 
     See https://github.com/fizyr/keras-retinanet#csv-datasets for more information.
