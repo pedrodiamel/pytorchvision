@@ -22,7 +22,7 @@ import itertools
 
 from .grid.grid_sample import grid_sample
 from .grid.tps_grid_gen import TPSGridGen
-from .rectutil import Rect
+from .rectutils import Rect
 
 
 def cunsqueeze(data):
