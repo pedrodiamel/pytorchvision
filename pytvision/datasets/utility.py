@@ -230,6 +230,7 @@ def list_dir(root, prefix=False):
     return directories
 
 def list_files(root, suffix, prefix=False):
+    
     """List all files ending with a suffix at a given root
 
     Args:
@@ -251,3 +252,42 @@ def list_files(root, suffix, prefix=False):
         files = [os.path.join(root, d) for d in files]
 
     return files
+
+
+def read_image_rgb(self, pathname):
+    '''
+    Load image using pathname
+    '''
+
+    if os.path.exists(pathname):
+        try:
+            image = PIL.Image.open(pathname)
+            image.load()
+        except IOError as e:
+            raise ValueError('IOError: Trying to load "%s": %s' % (pathname, e.message) ) 
+    else:
+        raise ValueError('"%s" not found' % pathname)
+
+    if image.mode in ['L', 'RGB']:
+        # No conversion necessary
+        return image
+    elif image.mode in ['1']:
+        # Easy conversion to L
+        return image.convert('L')
+    elif image.mode in ['LA']:
+        # Deal with transparencies
+        new = PIL.Image.new('L', image.size, 255)
+        new.paste(image, mask=image.convert('RGBA'))
+        return new
+    elif image.mode in ['CMYK', 'YCbCr']:
+        # Easy conversion to RGB
+        return image.convert('RGB')
+    elif image.mode in ['P', 'RGBA']:
+        # Deal with transparencies
+        new = PIL.Image.new('RGB', image.size, (255, 255, 255))
+        new.paste(image, mask=image.convert('RGBA'))
+        return new
+    else:
+        raise ValueError('Image mode "%s" not supported' % image.mode);
+    
+    return  image
