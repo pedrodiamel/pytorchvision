@@ -286,6 +286,47 @@ class ObjectImageTransform( ObjectTransform ):
         image = np.copy( self.image )
         self.image = F.draw_grid(image, grid_size, color, thickness)        
 
+
+
+class ObjectImageMetadataTransform( ObjectImageTransform ):
+    def __init__(self, image, meta ):
+        """
+        Arg:
+            @image
+            @meta
+        """
+        super(ObjectImageMetadataTransform, self).__init__(image)
+        self.meta = meta
+
+
+    #pytorch transform
+    def to_tensor(self):
+
+        image = self.image
+        meta  = self.meta
+
+        # swap color axis because
+        # numpy image: H x W x C
+        # torch image: C X H X W
+        image  = image.transpose((2, 0, 1))
+        image  = torch.from_numpy(image).float()
+        meta   = torch.from_numpy( meta ).float()
+
+        self.image  = image
+        self.meta   = meta
+
+    ##interface of output
+    def to_dict(self):
+        return { 
+            'image': self.image, 
+            'metadata': self.meta,
+             }
+    
+    def to_value(self):
+        return self.image, self.meta
+
+
+
 class ObjectImageAndAnnotations( ObjectImageTransform ):
     def __init__(self, image, annotations, labels ):
         """
@@ -474,7 +515,6 @@ class ObjectImageAndMaskTransform( ObjectImageTransform ):
     def to_value(self):
         return self.image, self.mask
 
-
 class ObjectImageAndMaskMetadataTransform( ObjectImageAndMaskTransform ):
     def __init__(self, image, mask, metadata):
         """
@@ -512,7 +552,6 @@ class ObjectImageAndMaskMetadataTransform( ObjectImageAndMaskTransform ):
         
     def to_value(self):
         return self.image, self.mask, self.metadata
-
 
 class ObjectImageMaskAndWeightTransform(ObjectImageAndMaskTransform):
     def __init__(self, image, mask, weight ):
