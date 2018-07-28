@@ -483,7 +483,7 @@ class ObjectImageAndMaskMetadataTransform( ObjectImageAndMaskTransform ):
             @mask
             @metadata
         """
-        super(ObjectImageAndMaskTransform, self).__init__(image, mask)
+        super(ObjectImageAndMaskMetadataTransform, self).__init__(image, mask)
         self.metadata = metadata
 
     #pytorch transform
@@ -506,7 +506,7 @@ class ObjectImageAndMaskMetadataTransform( ObjectImageAndMaskTransform ):
     def to_dict(self):
         return { 
             'image': self.image, 
-            'mask': self.mask 
+            'label': self.mask,
             'metadata': self.metadata
              }
         
@@ -628,6 +628,47 @@ class ObjectImageMaskAndWeightTransform(ObjectImageAndMaskTransform):
 
     def to_value(self):
         return self.image, self.mask, self.weight
-    
 
+class ObjectImageMaskMetadataAndWeightTransform( ObjectImageMaskAndWeightTransform ):
+    def __init__(self, image, mask, weight, metadata):
+        """
+        Arg:
+            @image
+            @mask
+            @weight
+            @metadata
+        """
+        super(ObjectImageMaskMetadataAndWeightTransform, self).__init__(image, mask, weight)
+        self.metadata = metadata
 
+    #pytorch transform
+    def to_tensor(self):
+        
+        image  = self.image
+        mask   = self.mask
+        weight = self.weight
+        meta   = self.metadata
+        mask = (mask>0).astype( np.uint8 )
+
+        # numpy image: H x W x C
+        # torch image: C X H X W        
+        image  = image.transpose((2, 0, 1)).astype(np.float)
+        mask   = mask.transpose((2, 0, 1)).astype(np.float)
+        weight = weight.transpose((2, 0, 1)).astype(np.float)
+
+        self.image = torch.from_numpy(image).float()
+        self.mask  = torch.from_numpy(mask).float()
+        self.weight = torch.from_numpy(weight).float()
+        self.metadata = torch.from_numpy(meta).float()
+
+    ##interface of output
+    def to_dict(self):
+        return { 
+            'image': self.image, 
+            'label': self.mask,
+            'weight': self.weight,
+            'metadata': self.metadata
+             }
+        
+    def to_value(self):
+        return self.image, self.mask, self.weight, self.metadata
