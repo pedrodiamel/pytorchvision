@@ -286,7 +286,6 @@ class ObjectImageTransform( ObjectTransform ):
         image = np.copy( self.image )
         self.image = F.draw_grid(image, grid_size, color, thickness)        
 
-
 class ObjectImageAndAnnotations( ObjectImageTransform ):
     def __init__(self, image, annotations, labels ):
         """
@@ -342,7 +341,6 @@ class ObjectImageAndAnnotations( ObjectImageTransform ):
     def to_value(self):
         return self.image, self.annotations, labels
 
-
 class ObjectImageAndLabelTransform( ObjectImageTransform ):
     def __init__(self, image, label ):
         """
@@ -380,7 +378,7 @@ class ObjectImageAndLabelTransform( ObjectImageTransform ):
         return self.image, self.label 
 
 class ObjectImageAndMaskTransform( ObjectImageTransform ):
-    def __init__(self, image, mask ):
+    def __init__(self, image, mask):
         """
         Arg:
             @image
@@ -475,6 +473,46 @@ class ObjectImageAndMaskTransform( ObjectImageTransform ):
         
     def to_value(self):
         return self.image, self.mask
+
+
+class ObjectImageAndMaskMetadataTransform( ObjectImageAndMaskTransform ):
+    def __init__(self, image, mask, metadata):
+        """
+        Arg:
+            @image
+            @mask
+            @metadata
+        """
+        super(ObjectImageAndMaskTransform, self).__init__(image, mask)
+        self.metadata = metadata
+
+    #pytorch transform
+    def to_tensor(self):
+        
+        image  = self.image
+        mask   = self.mask
+        meta   = self.metadata
+        mask = (mask>0).astype( np.uint8 )
+
+        # numpy image: H x W x C
+        # torch image: C X H X W        
+        image  = image.transpose((2, 0, 1)).astype(np.float)
+        mask   = mask.transpose((2, 0, 1)).astype(np.float)
+        self.image = torch.from_numpy(image).float()
+        self.mask  = torch.from_numpy(mask).float()
+        self.metadata = torch.from_numpy(meta).float()
+
+    ##interface of output
+    def to_dict(self):
+        return { 
+            'image': self.image, 
+            'mask': self.mask 
+            'metadata': self.metadata
+             }
+        
+    def to_value(self):
+        return self.image, self.mask, self.metadata
+
 
 class ObjectImageMaskAndWeightTransform(ObjectImageAndMaskTransform):
     def __init__(self, image, mask, weight ):
