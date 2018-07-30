@@ -69,10 +69,10 @@ def scale(image, factor, mode, padding_mode ):
     return img
 
 def hflip( x ): 
-    return cunsqueeze( cv2.flip(x,1) )
+    return cunsqueeze(x[::-1,:,:])
 
 def vflip( x ):
-    return cunsqueeze( cv2.flip(x,0) )
+    return cunsqueeze(x[:,::-1,:])
 
 def rotate90( x ): 
     return cunsqueeze( cv2.flip(x.transpose(1,0,2),1) )
@@ -532,10 +532,10 @@ def resize_image( img, height, width,
         # chop off ends of dimension that is still too long
         if width_ratio > height_ratio:
             start = int(round((resize_width - width) / 2.0))
-            return image[:, start:start + width]
+            return cunsqueeze(image[:, start:start + width, :])
         else:
             start = int(round((resize_height - height) / 2.0))
-            return image[start:start + height, :]
+            return cunsqueeze(image[start:start + height, :, :])
     else:
         if resize_mode == 'fill':
             # resize to biggest of ratios (relatively smaller image), keeping aspect ratio
@@ -590,7 +590,7 @@ def resize_image( img, height, width,
             noise = np.random.randint(0, 255, noise_size).astype('uint8')
             image = np.concatenate((noise, image, noise), axis=1)
 
-        return image
+        return cunsqueeze(image)
 
 def compute_norm_mat(base_width, base_height): 
     # normalization matrix used in image pre-processing 

@@ -679,7 +679,7 @@ class ObjectImageMaskMetadataAndWeightTransform( ObjectImageMaskAndWeightTransfo
         """
         super(ObjectImageMaskMetadataAndWeightTransform, self).__init__(image, mask, weight)
         self.metadata = metadata
-
+        
     #pytorch transform
     def to_tensor(self):
         
