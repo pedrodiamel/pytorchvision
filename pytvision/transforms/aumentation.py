@@ -607,8 +607,8 @@ class ObjectImageMaskAndWeightTransform(ObjectImageAndMaskTransform):
         self.weight = F.scale( self.weight, factor, cv2.INTER_LINEAR, padding_mode )
 
     def hflip(self):
-        self.image = F.hflip( self.image )
-        self.mask = F.hflip( self.mask )
+        self.image  = F.hflip( self.image )
+        self.mask   = F.hflip( self.mask )
         self.weight = F.hflip( self.weight )
 
     def vflip(self):

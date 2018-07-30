@@ -69,19 +69,19 @@ def scale(image, factor, mode, padding_mode ):
     return img
 
 def hflip( x ): 
-    return cv2.flip(x,1)
+    return cunsqueeze( cv2.flip(x,1) )
 
 def vflip( x ):
-    return cv2.flip(x,0)
+    return cunsqueeze( cv2.flip(x,0) )
 
 def rotate90( x ): 
-    return cv2.flip(x.transpose(1,0,2),1)
+    return cunsqueeze( cv2.flip(x.transpose(1,0,2),1) )
 
 def rotate180( x ): 
-    return cv2.flip(x,-1)
+    return cunsqueeze( cv2.flip(x,-1) )
 
 def rotate270( x ):
-    return cv2.flip(x.transpose(1,0,2),0)
+    return cunsqueeze( cv2.flip(x.transpose(1,0,2),0) )
 
 def is_box_inside(img, box ):
     return box[0] < 0 or box[1] < 0 or box[2]+box[0] >= img.shape[1] or box[3]+box[1] >= img.shape[0]
