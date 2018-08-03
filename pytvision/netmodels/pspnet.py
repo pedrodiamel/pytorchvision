@@ -8,6 +8,18 @@ from torch.utils import model_zoo
 from torchvision import models
 
 
+__all__ = ['PSPNet', 'pspnet']
+
+def pspnet(pretrained=False, **kwargs):
+    r"""PSPNet model architecture
+    """
+    model = PSPNet(**kwargs)
+    if pretrained:
+        pass
+        #model.load_state_dict(model_zoo.load_url(model_urls['unet']))
+    return model
+
+
 
 class PSPDec(nn.Module):
     
@@ -25,10 +37,9 @@ class PSPDec(nn.Module):
     def forward(self, x):
         return self.features(x)
 
-
 class PSPNet(nn.Module):
 
-    def __init__(self, num_classes):
+    def __init__(self, num_classes=1, in_channels=3):
         super().__init__()
 
         '''

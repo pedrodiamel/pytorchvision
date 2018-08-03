@@ -8,7 +8,7 @@ from torchvision import models
 
 class FCN8(nn.Module):
 
-    def __init__(self, num_classes):
+    def __init__(self, num_classes=1, in_channels=3):
         super().__init__()
 
         feats = list(models.vgg16(pretrained=True).features.children())
@@ -54,7 +54,7 @@ class FCN8(nn.Module):
 
 class FCN16(nn.Module):
     
-    def __init__(self, num_classes):
+    def __init__(self, num_classes=1, in_channels=3):
         super().__init__()
 
         feats = list(models.vgg16(pretrained=True).features.children())
@@ -86,10 +86,9 @@ class FCN16(nn.Module):
 
         return F.upsample_bilinear(score, x.size()[2:])
 
-
 class FCN32(nn.Module):
     
-    def __init__(self, num_classes):
+    def __init__(self, num_classes=1, in_channels=3):
         super().__init__()
 
         self.feats = models.vgg16(pretrained=True).features
@@ -109,4 +108,33 @@ class FCN32(nn.Module):
         score = self.score(fconn)
 
         return F.upsample_bilinear(score, x.size()[2:])
+
+__all__ = ['FCN8', 'fcn8', 'FCN16', 'fcn16','FCN32', 'fcn32']
+
+def fcn8(pretrained=False, **kwargs):
+    r"""FCN8 model architecture
+    """
+    model = FCN8(**kwargs)
+    if pretrained:
+        pass
+        #model.load_state_dict(model_zoo.load_url(model_urls['unet']))
+    return model
+
+def fcn16(pretrained=False, **kwargs):
+    r"""FCN16 model architecture
+    """
+    model = FCN16(**kwargs)
+    if pretrained:
+        pass
+        #model.load_state_dict(model_zoo.load_url(model_urls['unet']))
+    return model
+
+def fcn32(pretrained=False, **kwargs):
+    r"""FCN32 model architecture
+    """
+    model = FCN32(**kwargs)
+    if pretrained:
+        pass
+        #model.load_state_dict(model_zoo.load_url(model_urls['unet']))
+    return model
 

@@ -8,6 +8,17 @@ import torch.nn.functional as F
 from torch.utils import model_zoo
 from torchvision import models
 
+__all__ = ['SegNet', 'segnet']
+
+def segnet(pretrained=False, **kwargs):
+    r"""SegNet model architecture
+    """
+    model = SegNet(**kwargs)
+    if pretrained:
+        pass
+        #model.load_state_dict(model_zoo.load_url(model_urls['segnet']))
+    return model
+
 class SegNetEnc(nn.Module):
     
     def __init__(self, in_channels, out_channels, num_layers):
@@ -34,10 +45,9 @@ class SegNetEnc(nn.Module):
     def forward(self, x):
         return self.encode(x)
 
-
 class SegNet(nn.Module):
 
-    def __init__(self, num_classes):
+    def __init__(self, num_classes=1, in_channels=3):
         super().__init__()
 
         # should be vgg16bn but at the moment we have no pretrained bn models
@@ -67,6 +77,7 @@ class SegNet(nn.Module):
         self.final = nn.Conv2d(64, num_classes, 3, padding=1)
 
     def forward(self, x):
+        
         dec1 = self.dec1(x)
         dec2 = self.dec2(dec1)
         dec3 = self.dec3(dec2)
