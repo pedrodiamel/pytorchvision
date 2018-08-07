@@ -639,8 +639,12 @@ class ObjectImageMaskAndWeightTransform(ObjectImageAndMaskTransform):
 
     def applay_elastic_transform(self, mapx, mapy, padding_mode = cv2.BORDER_CONSTANT):        
         self.image  = cv2.remap(self.image,  mapx, mapy, cv2.INTER_LINEAR, borderMode=padding_mode)
+        self.image  = F.cunsqueeze( self.image )
         self.mask  = cv2.remap(self.mask,  mapx, mapy, cv2.INTER_NEAREST, borderMode=padding_mode)
+        self.mask  = F.cunsqueeze( self.mask )
         self.weight  = cv2.remap(self.weight,  mapx, mapy, cv2.INTER_LINEAR, borderMode=padding_mode)
+        self.weight  = F.cunsqueeze( self.weight )
+        
 
     def applay_elastic_tensor_transform(self, grid):
         self.image = grid_sample( torch.unsqueeze( self.image, dim=0 ), grid ).data[0,...]
