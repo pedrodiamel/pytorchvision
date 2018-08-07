@@ -11,6 +11,16 @@ import torch.utils.model_zoo as model_zoo
 
 nonlinearity = nn.ReLU
 
+__all__ = ['LinkNet34', 'linknet34']
+
+def linknet34(pretrained=False, **kwargs):
+    r"""LinkNet34 model architecture
+    """
+    model = LinkNet34(**kwargs)
+    if pretrained:
+        pass
+        #model.load_state_dict(model_zoo.load_url(model_urls['unet']))
+    return model
 
 class DecoderBlock(nn.Module):
     def __init__(self, in_channels, n_filters):
@@ -45,9 +55,10 @@ class DecoderBlock(nn.Module):
         return x
 
 class LinkNet34(nn.Module):
-    def __init__(self, num_classes, num_channels=3):
+    
+    def __init__(self, num_classes=1, in_channels=3 ):
         super().__init__()
-        assert num_channels == 3, "num channels not used now. to use changle first conv layer to support num channels other then 3"
+        assert in_channels == 3, "num channels not used now. to use changle first conv layer to support num channels other then 3"
         filters = [64, 128, 256, 512]
         resnet = models.resnet34(pretrained=True)
 
@@ -75,6 +86,7 @@ class LinkNet34(nn.Module):
 
     # noinspection PyCallingNonCallable
     def forward(self, x):
+        
         # Encoder
         x = self.firstconv(x)
         x = self.firstbn(x)

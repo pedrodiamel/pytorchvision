@@ -18,7 +18,7 @@ def unet(pretrained=False, **kwargs):
 
 class UNet(nn.Module):
 
-    def __init__(self, num_classes=3, is_deconv=False, in_channels=3, is_batchnorm=False):
+    def __init__(self, num_classes=1, in_channels=3, is_deconv=False, is_batchnorm=False):
         super(UNet, self).__init__()
         self.is_deconv = is_deconv
         self.in_channels = in_channels
