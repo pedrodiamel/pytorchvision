@@ -135,8 +135,8 @@ def transform_aug():
             # mtrans.ToRandomTransform( mtrans.ToGaussianBlur(), prob=0.75 ),
             
             ## geometrical 
-            mtrans.ToRandomTransform( mtrans.HFlip(), prob=0.5 )
-            mtrans.ToRandomTransform( mtrans.VFlip(), prob=0.5 )
+            mtrans.ToRandomTransform( mtrans.HFlip(), prob=0.5 ),
+            mtrans.ToRandomTransform( mtrans.VFlip(), prob=0.5 ),
             mtrans.RandomScale(factor=0.2, padding_mode=cv2.BORDER_REFLECT101 ),
             #mtrans.RandomGeometricalTransform( angle=360, translation=0.2, warp=0.02, padding_mode=cv2.BORDER_REFLECT101),
             #mtrans.RandomElasticDistort( size_grid=50, padding_mode=cv2.BORDER_REFLECT101 ),
