@@ -99,7 +99,9 @@ class ImageVisdom(object):
         
         if self.imsize:
             image = cv2.resize(image, self.imsize, interpolation = cv2.INTER_LINEAR)
-
+        image = image.astype(float)
+        image = np.transpose(image, (2,0,1) )
+        
         if title not in self.images:
             self.images[title] = self.vis.image(
                 image, 
