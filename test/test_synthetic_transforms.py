@@ -5,7 +5,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 
+import torch
 from torchvision import transforms
+
 from PIL import Image
 import imageio
 import datetime
@@ -13,6 +15,9 @@ import datetime
 import scipy.misc
 import cv2
 import time
+
+import pytest
+
 
 sys.path.append('../')
 from pytvision.transforms import transforms as mtrans
@@ -111,10 +116,17 @@ def tranform_image_and_mask_performs( data, name, num_transform=4, bsave=False, 
 def transform_aug():
     return transforms.Compose([
 
+            #mtrans.HFlip(),
+            #mtrans.VFlip(),
+            #mtrans.Rotate90(),
+            #mtrans.Rotate180(),
+            #mtrans.Rotate270(),           
+
+
             ## resize and crop                           
-            mtrans.ToResize( (400,400), resize_mode='square', padding_mode=cv2.BORDER_REFLECT_101 ) ,
+            mtrans.ToResize( (300,300), resize_mode='asp', padding_mode=cv2.BORDER_CONSTANT ) ,
             #mtrans.CenterCrop( (200,200) ),
-            #mtrans.RandomCrop( (255,255), limit=50, padding_mode=cv2.BORDER_REFLECT_101  ),
+            #mtrans.RandomCrop( (400,400), limit=50, padding_mode=cv2.BORDER_REFLECT_101  ),
             #mtrans.ToResizeUNetFoV(388, cv2.BORDER_REFLECT_101),         
             
             # ## color 
@@ -131,13 +143,13 @@ def transform_aug():
 
             ## blur
             # mtrans.ToRandomTransform( mtrans.ToLinealMotionBlur( lmax=1 ), prob=0.5 ),
-            # mtrans.ToRandomTransform( mtrans.ToMotionBlur( ), prob=0.5 ),
+            mtrans.ToRandomTransform( mtrans.ToMotionBlur( ), prob=0.5 ),
             # mtrans.ToRandomTransform( mtrans.ToGaussianBlur(), prob=0.75 ),
             
             ## geometrical 
-            mtrans.ToRandomTransform( mtrans.HFlip(), prob=0.5 ),
-            mtrans.ToRandomTransform( mtrans.VFlip(), prob=0.5 ),
-            mtrans.RandomScale(factor=0.2, padding_mode=cv2.BORDER_REFLECT101 ),
+            #mtrans.ToRandomTransform( mtrans.HFlip(), prob=0.5 ),
+            #mtrans.ToRandomTransform( mtrans.VFlip(), prob=0.5 ),
+            #mtrans.RandomScale(factor=0.2, padding_mode=cv2.BORDER_REFLECT101 ),
             #mtrans.RandomGeometricalTransform( angle=360, translation=0.2, warp=0.02, padding_mode=cv2.BORDER_REFLECT101),
             #mtrans.RandomElasticDistort( size_grid=50, padding_mode=cv2.BORDER_REFLECT101 ),
             
@@ -157,11 +169,36 @@ def transform_aug():
             ])
 
 
+
+def test_image_transform():
+
+
+    image = cv2.imread( '../rec/image.jpg' )
+    image = image[:,:,(2,1,0)] #[:,:,0]
+
+    obj = ObjectImageTransform( image )
+    trans = transform_aug()
+
+    start = time.time()
+    obj_t = trans(obj)
+    t = time.time() - start
+    print('Time {}(s)'.format(t))
+
+    image_t = obj_t.image.permute((1,2,0)).numpy()#.squeeze(-1)
+
+    plt.figure(figsize=(8,8))
+    plt.imshow(image_t)
+    plt.show()
+
+
+test_image_transform()
+
+
 def test_transform():
 
     # Transformation
     num_transform = 10
-    bshow=True
+    bshow=False
     bsave=False
     bgrid=True
     name = 'syntetic_transformations'
@@ -175,7 +212,6 @@ def test_transform():
             bdraw_grid=bgrid,
             transform=transform_aug()
             )
-
 
     tranform_image_and_mask_performs(data, name, num_transform, bsave, bshow, bgrid)
 
