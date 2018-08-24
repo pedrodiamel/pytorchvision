@@ -18,14 +18,23 @@ class VisdomLinePlotter(object):
                 legend=[split_name],
                 title=var_name,
                 xlabel='Epoch',
-                ylabel=var_name
+                ylabel=var_name,
+                showlegend=True,
             ))
         else:
-            self.viz.updateTrace(X=np.array([x]), Y=np.array([y]), 
+            self.viz.line(X=np.array([x]), Y=np.array([y]), 
                 env=self.env, 
+                legend=[split_name],
                 win=self.plots[var_name], 
-                name=split_name
+                update='append',
+                showlegend=True,
                 )
+
+            # self.viz.updateTrace(X=np.array([x]), Y=np.array([y]), 
+            #     env=self.env, 
+            #     win=self.plots[var_name], 
+            #     name=split_name
+            #     )
 
 
 
