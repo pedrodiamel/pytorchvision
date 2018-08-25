@@ -69,19 +69,19 @@ def scale(image, factor, mode, padding_mode ):
     return img
 
 def hflip( x ): 
-    return cunsqueeze(x[::-1,:,:])
+    return cunsqueeze( cv2.flip( x, 0 ) )
 
 def vflip( x ):
-    return cunsqueeze(x[:,::-1,:])
+    return cunsqueeze( cv2.flip( x, 1 )  )
 
 def rotate90( x ): 
-    return cunsqueeze( cv2.flip(x.transpose(1,0,2),1) )
+    return cunsqueeze( cv2.flip( cunsqueeze(x).transpose(1,0,2),1) )
 
 def rotate180( x ): 
     return cunsqueeze( cv2.flip(x,-1) )
 
 def rotate270( x ):
-    return cunsqueeze( cv2.flip(x.transpose(1,0,2),0) )
+    return cunsqueeze( cv2.flip( cunsqueeze(x).transpose(1,0,2),0) )
 
 def is_box_inside(img, box ):
     return box[0] < 0 or box[1] < 0 or box[2]+box[0] >= img.shape[1] or box[3]+box[1] >= img.shape[0]
@@ -471,7 +471,7 @@ def resize_image( img, height, width,
         raise ValueError('resize_mode "%s" not supported' % resize_mode)
 
     # convert to array
-    image = np.copy(img)
+    image = cunsqueeze( np.copy(img) )
     #image = image_to_array(image, channels)
     
 
@@ -512,7 +512,8 @@ def resize_image( img, height, width,
             padxL, padxR = 0,0;
             padyT = int(np.floor( (h-w) / 2.0));
             padyB = int(np.ceil( (h-w) / 2.0));
-        image = cv2.copyMakeBorder(image, padxL, padxR, padyT, padyB, borderType=padding_mode)
+            
+        image = cv2.copyMakeBorder(image, padyT, padyB, padxL, padxR, borderType=padding_mode)
         image = cv2.resize(image, (width, height) , interpolation = interpolate_mode)  
         image = cunsqueeze(image)
         return image

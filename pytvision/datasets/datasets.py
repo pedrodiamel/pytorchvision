@@ -16,23 +16,24 @@ warnings.filterwarnings("ignore")
 
 
 class Dataset( object ):
-    """
-    Generic dataset
-    """
+    r"""Generic dataset
 
+    Args:
+        data         : dataprovide class
+        num_channels : channels number
+        count        : resize dataset (None default) 
+        tranform     : tranform           
+
+    """
     def __init__(self, 
-        data,
-        num_channels=1,
-        transform=None  
+        data, 
+        num_channels=1, 
+        count=None, 
+        transform=None 
         ):
-        """
-        Initialization 
-        Args:
-            @data: dataprovide class
-            @num_channels: 
-            @tranform: tranform           
-        """             
         
+        if count is None: count = len(data)
+
         self.data = data
         self.num_channels=num_channels        
         self.transform = transform   
@@ -41,36 +42,37 @@ class Dataset( object ):
         self.numclass = len(self.classes)
 
     def __len__(self):
-        return len(self.data)
+        return self.count
 
     def __getitem__(self, idx):   
 
-        image, label = self.data[idx]
+        image, label = self.data[ idx%self.count ]
         image = np.array(image) 
         image = utility.to_channels(image, self.num_channels)        
         label = utility.to_one_hot(label, self.numclass)
 
         obj = ObjectImageAndLabelTransform( image, label )
         if self.transform: 
-            sample = self.transform( obj )
+            obj = self.transform( obj )
         return obj.to_dict()
     
 class ResampleDataset( object ):
-    """
-    Resample data for generic dataset
-    """
+    r"""Resample data for generic dataset
 
+    Args:
+        data         : dataloader class
+        num_channels : number of the channels
+        count        : size of dataset
+        tranform     : tranform           
+     
+    """
     def __init__(self, 
         data,
         num_channels=1,
         count=200,
         transform=None  
         ):
-        """
-        Initialization   
-        data: dataloader class
-        tranform: tranform           
-        """             
+           
         
         self.num_channels=num_channels
         self.data = data        
@@ -100,11 +102,10 @@ class ResampleDataset( object ):
 
     def __getitem__(self, idx):   
                 
-        idx = self.dist_of_classes[idx]
+        idx = self.dist_of_classes[ idx ]
         class_index = self.labels_index[idx]
         n =  len(class_index)
         idx = class_index[ random.randint(0,n-1) ]
-
         image, label = self.data[idx]
 
         image = np.array(image) 
@@ -113,11 +114,22 @@ class ResampleDataset( object ):
 
         obj = ObjectImageAndLabelTransform( image, label )
         if self.transform: 
-            sample = self.transform( obj )
+            obj = self.transform( obj )
         return obj.to_dict()
 
+
 class ODDataset( object ):
-    """ Abstract generator class for object detection.
+    r"""Abstract generator class for object detection.
+
+    Args:
+        batch_size             : The size of the batches to generate.
+        shuffle_groups         : If True, shuffles the groups each epoch.
+        image_min_side         : After resizing the minimum side of an image is equal to image_min_side.
+        image_max_side         : If after resizing the maximum side is larger than image_max_side, scales down further so that the max side is equal to image_max_side.
+        transform_parameters   : The transform parameters used for data augmentation.
+        compute_anchor_targets : Function handler for computing the targets of anchors for an image and its annotations.
+        compute_shapes         : Function handler for computing the shapes of the pyramid for a given input.
+       
     """
 
     def __init__(
@@ -130,18 +142,6 @@ class ODDataset( object ):
         compute_anchor_targets=anchor_targets_bbox,
         compute_shapes=guess_shapes,
     ):
-
-        """ Initialize Generator object.
-
-        Args
-            batch_size             : The size of the batches to generate.
-            shuffle_groups         : If True, shuffles the groups each epoch.
-            image_min_side         : After resizing the minimum side of an image is equal to image_min_side.
-            image_max_side         : If after resizing the maximum side is larger than image_max_side, scales down further so that the max side is equal to image_max_side.
-            transform_parameters   : The transform parameters used for data augmentation.
-            compute_anchor_targets : Function handler for computing the targets of anchors for an image and its annotations.
-            compute_shapes         : Function handler for computing the shapes of the pyramid for a given input.
-        """
 
         self.batch_size             = int(batch_size)
         self.shuffle_groups         = shuffle_groups
