@@ -1,6 +1,5 @@
 numpy
 matplotlib
-opencv-python
 graphviz
 pycocotools
 six

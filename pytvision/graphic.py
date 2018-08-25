@@ -6,7 +6,7 @@ class VisdomLinePlotter(object):
     """Plots to Visdom"""
     
     def __init__(self, env_name='main'):
-        self.viz = Visdom()
+        self.viz = Visdom( use_incoming_socket=False )
         self.env = env_name
         self.plots = {}
     
@@ -18,22 +18,23 @@ class VisdomLinePlotter(object):
                 legend=[split_name],
                 title=var_name,
                 xlabel='Epoch',
-                ylabel=var_name
+                ylabel=var_name,
+                showlegend=True,
             ))
         else:
-            self.viz.updateTrace(X=np.array([x]), Y=np.array([y]), 
+            self.viz.line(X=np.array([x]), Y=np.array([y]), 
                 env=self.env, 
                 win=self.plots[var_name], 
-                name=split_name
+                name=split_name,
+                update='append'
                 )
-
 
 
 class VisdomScatter(object):
     """Scatter to Visdom"""
     
     def __init__(self, env_name='main'):
-        self.viz = Visdom()
+        self.viz = Visdom( use_incoming_socket=False )
         self.env = env_name
         self.scatters = {}
 
@@ -62,7 +63,7 @@ class HeatMapVisdom(object):
     """Heat Map to Visdom"""
     
     def __init__(self, env_name='main', heatsize=None ):
-        self.vis = Visdom()
+        self.vis = Visdom( use_incoming_socket=False )
         self.env = env_name
         self.hmaps = {}
         self.heatsize = heatsize
@@ -90,7 +91,7 @@ class ImageVisdom(object):
     """Images to Visdom"""
     
     def __init__(self, env_name='main', imsize=None):
-        self.vis = Visdom()
+        self.vis = Visdom( use_incoming_socket=False )
         self.env = env_name
         self.images = {}
         self.imsize = imsize
