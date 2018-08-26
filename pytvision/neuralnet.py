@@ -208,7 +208,7 @@ class NeuralNetAbstract(object):
 
         # create optimizer
         if optimizer == 'adam':
-            self.optimizer = torch.optim.Adam( self.net.parameters(), lr=lr ) # amsgrad=True
+            self.optimizer = torch.optim.Adam( self.net.parameters(), lr=lr, amsgrad=True )  
         elif optimizer == 'sgd':
             self.optimizer = torch.optim.SGD( self.net.parameters(), lr=lr, momentum=momentum)
         elif optimizer == 'rprop':
