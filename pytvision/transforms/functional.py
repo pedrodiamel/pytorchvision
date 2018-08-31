@@ -482,8 +482,9 @@ def resize_image( img, height, width,
     # Resize
     #interp = 'bilinear'
 
-    width_ratio = float(image.shape[1]) / width
+    width_ratio  = float(image.shape[1]) / width
     height_ratio = float(image.shape[0]) / height
+    
     if resize_mode == 'squash' or width_ratio == height_ratio:
         image = cv2.resize(image, (width, height) , interpolation = interpolate_mode)
         image = cunsqueeze(image)
