@@ -84,10 +84,13 @@ class NeuralNetAbstract(object):
         num_input_channels, 
         loss, 
         lr, 
-        momentum, 
         optimizer, 
         lrsch, 
-        pretrained=False
+        pretrained=False,
+        cfg_model=None,
+        cfg_loss=None,
+        cfg_opt=None,
+        cfg_scheduler=None,
         ):
         """
         Create 
@@ -105,6 +108,15 @@ class NeuralNetAbstract(object):
         self.s_lerning_rate_sch = lrsch
         self.s_loss = loss
 
+        if cfg_model is None:       #defaul configurate
+            cfg_model = {}
+        if cfg_loss is None:        #defaul configurate
+            cfg_loss = {}
+        if cfg_opt is None:         #defaul configurate
+            cfg_opt = {}
+        if cfg_scheduler is None:   #defaul configurate
+            cfg_scheduler = {}
+
         # create project directory
         self.pathmodels = os.path.join(self.pathproject, 'models')
         if not os.path.exists(self.pathproject):
@@ -112,10 +124,10 @@ class NeuralNetAbstract(object):
         if not os.path.exists(self.pathmodels):
             os.makedirs(self.pathmodels)
         
-        self._create_model( arch, num_output_channels, num_input_channels, pretrained )
-        self._create_loss( loss )
-        self._create_optimizer( optimizer, lr, momentum )
-        self._create_scheduler_lr( lrsch )
+        self._create_model( arch, num_output_channels, num_input_channels, pretrained, **cfg_model )
+        self._create_loss( loss, **cfg_loss )
+        self._create_optimizer( optimizer, lr, **cfg_opt )
+        self._create_scheduler_lr( lrsch, **cfg_scheduler )
 
     def training(self, data_loader, epoch=0):
         pass
@@ -187,7 +199,7 @@ class NeuralNetAbstract(object):
         """    
         pass
 
-    def _create_loss(self, loss):
+    def _create_loss(self, loss, **kwargs):
         """
         Create loss
         Args:
@@ -195,7 +207,7 @@ class NeuralNetAbstract(object):
         """
         pass
 
-    def _create_optimizer(self, optimizer='adam', lr=0.0001, momentum=0.99):
+    def _create_optimizer(self, optimizer='adam', lr=0.0001, **kwargs):
         """
         Create optimizer
         Args:
@@ -210,7 +222,7 @@ class NeuralNetAbstract(object):
         if optimizer == 'adam':
             self.optimizer = torch.optim.Adam( self.net.parameters(), lr=lr, amsgrad=True )  
         elif optimizer == 'sgd':
-            self.optimizer = torch.optim.SGD( self.net.parameters(), lr=lr, momentum=momentum)
+            self.optimizer = torch.optim.SGD( self.net.parameters(), lr=lr, **kwargs ) #momentum=0.9, weight_decay=5e-4 
         elif optimizer == 'rprop':
             self.optimizer = torch.optim.Rprop( self.net.parameters(), lr=lr) 
         elif optimizer == 'rmsprop':
@@ -219,10 +231,9 @@ class NeuralNetAbstract(object):
             assert(False)
 
         self.lr = lr; 
-        self.momentum = momentum
         self.s_optimizer = optimizer
 
-    def _create_scheduler_lr(self, lrsch ):
+    def _create_scheduler_lr(self, lrsch, **kwargs ):
         
         #MultiStepLR(optimizer, milestones=[30,80], gamma=0.1)
         #ExponentialLR
@@ -233,25 +244,26 @@ class NeuralNetAbstract(object):
         if lrsch == 'fixed':
             pass           
         elif lrsch == 'step':
-            self.lrscheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=3, gamma=0.1 )
+            self.lrscheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, **kwargs )# step_size=3, gamma=0.1 
         elif lrsch == 'cyclic': 
-            self.lrscheduler = netlearningrate.CyclicLR(self.optimizer)
+            self.lrscheduler = netlearningrate.CyclicLR(self.optimizer, **kwargs)
         elif lrsch == 'exp':
-            self.lrscheduler = torch.optim.lr_scheduler.ExponentialLR(self.optimizer, gamma=0.99 )
+            self.lrscheduler = torch.optim.lr_scheduler.ExponentialLR(self.optimizer, **kwargs ) # gamma=0.99 
         elif lrsch == 'plateau':
-            self.lrscheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, 'min', patience=10)
+            self.lrscheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, **kwargs ) # 'min', patience=10
         else:
             assert(False)
         
         self.s_lerning_rate_sch = lrsch
 
-    def adjust_learning_rate(self, epoch):
+    def adjust_learning_rate(self, epoch ):
         """
         Update learning rate
         """       
  
         # update
-        if self.s_lerning_rate_sch == 'fixed': lr = self.lr
+        if self.s_lerning_rate_sch == 'fixed': 
+            lr = self.lr
         elif self.s_lerning_rate_sch == 'plateau':
             self.lrscheduler.step( self.vallosses )
             for param_group in self.optimizer.param_groups:
