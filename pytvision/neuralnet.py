@@ -84,7 +84,6 @@ class NeuralNetAbstract(object):
         num_input_channels, 
         loss, 
         lr, 
-        momentum, 
         optimizer, 
         lrsch, 
         pretrained=False,
