@@ -87,7 +87,8 @@ class NeuralNetAbstract(object):
         momentum, 
         optimizer, 
         lrsch, 
-        pretrained=False
+        pretrained=False,
+        **kwargs,
         ):
         """
         Create 
@@ -112,10 +113,10 @@ class NeuralNetAbstract(object):
         if not os.path.exists(self.pathmodels):
             os.makedirs(self.pathmodels)
         
-        self._create_model( arch, num_output_channels, num_input_channels, pretrained )
-        self._create_loss( loss )
-        self._create_optimizer( optimizer, lr, momentum )
-        self._create_scheduler_lr( lrsch )
+        self._create_model( arch, num_output_channels, num_input_channels, pretrained, **kwargs )
+        self._create_loss( loss, **kwargs )
+        self._create_optimizer( optimizer, lr, **kwargs )
+        self._create_scheduler_lr( lrsch, **kwargs )
 
     def training(self, data_loader, epoch=0):
         pass
@@ -187,7 +188,7 @@ class NeuralNetAbstract(object):
         """    
         pass
 
-    def _create_loss(self, loss):
+    def _create_loss(self, loss, **kwargs):
         """
         Create loss
         Args:
@@ -195,7 +196,7 @@ class NeuralNetAbstract(object):
         """
         pass
 
-    def _create_optimizer(self, optimizer='adam', lr=0.0001, momentum=0.99):
+    def _create_optimizer(self, optimizer='adam', lr=0.0001, **kwargs):
         """
         Create optimizer
         Args:
@@ -210,7 +211,7 @@ class NeuralNetAbstract(object):
         if optimizer == 'adam':
             self.optimizer = torch.optim.Adam( self.net.parameters(), lr=lr ) # amsgrad=True
         elif optimizer == 'sgd':
-            self.optimizer = torch.optim.SGD( self.net.parameters(), lr=lr, momentum=momentum)
+            self.optimizer = torch.optim.SGD( self.net.parameters(), lr=lr, **kwargs )
         elif optimizer == 'rprop':
             self.optimizer = torch.optim.Rprop( self.net.parameters(), lr=lr) 
         elif optimizer == 'rmsprop':
