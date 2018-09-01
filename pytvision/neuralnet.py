@@ -123,7 +123,8 @@ class NeuralNetAbstract(object):
             os.makedirs(self.pathproject)
         if not os.path.exists(self.pathmodels):
             os.makedirs(self.pathmodels)
-        
+            
+                
         self._create_model( arch, num_output_channels, num_input_channels, pretrained, **cfg_model )
         self._create_loss( loss, **cfg_loss )
         self._create_optimizer( optimizer, lr, **cfg_opt )
@@ -207,7 +208,7 @@ class NeuralNetAbstract(object):
         """
         pass
 
-    def _create_optimizer(self, optimizer='adam', lr=0.0001, **kwargs):
+    def _create_optimizer(self, optimizer='adam', lr=0.0001, **kwargs ):
         """
         Create optimizer
         Args:
