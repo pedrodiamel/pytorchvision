@@ -9,7 +9,7 @@ from .grid.tps_grid_gen import TPSGridGen
 from . import functional as F
 
 
-interpolate_image_mode   = cv2.INTER_CUBIC
+interpolate_image_mode   = cv2.INTER_LINEAR
 interpolate_mask_mode    = cv2.INTER_NEAREST
 interpolate_weight_mode  = cv2.INTER_LINEAR
 
