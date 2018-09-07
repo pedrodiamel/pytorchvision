@@ -20,6 +20,7 @@ import pytest
 
 
 sys.path.append('../')
+import pytvision
 from pytvision.transforms import transforms as mtrans
 from pytvision.datasets.ellipse_dataset import SyntethicCircleDataset
 from pytvision.transforms.aumentation import ObjectImageMaskAndWeightTransform, ObjectImageTransform, ObjectImageAndMaskTransform
@@ -124,7 +125,8 @@ def transform_aug():
 
 
             ## resize and crop                           
-            mtrans.ToResize( (300,300), resize_mode='asp', padding_mode=cv2.BORDER_CONSTANT ) ,
+            mtrans.ToResize( (600,600), resize_mode='asp', padding_mode=cv2.BORDER_CONSTANT ) ,
+            mtrans.ToPad( 20, 20, padding_mode=cv2.BORDER_CONSTANT ) ,
             #mtrans.CenterCrop( (200,200) ),
             #mtrans.RandomCrop( (400,400), limit=50, padding_mode=cv2.BORDER_REFLECT_101  ),
             #mtrans.ToResizeUNetFoV(388, cv2.BORDER_REFLECT_101),         
@@ -143,7 +145,7 @@ def transform_aug():
 
             ## blur
             # mtrans.ToRandomTransform( mtrans.ToLinealMotionBlur( lmax=1 ), prob=0.5 ),
-            mtrans.ToRandomTransform( mtrans.ToMotionBlur( ), prob=0.5 ),
+            # mtrans.ToRandomTransform( mtrans.ToMotionBlur( ), prob=0.5 ),
             # mtrans.ToRandomTransform( mtrans.ToGaussianBlur(), prob=0.75 ),
             
             ## geometrical 
@@ -172,6 +174,7 @@ def transform_aug():
 
 def test_image_transform():
 
+    pytvision.transforms.aumentation.interpolate_image_mode = cv2.INTER_LINEAR
 
     image = cv2.imread( '../rec/image.jpg' )
     image = image[:,:,(2,1,0)] #[:,:,0]
@@ -191,13 +194,13 @@ def test_image_transform():
     plt.show()
 
 
-test_image_transform()
+# test_image_transform()
 
 
 def test_transform():
 
     # Transformation
-    num_transform = 10
+    num_transform = 3
     bshow=False
     bsave=False
     bgrid=True
@@ -217,5 +220,5 @@ def test_transform():
 
 
 
-
+test_transform()
 
