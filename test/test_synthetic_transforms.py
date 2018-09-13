@@ -191,7 +191,7 @@ def test_image_transform():
     plt.show()
 
 
-test_image_transform()
+#test_image_transform()
 
 
 def test_transform():
@@ -216,6 +216,7 @@ def test_transform():
     tranform_image_and_mask_performs(data, name, num_transform, bsave, bshow, bgrid)
 
 
+test_transform()
 
 
 
