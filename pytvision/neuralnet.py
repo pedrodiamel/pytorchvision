@@ -320,7 +320,8 @@ class NeuralNetAbstract(object):
                 print("=> loading checkpoint '{}'".format(pathnamemodel))
                 checkpoint = torch.load( pathnamemodel ) if self.cuda else torch.load( pathnamemodel, map_location=lambda storage, loc: storage )
                 
-                self._create_model(checkpoint['arch'], checkpoint['num_classes'], checkpoint['num_channels'], False )                
+                self._create_model(checkpoint['arch'], checkpoint['num_classes'], checkpoint['num_channels'], False )      
+                self.size_input = checkpoint['imsize']         
                 self.net.load_state_dict( checkpoint['state_dict'] )               
 
                 print("=> loaded checkpoint for {} arch!".format(checkpoint['arch']))

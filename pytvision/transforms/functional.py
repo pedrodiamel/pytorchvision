@@ -68,6 +68,14 @@ def scale(image, factor, mode, padding_mode ):
     img = cunsqueeze(img)    
     return img
 
+
+def pad(image,  h_pad, w_pad, padding_mode):
+    img = np.copy(image)
+    height, width = img.shape[:2]
+    img = cv2.copyMakeBorder(img, h_pad, h_pad, w_pad, w_pad, padding_mode)
+    img = cunsqueeze(img) 
+    return img
+
 def hflip( x ): 
     return cunsqueeze( cv2.flip( x, 0 ) )
 
@@ -82,6 +90,11 @@ def rotate180( x ):
 
 def rotate270( x ):
     return cunsqueeze( cv2.flip( cunsqueeze(x).transpose(1,0,2),0) )
+
+def transpose( x ):
+    return cunsqueeze( cunsqueeze(x).transpose(1,0,2) )
+
+
 
 def is_box_inside(img, box ):
     return box[0] < 0 or box[1] < 0 or box[2]+box[0] >= img.shape[1] or box[3]+box[1] >= img.shape[0]
