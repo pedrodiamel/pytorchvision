@@ -9,6 +9,7 @@ class VisdomLinePlotter(object):
         self.viz = Visdom( use_incoming_socket=False )
         self.env = env_name
         self.plots = {}
+
     
     def plot(self, var_name, split_name, x, y):
         if var_name not in self.plots:
@@ -21,13 +22,14 @@ class VisdomLinePlotter(object):
                 ylabel=var_name,
                 showlegend=True,
             ))
+                        
         else:
             self.viz.line(X=np.array([x]), Y=np.array([y]), 
                 env=self.env, 
-                legend=[split_name],
                 win=self.plots[var_name], 
                 name=split_name,
-                update='append'
+                update='append',
+                opts=dict(showlegend=True)
                 )
 
             # self.viz.updateTrace(X=np.array([x]), Y=np.array([y]), 

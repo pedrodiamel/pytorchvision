@@ -3,6 +3,5 @@ matplotlib
 graphviz
 pycocotools
 six
-torch
 tqdm
 scipy

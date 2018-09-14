@@ -191,7 +191,7 @@ def test_image_transform():
     plt.show()
 
 
-test_image_transform()
+# test_image_transform()
 
 
 def test_transform():
@@ -217,5 +217,5 @@ def test_transform():
 
 
 
-
+test_transform()
 
