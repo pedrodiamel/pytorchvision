@@ -20,7 +20,7 @@ From source:
 
 - [kaggle-datasciencebowl-2018](https://github.com/pedrodiamel/kaggle-datasciencebowl-2018)
 - [kaggle-imaterialist](https://github.com/pedrodiamel/kaggle-imaterialist)
-- kaggle-tgs-salt-identification
+- [kaggle-tgs-salt-identification](https://github.com/pedrodiamel/kaggle-tgs-salt-identification)
 
 ## Documentation
 The full documentation is available at [doc](https://pytorchvision.readthedocs.io/en/latest/)
@@ -42,12 +42,13 @@ The full documentation is available at [doc](https://pytorchvision.readthedocs.i
 
 ## Transforms
 
-- Geometrical transformation
 - Color transformation
+- Geometrical transformation
 - Blur + Noise transformation
 
 
 
+<!-- 
 ## Building the documentation
 1. Go to `docs/` directory
 ```
@@ -61,9 +62,7 @@ pip install -r requirements.txt
 ```
 make html
 ```
-4. Open `_build/html/index.html` in browser.
-
-
-
+4. Open `_build/html/index.html` in browser. 
+-->
 
 
