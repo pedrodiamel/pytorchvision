@@ -6,9 +6,9 @@ import random
 from collections import namedtuple
 
 import torch
-from pytvision.datasets import utility 
-from pytvision.datasets import imageProvide
-from pytvision.transforms.aumentation import ObjectImageAndLabelTransform, ObjectImageTransform
+from . import utility 
+from .datasets import imageProvide
+from .transforms.aumentation import ObjectImageAndLabelTransform, ObjectImageTransform
 
 
 import warnings
@@ -139,8 +139,8 @@ class ODDataset( object ):
         image_min_side=800,
         image_max_side=1333,
         transform_parameters=None,
-        compute_anchor_targets=anchor_targets_bbox,
-        compute_shapes=guess_shapes,
+        compute_anchor_targets=None,
+        compute_shapes=None,
     ):
 
         self.batch_size             = int(batch_size)
