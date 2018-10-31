@@ -407,7 +407,7 @@ class ToEqNormalization(ToTransform):
 # geometrical transforms
 
 class ToResize(ToTransform):
-    """Resize to unet fov
+    """Resize
     """
     
     def __init__(self, imsize, resize_mode=None, padding_mode=cv2.BORDER_CONSTANT ):
@@ -423,6 +423,25 @@ class ToResize(ToTransform):
     def __call__(self, obj):
         obj.resize( self.imsize, self.resize_mode, self.padding_mode )
         return obj
+
+class ToPad(ToTransform):
+    r"""Pad
+    Args:
+        h_pad: height padding
+        w_pad: width  padding
+        pad_mode: resize mode
+    """
+    
+    def __init__(self, h_pad, w_pad, padding_mode=cv2.BORDER_CONSTANT ):
+        self.h_pad = h_pad
+        self.w_pad = w_pad
+        self.padding_mode = padding_mode
+
+    def __call__(self, obj):
+        obj.pad( self.h_pad, self.w_pad, self.padding_mode )
+        return obj
+
+
 
 class ToResizeUNetFoV(ToTransform):
     """Resize to unet fov
