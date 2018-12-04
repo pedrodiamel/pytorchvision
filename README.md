@@ -1,7 +1,17 @@
 # PyTVision
-[![Documentation Status](https://readthedocs.org/projects/pytorchvision/badge/?version=latest)](https://pytorchvision.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/pytorchvision/badge/?version=latest)](https://pytorchvision.readthedocs.io/en/latest/?badge=latest) 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 The pytvision package consists of my datasets, models, and image transformations methods for computer vision projects. This package also containing the synthetic render methods. The backend transforms using opencv.
+
+
+## Requirements
+
+    pytorch 0.4.1
+    git clone https://github.com/pytorch/vision.git
+    cd vision
+    python setup.py install
+
 
 ## Installation
 
@@ -9,6 +19,7 @@ From source:
 
     python setup.py build_ext --inplace
     python setup.py install
+
 
 ## Books
 
