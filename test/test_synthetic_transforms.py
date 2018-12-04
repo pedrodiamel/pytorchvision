@@ -194,10 +194,6 @@ def test_image_transform():
     plt.show()
 
 
-<<<<<<< HEAD
-# test_image_transform()
-=======
->>>>>>> 68a9eb8c19bc6717d0b2eb4ee01afdf91b533cdb
 
 #test_image_transform()
 
@@ -223,9 +219,5 @@ def test_transform():
     tranform_image_and_mask_performs(data, name, num_transform, bsave, bshow, bgrid)
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 68a9eb8c19bc6717d0b2eb4ee01afdf91b533cdb
 test_transform()
 

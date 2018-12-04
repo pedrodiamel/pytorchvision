@@ -57,9 +57,15 @@ The full documentation is available at [doc](https://pytorchvision.readthedocs.i
 - Geometrical transformation
 - Blur + Noise transformation
 
+## Similar projects 
+
+- https://github.com/albu/albumentations
 
 
 <!-- 
+
+https://www.youtube.com/watch?v=oJsUvBQyHBs
+
 ## Building the documentation
 1. Go to `docs/` directory
 ```
