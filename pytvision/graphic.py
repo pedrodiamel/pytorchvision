@@ -38,7 +38,6 @@ class VisdomLinePlotter(object):
             #     name=split_name
             #     )
 
-            
 
 class VisdomScatter(object):
     """Scatter to Visdom"""

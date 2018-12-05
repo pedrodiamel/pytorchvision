@@ -1,9 +1,7 @@
 numpy
 matplotlib
-opencv-python
 graphviz
 pycocotools
 six
-torch
 tqdm
 scipy

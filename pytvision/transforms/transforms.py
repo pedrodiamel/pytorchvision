@@ -167,6 +167,26 @@ class ToGaussianBlur(ToTransform):
         obj.gaussian_blur(wnd)
         return obj
 
+
+class ToGaussianNoise(ToTransform):
+    """Gaussian Noise randomly.
+    """
+    def __init__(self, sigma=0.2 ):        
+        """Initialization
+        Args:
+            @lmax: maximun lineal blur
+        """
+        self.sigma = sigma
+
+    def __call__(self, obj):
+        
+        # add gaussian noise
+        H,W = obj.size()[:2]
+        noise = np.array([random.gauss(0,self.sigma) for i in range(H*W)])
+        noise = noise.reshape(H,W)
+        obj.add_noise( noise )
+        return obj
+
 # Color tranformations
 
 class RandomBrightness(ToTransform):
@@ -591,7 +611,6 @@ class Rotate270(ToTransform):
 class RandomGeometricalTransform(ToTransform):
     """ Random Geometrical Transform
     """
-
     def __init__(self, angle=360, translation=0.2, warp=0.0, padding_mode=cv2.BORDER_CONSTANT ):        
         """Initialization 
         Args:
