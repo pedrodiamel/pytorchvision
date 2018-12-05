@@ -1,5 +1,5 @@
 # PyTVision
-[![Documentation Status](https://readthedocs.org/projects/pytorchvision/badge/?version=latest)](https://pytorchvision.readthedocs.io/en/latest/?badge=latest) 
+[![Documentation Status](https://readthedocs.org/projects/pytorchvision/badge/?version=latest)](https://pytorchvision.readthedocs.io/en/latest/?badge=latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 The pytvision package consists of my datasets, models, and image transformations methods for computer vision projects. This package also containing the synthetic render methods. The backend transforms using opencv.
@@ -26,8 +26,11 @@ From source:
 - [Example transformation](https://github.com/pedrodiamel/pytorchvision/blob/master/books/example_transforms.ipynb)
 - [Example transformation for pytorch](https://github.com/pedrodiamel/pytorchvision/blob/master/books/example_tranforms_pytorch.ipynb)
 
-
 ## Projects
+
+- [Classification](https://github.com/pedrodiamel/pytorch-classification)
+
+## Kaggle Projects
 
 - [kaggle-datasciencebowl-2018](https://github.com/pedrodiamel/kaggle-datasciencebowl-2018)
 - [kaggle-imaterialist](https://github.com/pedrodiamel/kaggle-imaterialist)
