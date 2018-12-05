@@ -1,7 +1,6 @@
 numpy
 matplotlib
 graphviz
-pycocotools
 six
 tqdm
 scipy
