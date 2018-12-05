@@ -121,12 +121,11 @@ def transform_aug():
             #mtrans.VFlip(),
             #mtrans.Rotate90(),
             #mtrans.Rotate180(),
-            #mtrans.Rotate270(),           
-
+            #mtrans.Rotate270(),          
 
             ## resize and crop                           
             mtrans.ToResize( (600,600), resize_mode='asp', padding_mode=cv2.BORDER_CONSTANT ) ,
-            mtrans.ToPad( 20, 20, padding_mode=cv2.BORDER_CONSTANT ) ,
+            #mtrans.ToPad( 20, 20, padding_mode=cv2.BORDER_CONSTANT ) ,
             #mtrans.CenterCrop( (200,200) ),
             #mtrans.RandomCrop( (400,400), limit=50, padding_mode=cv2.BORDER_REFLECT_101  ),
             #mtrans.ToResizeUNetFoV(388, cv2.BORDER_REFLECT_101),         
@@ -145,7 +144,7 @@ def transform_aug():
 
             ## blur
             # mtrans.ToRandomTransform( mtrans.ToLinealMotionBlur( lmax=1 ), prob=0.5 ),
-            # mtrans.ToRandomTransform( mtrans.ToMotionBlur( ), prob=0.5 ),
+            mtrans.ToRandomTransform( mtrans.ToMotionBlur( ), prob=1.0 ),
             # mtrans.ToRandomTransform( mtrans.ToGaussianBlur(), prob=0.75 ),
             
             ## geometrical 
@@ -195,7 +194,8 @@ def test_image_transform():
 
 
 
-#test_image_transform()
+test_image_transform()
+
 
 def test_transform():
 
@@ -219,5 +219,5 @@ def test_transform():
     tranform_image_and_mask_performs(data, name, num_transform, bsave, bshow, bgrid)
 
 
-test_transform()
+# test_transform()
 

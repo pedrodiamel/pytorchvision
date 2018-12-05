@@ -4,7 +4,7 @@ import numpy as np
 import cv2
 import types
 
-from .renderblur import BlurRender
+from .blurrender import BlurRender
 from .aumentation import ObjectTransform
 from . import functional as F
 

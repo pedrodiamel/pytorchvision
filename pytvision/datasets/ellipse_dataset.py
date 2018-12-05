@@ -7,7 +7,7 @@ from sklearn import datasets
 import warnings
 warnings.filterwarnings("ignore")
 
-from ..transforms.ellipse_render import  CircleRender, EllipseRender
+from ..transforms.ellipserender import  CircleRender, EllipseRender
 from ..transforms.aumentation import ObjectImageMaskAndWeightTransform, ObjectImageTransform, ObjectImageAndLabelTransform, ObjectImageAndMaskTransform, ObjectRegressionTransform
 from ..transforms import functional as F
 

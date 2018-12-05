@@ -161,20 +161,20 @@ class BlurRender(object):
         
         def ftriangle(d): return np.maximum(0, (1 - np.abs(d)));
         def ftriangle_prod(d1, d2): return ftriangle(d1) * ftriangle(d2);
-        texp_t = 0
+        prevT = 0
 
         # sample the trajectory until time T
         for t in range( numt ):
             
             t_proportion = 0            
-            if (texp * numt >= t) and (texp_t * numt < t - 1): t_proportion = 1;
-            elif (texp * numt >= t - 1) and (texp_t * numt < t - 1): t_proportion = (texp * numt) - (t - 1);
-            elif (texp * numt >= t) and (texp_t * numt < t): t_proportion = t - (texp_t * numt);
-            elif (texp * numt >= t - 1) and (texp_t * numt < t): t_proportion = (texp - texp_t) * numt;      
+            if (texp * numt >= (t+1)) and (prevT * numt < t): t_proportion = 1
+            elif (texp * numt >= t) and (prevT * numt < t): t_proportion = (texp * numt) - (t)
+            elif (texp * numt >= (t+1)) and (prevT * numt < (t+1)): t_proportion = (t+1) - (prevT * numt)
+            elif (texp * numt >= t) and (prevT * numt < (t+1)): t_proportion = (texp - prevT) * numt  
 
-            m2 = int(np.minimum(pSFsize[1] - 1, np.maximum(1, np.floor ( np.real(x[t] ))))) - 1
+            m2 = int(np.minimum(pSFsize[1] - 1, np.maximum(1, np.floor ( np.real(x[t] )))))
             M2 = m2 + 1
-            m1 = int(np.minimum(pSFsize[0] - 1, np.maximum(1, np.floor( np.imag(x[t] ))))) - 1
+            m1 = int(np.minimum(pSFsize[0] - 1, np.maximum(1, np.floor( np.imag(x[t] )))))
             M1 = m1 + 1
 
             a1 = t_proportion * ftriangle_prod(np.real(x[t]) - m2, np.imag(x[t]) - m1)
@@ -182,23 +182,25 @@ class BlurRender(object):
             a3 = t_proportion * ftriangle_prod(np.real(x[t]) - m2, np.imag(x[t]) - M1)
             a4 = t_proportion * ftriangle_prod(np.real(x[t]) - M2, np.imag(x[t]) - M1)
 
-            PSF[m1, m2] += a1;
-            PSF[m1, M2] += a2;
-            PSF[M1, m2] += a3;
-            PSF[M1, M2] += a4;
+            PSF[m1-1, m2-1] += a1
+            PSF[m1-1, M2-1] += a2
+            PSF[M1-1, m2-1] += a3
+            PSF[M1-1, M2-1] += a4
 
-            M[m1, m2] = np.maximum(M[m1, m2], a1);
-            M[m1, M2] = np.maximum(M[m1, M2], a2);
-            M[M1, m2] = np.maximum(M[M1, m2], a3);
-            M[M1, M2] = np.maximum(M[M1, M2], a4);    
+            M[m1-1, m2-1] = np.maximum(M[m1-1, m2-1], a1)
+            M[m1-1, M2-1] = np.maximum(M[m1-1, M2-1], a2)
+            M[M1-1, m2-1] = np.maximum(M[M1-1, m2-1], a3)
+            M[M1-1, M2-1] = np.maximum(M[M1-1, M2-1], a4)  
 
 
-        PSF = PSF/numt;
+        PSF = PSF/numt
         if np.sum(PSF):
-            PSF = PSF/(np.sum(PSF) );
+            PSF = PSF/(np.sum(PSF) )
+            PSF[pSFsize[0]//2,pSFsize[1]//2]=1
+        
         power = np.sum(M)
 
-        return PSF, power;
+        return PSF, power
     
 
 
