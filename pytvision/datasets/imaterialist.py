@@ -3,9 +3,9 @@ import os
 import numpy as np
 
 
-from pytvision.datasets import imageProvide
-from pytvision.datasets import utility 
-from pytvision.transforms.aumentation import ObjectImageTransform
+from .datasets import imageProvide
+from .datasets import utility 
+from .transforms.aumentation import ObjectImageTransform
 
 import torch
 from torchvision import datasets
