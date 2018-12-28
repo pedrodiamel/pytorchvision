@@ -4,13 +4,12 @@ import numpy as np
 
 #import matplotlib
 #matplotlib.use('agg')
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import cv2
 
 import torch
 from torchvision import transforms, utils
 from graphviz import Digraph
-
 
 import PIL.Image as Image
 import PIL.ImageColor as ImageColor
