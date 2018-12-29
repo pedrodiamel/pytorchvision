@@ -6,9 +6,29 @@ import torch
 from torchvision import models
 import torchvision
 
-__all__ = ['UNetResNet', 'unetresnet']
+__all__ = ['UNetResNet', 'unetresnet34', 'unetresnet101', 'unetresnet152']
 
-def unetresnet(pretrained=False, **kwargs):
+def unetresnet34(pretrained=False, **kwargs):
+    """"UNetResNet model architecture
+    """
+    model = UNetResNet(encoder_depth=34 ,pretrained=pretrained, **kwargs)
+
+    if pretrained == True:
+        #model.load_state_dict(state['model'])
+        pass
+    return model
+
+def unetresnet101(pretrained=False, **kwargs):
+    """"UNetResNet model architecture
+    """
+    model = UNetResNet(encoder_depth=101 ,pretrained=pretrained, **kwargs)
+
+    if pretrained == True:
+        #model.load_state_dict(state['model'])
+        pass
+    return model
+
+def unetresnet152(pretrained=False, **kwargs):
     """"UNetResNet model architecture
     """
     model = UNetResNet(encoder_depth=152 ,pretrained=pretrained, **kwargs)

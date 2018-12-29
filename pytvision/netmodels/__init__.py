@@ -4,6 +4,7 @@ from .simpletsegnet import *
 from .unet import *
 from .dunet import *
 from .unet11 import * 
+from .unetresnet import *
 
 from .alexnet import *
 from .resnet import *
