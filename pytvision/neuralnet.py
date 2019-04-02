@@ -57,7 +57,8 @@ class NeuralNetAbstract(object):
         self.pathproject = os.path.join(patchproject, nameproject)
 
         # Set the graphic visualization
-        self.plotter = gph.VisdomLinePlotter(env_name=nameproject)
+        self.plotter = None
+        #self.plotter = gph.VisdomLinePlotter(env_name=nameproject)
         
         # initialization var
         self.print_freq = print_freq
@@ -123,7 +124,9 @@ class NeuralNetAbstract(object):
             os.makedirs(self.pathproject)
         if not os.path.exists(self.pathmodels):
             os.makedirs(self.pathmodels)
-            
+        
+        # create visual visdom plot
+        self.plotter =  gph.VisdomLinePlotter(env_name=self.nameproject)
                 
         self._create_model( arch, num_output_channels, num_input_channels, pretrained, **cfg_model )
         self._create_loss( loss, **cfg_loss )
