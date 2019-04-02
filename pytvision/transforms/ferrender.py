@@ -9,8 +9,14 @@ import random as rn
 from pytvision.transforms import functional as F
 
 
+def hflip( image, mask ):
+    if rn.random() < 0.5:
+        image = image[:,::-1,:]
+        mask  = mask[:,::-1]    
+    return image, mask
+
 def pad( image, h_pad, w_pad, padding=cv2.BORDER_CONSTANT ):
-    image = F.pad(image, h_pad, w_pad, padding_mode)
+    image = F.pad(image, h_pad, w_pad, padding)
     return image
         
 def scale(image, mask, factor=0.2, padding=cv2.BORDER_CONSTANT ):
@@ -28,15 +34,33 @@ def crop(image, cropsize, limit=10, padding=cv2.BORDER_CONSTANT):
     image = F.imcrop( image, box, padding )
     return image
 
+
+def param2theta(mat_r, mat_t, mat_w, w, h):
+    Hr = np.concatenate( (mat_r,[[0,0,1]]),axis=0 )  
+    Ht = np.concatenate( (mat_t,[[0,0,1]]),axis=0 )
+    Hw = np.concatenate( (mat_w,[[0,0,1]]),axis=0 )
+    H = Hw.dot( Ht.dot( Hr) ) 
+    param = H #np.linalg.inv(H)
+    theta = np.zeros([2,3])
+    theta[0,0] = param[0,0]
+    theta[0,1] = param[0,1]*h/w
+    theta[0,2] = param[0,2]*2/w + param[0,0] + param[0,1] - 1
+    theta[1,0] = param[1,0]*w/h
+    theta[1,1] = param[1,1]
+    theta[1,2] = param[1,2]*2/h + param[1,0] + param[1,1] - 1
+    theta = theta.reshape(-1)
+    return theta
+
 def transform(image, mask, angle=360, translation=0.2, warp=0.0, padding=cv2.BORDER_CONSTANT ):
     imsize = image.shape[:2]
     mat_r, mat_t, mat_w = F.get_geometric_random_transform( imsize, angle, translation, warp )
     image = F.applay_geometrical_transform( image, mat_r, mat_t, mat_w, cv2.INTER_LINEAR , padding )
-    mask  = F.applay_geometrical_transform( mask, mat_r, mat_t, mat_w, cv2.INTER_NEAREST , padding )
-    return image, mask
+    mask  = F.applay_geometrical_transform( mask, mat_r, mat_t, mat_w, cv2.INTER_NEAREST , padding )   
+    h,w = image.shape[:2]
+    theta = param2theta( mat_r, mat_t, mat_w, w, h )
+    return image, mask, theta
     
-def norm(image, mask=None):
-    
+def norm(image, mask=None):    
     image = image.astype(np.float)
     for i in range(3):
         image_norm = image[:,:,i]
@@ -46,6 +70,29 @@ def norm(image, mask=None):
     image  =  (image*255.0).astype(np.uint8)   
     return image
         
+
+def filtermask( mask, sz=7 ):
+    se = cv2.getStructuringElement(cv2.MORPH_RECT,(sz,sz))
+    mask = cv2.morphologyEx(mask*1.0, cv2.MORPH_CLOSE, se)
+    mask = cv2.erode(mask*1.0, se, iterations=1)==1          
+    mask = ndi.morphology.binary_fill_holes( mask*1.0 , structure=np.ones((sz,sz)) ) == 1
+    return np.stack( (mask,mask,mask), axis=2 )
+    
+def ligthnorm( image, mask, back ):   
+            
+    face_lab = skcolor.rgb2lab( image )
+    back_lab = skcolor.rgb2lab( back )    
+    face_l = face_lab[:,:,0] 
+    back_l = back_lab[:,:,0]
+    l_f = face_l[mask[:,:,0]==1].mean()
+    l_b = back_l[mask[:,:,0]==1].mean()
+    w_ligth = l_b/(l_f + np.finfo(np.float).eps)            
+    w_ligth = np.clip( w_ligth, 0.5, 1.5 )
+    face_lab[:,:,0] = np.clip( face_lab[:,:,0]*w_ligth , 10, 90 )
+    image_ilu = skcolor.lab2rgb(face_lab)*255 
+    return image_ilu
+    
+    
 class Generator(object):
     
     def __init__(self, iluminate=True, angle=45, translation=0.3, warp=0.1, factor=0.2 ):
@@ -54,7 +101,6 @@ class Generator(object):
         self.translation=translation
         self.warp=warp
         self.factor=factor
-        
 
 
     def mixture(self, img, mask, back, iluminate=True, angle=45, translation=0.3, warp=0.1, factor=0.2 ):
@@ -63,54 +109,40 @@ class Generator(object):
         image = img.copy()
         mask  = mask.copy()
         mask  = (mask[:,:,0] == 0).astype(np.uint8)
-
-        #normalizate
-        #image  =  image.astype(np.float32) - np.min( image )
-        #image /=  np.max(image )
-        #image  =  (image*255.0).astype(np.uint8)  
         
         image = norm(image, mask)
         back  = norm(back)   
         
-        #scale 
+        #image_o, mask_o = image, mask
+        
+        #tranform
         image, mask = scale( image, mask, factor=factor )
-        image, mask = transform( image, mask, angle=angle, translation=translation, warp=warp )        
-        image_ilu = image.copy()
+        image, mask = hflip( image, mask )       
+        image_t, mask_t, h = transform( image, mask, angle=angle, translation=translation, warp=warp )        
+        image_ilu = image_t.copy()
         
         #normalize illumination change
         if iluminate:            
-            face_lab = skcolor.rgb2lab( image )
-            back_lab = skcolor.rgb2lab( back )                      
-            l_f = face_lab[:,:,0].mean()
-            l_b = back_lab[:,:,0].mean()
-            w_ligth = l_b/(l_f + np.finfo(np.float).eps)            
-            w_ligth = np.clip( w_ligth, 0.5, 1.5 )
-            face_lab[:,:,0] = np.clip( face_lab[:,:,0]*w_ligth , 10, 90 )
-            image_ilu = skcolor.lab2rgb(face_lab)*255 
-            
-            #image_lab = skcolor.rgb2lab( image )
-            #image_lab[:,:,0] = image_lab[:,:,0]*(rn.random()+0.5);
-            #image_lab[:,:,0] = np.clip( image_lab[:,:,0], 10, 100 )
-            #image            = skcolor.lab2rgb(image_lab)*255  
-            
+            image_ilu = ligthnorm(image_t, mask_t, back)
         
-        se = cv2.getStructuringElement(cv2.MORPH_RECT,(7,7)) #MORPH_CLOSE
-        mask = cv2.morphologyEx(mask*1.0, cv2.MORPH_CLOSE, se)
-        mask = cv2.erode(mask*1.0, se, iterations=1)==1          
-        mask = ndi.morphology.binary_fill_holes( mask*1.0 , structure=np.ones((7,7)) ) == 1
-        mask = np.stack( (mask,mask,mask), axis=2 )
-
-        image_org = back*(1-mask) + (mask)*image   
-        image_ilu = back*(1-mask) + (mask)*image_ilu
+        #filter mask 
+        mask = filtermask(mask)
+        mask_t = filtermask(mask_t)
         
-        return image_org, image_ilu, mask
+        
+        image_org = (mask_t)*image_t   
+        #image_org = back*(1-mask_t) + (mask_t)*image_t   
+        image_ilu = back*(1-mask_t) + (mask_t)*image_ilu
+        
+        return image_org, image_ilu, mask_t, h
     
 
     def generate(self, image, back, pad = 10 ):
         '''generate image
         '''
         
-        image = cv2.resize(image, (256,256) ) 
+        imsize = 128 #256
+        image = cv2.resize(image, (imsize,imsize) ) 
         
         im_h,im_w = image.shape[:2]
         bk_h,bk_w = back.shape[:2]
@@ -129,8 +161,8 @@ class Generator(object):
         back = back[ dy:(dy+im_h), dx:(dx+im_w), : ]
         back = cv2.resize(back, (im_w,im_h) ) 
         
-        image_org, image_ilu, mask = self.mixture( image, mask, back, self.iluminate, self.angle, self.translation, self.warp, self.factor  )
+        image_org, image_ilu, mask, h = self.mixture( image, mask, back, self.iluminate, self.angle, self.translation, self.warp, self.factor  )
         mask = mask.astype(int)
         
-        return image_org, image_ilu, mask
+        return image_org, image_ilu, mask, h
         
