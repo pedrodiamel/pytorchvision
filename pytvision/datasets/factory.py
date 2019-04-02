@@ -43,6 +43,7 @@ class FactoryDataset(object):
     bu3dfe='bu3dfe'
     afew='afew'
     affect='affectnet'
+    affectdark='affectnetdark'
 
 
     cub2011='cub2011'
@@ -183,6 +184,11 @@ class FactoryDataset(object):
             btrain=(subset=='train')
             pathname = create_folder(pathname, name)
             data = affect.create_affect(path=pathname, train=btrain )
+
+        elif name == 'affectnetdark':
+            btrain=(subset=='train')
+            pathname = create_folder(pathname, 'affectnet')
+            data = affect.create_affectdark(path=pathname, train=btrain )
 
 
         # metric learning dataset
