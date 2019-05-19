@@ -34,9 +34,9 @@ warnings.filterwarnings("ignore")
 
 
 class SyntheticFaceDataset( data.Dataset ):
+    '''Management for Synthetic Face dataset
     '''
-    Management for Synthetic Face dataset
-    '''
+    
     generate_image = 'image'
     generate_image_and_mask = 'image_and_mask' 
 
@@ -99,7 +99,23 @@ class SyntheticFaceDataset( data.Dataset ):
             back = np.ones( (640,1024,3), dtype=np.uint8 )*255
        
         if self.generate == 'image':
-            obj = ObjectImageTransform( image  )
+            obj = ObjectImageTransform( image )
+            
+        elif self.generate == 'image_and_label':
+            
+            _, image_ilu, _, _ = self.ren.generate( image, back )
+            image_ilu = utility.to_gray( image_ilu.astype(np.uint8) )
+            image_ilu = utility.to_channels(image_ilu, self.num_channels )
+            image_ilu = image_ilu.astype(np.uint8)
+            label = utility.to_one_hot( int(label), self.data.numclass )
+            obj = ObjectImageAndLabelTransform( image_ilu, label )
+            
+            if self.transform_image:
+                obj = self.transform_image( obj )
+                
+            return  obj.to_dict()
+            
+            
             
         elif self.generate == 'image_and_mask':                           
             
@@ -136,13 +152,14 @@ class SyntheticFaceDataset( data.Dataset ):
         return x_org, x_img, y_mask, y_lab
 
 
+   
+
 class SecuencialSyntheticFaceDataset( data.Dataset ):
+    '''Management for Synthetic Face dataset
     '''
-    Management for Synthetic Face dataset
-    '''
+    
     generate_image = 'image'
     generate_image_and_mask = 'image_and_mask' 
-
 
     def __init__(self, 
         data,
