@@ -36,7 +36,7 @@ class DeXpression(nn.Module):
         
         self.num_classes = num_classes
         self.num_channels = num_channels
-        self.size_input=48 
+        self.size_input=224 
         self.dim = 272*14*14
 
         self.conv01 = BasicConv2d(num_channels, 64, kernel_size=7, stride=2, padding=3)        
