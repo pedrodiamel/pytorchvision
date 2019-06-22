@@ -104,6 +104,7 @@ class SyntheticFaceDataset( data.Dataset ):
         elif self.generate == 'image_and_label':
             
             _, image_ilu, _, _ = self.ren.generate( image, back )
+            #image_ilu, _, _, _ = self.ren.generate( image, back )
             image_ilu = utility.to_gray( image_ilu.astype(np.uint8) )
             image_ilu = utility.to_channels(image_ilu, self.num_channels )
             image_ilu = image_ilu.astype(np.uint8)
