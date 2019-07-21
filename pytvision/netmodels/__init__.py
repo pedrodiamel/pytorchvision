@@ -20,4 +20,5 @@ from .dexpression import *
 from .simplet import *
 from .cvgg import *
 from .fmp import *
+from .ferattentionnet import *
 
