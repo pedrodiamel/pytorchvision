@@ -7,7 +7,7 @@ import torch
 from torchvision import models
 import torchvision
 
-from . import utils as utl
+from . import utility as utl
 from . import preactresnet
 from . import resnet
 from . import inception
