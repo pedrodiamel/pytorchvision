@@ -4,3 +4,5 @@ graphviz
 six
 tqdm
 scipy
+visdom
+opencv-python
