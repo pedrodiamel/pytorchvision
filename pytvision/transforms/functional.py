@@ -26,9 +26,9 @@ from .rectutils import Rect
 
 
 def cunsqueeze(data):
-    if len( data.shape ) == 2: 
+    if len( data.shape ) == 2:
         data = data[:,:,np.newaxis]
-    return data   
+    return data
 
 def clip(img, dtype, maxval):
     return np.clip(img, 0, maxval).astype(dtype)
@@ -45,27 +45,27 @@ def relabel( mask ):
         mask[i, j] = relabel_dict[mask[i, j]]
     return mask
 
-def scale(image, factor, mode, padding_mode ): 
+def scale(image, factor, mode, padding_mode ):
 
     img = np.copy(image)
 
     h,w = img.shape[:2]
-    img = cv2.resize(img, None, fx=factor, fy=factor, interpolation=mode ) 
+    img = cv2.resize(img, None, fx=factor, fy=factor, interpolation=mode )
     img = cunsqueeze(img)
     hn, wn = img.shape[:2]
-    
+
     borderX = float( abs(wn-w) )/2.0
     borderY = float( abs(hn-h) )/2.0
 
     padxL = int(np.floor( borderY ))
-    padxR = int(np.ceil(  borderY ))  
+    padxR = int(np.ceil(  borderY ))
     padyT = int(np.floor( borderX ))
     padyB = int(np.ceil(  borderX ))
 
     if factor < 1:  img = cv2.copyMakeBorder(img, padxL, padxR, padyT, padyB, borderType=padding_mode)
     else: img = img[ padyT:padyT+h, padxL:padxL+w, : ]
 
-    img = cunsqueeze(img)    
+    img = cunsqueeze(img)
     return img
 
 
@@ -73,19 +73,19 @@ def pad(image,  h_pad, w_pad, padding_mode):
     img = np.copy(image)
     height, width = img.shape[:2]
     img = cv2.copyMakeBorder(img, h_pad, h_pad, w_pad, w_pad, padding_mode)
-    img = cunsqueeze(img) 
+    img = cunsqueeze(img)
     return img
 
-def hflip( x ): 
+def hflip( x ):
     return cunsqueeze( cv2.flip( x, 0 ) )
 
 def vflip( x ):
     return cunsqueeze( cv2.flip( x, 1 )  )
 
-def rotate90( x ): 
+def rotate90( x ):
     return cunsqueeze( cv2.flip( cunsqueeze(x).transpose(1,0,2),1) )
 
-def rotate180( x ): 
+def rotate180( x ):
     return cunsqueeze( cv2.flip(x,-1) )
 
 def rotate270( x ):
@@ -100,7 +100,7 @@ def is_box_inside(img, box ):
     return box[0] < 0 or box[1] < 0 or box[2]+box[0] >= img.shape[1] or box[3]+box[1] >= img.shape[0]
 
 def pad_img_to_fit_bbox(image, box, padding_mode):
-    
+
     img = np.copy(image)
     x1,y1,x2,y2 = box
     x2 = x1+x2; y2 = y1+y2
@@ -110,11 +110,11 @@ def pad_img_to_fit_bbox(image, box, padding_mode):
     padyT = (np.abs(np.minimum(0, x1)))
     padyB = np.maximum(x2 - img.shape[1], 0)
     img = cv2.copyMakeBorder(img, padxL, padxR, padyT, padyB, borderType=padding_mode )
-    
+
     # img = np.pad(
     #     img, ((np.abs(np.minimum(0, y1)), np.maximum(y2 - img.shape[0], 0)),
-    #           (np.abs(np.minimum(0, x1)), np.maximum(x2 - img.shape[1], 0)), 
-    #           (0,0)), mode="constant")  
+    #           (np.abs(np.minimum(0, x1)), np.maximum(x2 - img.shape[1], 0)),
+    #           (0,0)), mode="constant")
 
     img = cunsqueeze(img)
     y2 += np.abs(np.minimum(0, y1))
@@ -129,34 +129,34 @@ def imcrop( image, box, padding_mode ):
     Args
         @image
         @box: [x,y,w,h]
-    """    
+    """
     img = np.copy(image)
     h, w, c = img.shape
     if is_box_inside(img, box):
-        img, box = pad_img_to_fit_bbox(img, box, padding_mode)    
+        img, box = pad_img_to_fit_bbox(img, box, padding_mode)
     x, y, new_w, new_h = box
-    imagecrop = img[y:y + new_h, x:x + new_w, : ]   
+    imagecrop = img[y:y + new_h, x:x + new_w, : ]
     imagecrop = cunsqueeze(imagecrop)
 
     return imagecrop
 
 def unsharp(image, size=9, strength=0.25, alpha=5 ):
-    
+
     image = image.astype(np.float32)
     size  = 1+2*(int(size)//2)
     strength = strength*255
     blur  = cv2.GaussianBlur(image, (size,size), strength)
     image = alpha*image + (1-alpha)*blur
     image = np.clip(image, 0, 255).astype(np.uint8)
-    
+
     return image
 
 def gaussian_noise(image, sigma=0.5):
-    
+
     lab = cv2.cvtColor(image, cv2.COLOR_RGB2LAB)
-    gray, a, b = cv2.split(lab)    
+    gray, a, b = cv2.split(lab)
     gray = gray.astype(np.float32)/255
-    
+
     H,W  = gray.shape
     noise = np.array([random.gauss(0,sigma) for i in range(H*W)])
     noise = noise.reshape(H,W)
@@ -200,21 +200,21 @@ def inv_speckle_noise(image, sigma=0.5):
     return image
 
 def get_elastic_transform(shape, size_grid, deform):
-    """Get elastic tranform 
+    """Get elastic tranform
     Args:
         @shape: image shape
         @size_grid: size of the grid (example (10,10) )
         @deform: deform coeficient
     """
-        
+
     m,n=shape[:2]
     grid_x, grid_y = np.mgrid[:m,:n]
-    
-    source = [] 
+
+    source = []
     destination = []
 
     for i in range(int(m/size_grid)+1):
-        for j in range(int(n/size_grid)+1):            
+        for j in range(int(n/size_grid)+1):
             source = source + [np.array([i*size_grid, j*size_grid])]
             noisex = round(random.uniform(-deform,deform))
             noisey = round(random.uniform(-deform,deform))
@@ -226,7 +226,7 @@ def get_elastic_transform(shape, size_grid, deform):
     destination=np.vstack(destination)
     destination[destination<0] = 0
     destination[destination>=n] = n-1
-    
+
     grid_z = griddata(destination, source, (grid_x, grid_y), method='cubic')
 
     map_x = np.append([], [ar[:,1] for ar in grid_z]).reshape(m,n)
@@ -242,7 +242,7 @@ def get_tensor_elastic_transform( shape, size_grid, deform):
         @shape: image shape
         @size_grid: size of the grid (example (10,10) )
         @deform: deform coeficient
-    """   
+    """
     target_height, target_width = shape[:2]
 
     target_control_points = torch.Tensor( list(itertools.product(
@@ -254,7 +254,7 @@ def get_tensor_elastic_transform( shape, size_grid, deform):
     tps = TPSGridGen(target_height, target_width, target_control_points)
     source_coordinate = tps(Variable(torch.unsqueeze(source_control_points, 0)))
     grid = source_coordinate.view(1, target_height, target_width, 2)
-    
+
     return grid
 
 def get_geometric_random_transform( imsize, degree, translation, warp ):
@@ -275,7 +275,7 @@ def get_geometric_random_transform( imsize, degree, translation, warp ):
     center = (width//2, height//2)
     theta = random.uniform(-degree, degree)
     rotation_mat = cv2.getRotationMatrix2D(center, -theta*180/math.pi, 1)
-    
+
     # Translation
     x_offset = translation * width * random.uniform(-1, 1)
     y_offset = translation * height * random.uniform(-1, 1)
@@ -283,7 +283,7 @@ def get_geometric_random_transform( imsize, degree, translation, warp ):
 
     # # Warp
     # # NOTE: The commented code below is left for reference
-    # # The warp function tends to blur the image, so it is not useds    
+    # # The warp function tends to blur the image, so it is not useds
     src_triangle = np.float32([[0, 0], [0, height], [width, 0]])
     x_offsets = [warp * width * random.uniform(-1, 1) for _ in range(3)]
     y_offsets = [warp * height * random.uniform(-1, 1) for _ in range(3)]
@@ -293,10 +293,10 @@ def get_geometric_random_transform( imsize, degree, translation, warp ):
     warp_mat = cv2.getAffineTransform(src_triangle, dst_triangle)
 
 
-    return rotation_mat, translation_mat, warp_mat 
+    return rotation_mat, translation_mat, warp_mat
 
 def applay_geometrical_transform( image, mat_r, mat_t, mat_w, interpolate_mode, padding_mode  ):
-    h,w = image.shape[:2] 
+    h,w = image.shape[:2]
     image = cv2.warpAffine(image, mat_r, (w,h), flags=interpolate_mode, borderMode=padding_mode )
     image = cv2.warpAffine(image, mat_t, (w,h), flags=interpolate_mode, borderMode=padding_mode )
     image = cv2.warpAffine(image, mat_w, (w,h), flags=interpolate_mode, borderMode=padding_mode )
@@ -304,28 +304,28 @@ def applay_geometrical_transform( image, mat_r, mat_t, mat_w, interpolate_mode, 
     return image
 
 def square_resize(img, newsize, interpolate_mode, padding_mode):
-    
-    image = np.copy(img)
-    w, h, channels = image.shape; 
-    if w == h: return image  
 
-    if w>h:        
+    image = np.copy(img)
+    w, h, channels = image.shape;
+    if w == h: return image
+
+    if w>h:
         padxL = int(np.floor( (w-h) / 2.0));
         padxR = int(np.ceil( (w-h) / 2.0)) ;
-        padyT, padyB = 0,0 
+        padyT, padyB = 0,0
     else:
         padxL, padxR = 0,0;
         padyT = int(np.floor( (h-w) / 2.0));
         padyB = int(np.ceil( (h-w) / 2.0));
 
     image = cv2.copyMakeBorder(image, padxL, padxR, padyT, padyB, borderType=padding_mode)
-    image = cv2.resize(image, (newsize, newsize) , interpolation = interpolate_mode)    
+    image = cv2.resize(image, (newsize, newsize) , interpolation = interpolate_mode)
 
     image = cunsqueeze(image)
     return image
 
 def draw_grid(imgrid, grid_size=50, color=(255,0,0), thickness=1):
-    
+
     m,n = imgrid.shape[:2]
     # Draw grid lines
     for i in range(0, n-1, grid_size):
@@ -334,29 +334,29 @@ def draw_grid(imgrid, grid_size=50, color=(255,0,0), thickness=1):
         cv2.line(imgrid, (0, j+grid_size), (n, j+grid_size), color=color, thickness=thickness)
     return imgrid
 
-def resize_unet_transform(img, size, interpolate_mode, padding_mode): 
-    
+def resize_unet_transform(img, size, interpolate_mode, padding_mode):
+
     image = np.copy(img)
     height, width, ch = image.shape
-    
+
     #unet required input size
     downsampleFactor = 16
     d4a_size   = 0
     padInput   = (((d4a_size *2 +2 +2)*2 +2 +2)*2 +2 +2)*2 +2 +2
-    padOutput  = ((((d4a_size -2 -2)*2-2 -2)*2-2 -2)*2-2 -2)*2-2 -2    
+    padOutput  = ((((d4a_size -2 -2)*2-2 -2)*2-2 -2)*2-2 -2)*2-2 -2
     d4a_size   = math.ceil( (size - padOutput)/downsampleFactor)
     input_size  = downsampleFactor*d4a_size + padInput
     output_size = downsampleFactor*d4a_size + padOutput;
-    
+
     if height < width:
         asp = float(height)/width
         w = output_size
         h = int(w*asp)
     else:
-        asp = float(width)/height 
+        asp = float(width)/height
         h = output_size
-        w = int(h*asp) 
-        
+        w = int(h*asp)
+
     #resize mantaining aspect ratio
     image = cv2.resize(image, (w,h), interpolation = interpolate_mode)
     image = cunsqueeze(image)
@@ -365,27 +365,27 @@ def resize_unet_transform(img, size, interpolate_mode, padding_mode):
     borderY = float(input_size-h)/2.0
 
     padxL = int(np.floor( borderY ))
-    padxR = int(np.ceil(  borderY )) 
+    padxR = int(np.ceil(  borderY ))
     padyT = int(np.floor( borderX ))
-    padyB = int(np.ceil(  borderX )) 
+    padyB = int(np.ceil(  borderX ))
 
     #image = square_resize(image, input_size, interpolate_mode, padding_mode)
     image = cv2.copyMakeBorder(image, padxL, padxR, padyT, padyB, borderType=padding_mode)
-    image = cv2.resize(image, (input_size, input_size) , interpolation = interpolate_mode)    
+    image = cv2.resize(image, (input_size, input_size) , interpolation = interpolate_mode)
     image = cunsqueeze(image)
 
     return image
 
-def ffftshift2(h):    
+def ffftshift2(h):
     H = np.fft.fft2(h)
     H = np.abs( np.fft.fftshift( H ) )
     return H
 
-def norm_fro(a,b): 
+def norm_fro(a,b):
     return np.sum( (a-b)**2.0 );
 
 def complex2vector(c):
-    '''complex to vector'''    
+    '''complex to vector'''
     return np.concatenate( ( c.real, c.imag ) , axis=1 )
 
 def image_to_array(image, channels=None):
@@ -463,11 +463,11 @@ def image_to_array(image, channels=None):
 def resize_image( img, height, width,
                  resize_mode=None,
                  padding_mode=cv2.BORDER_CONSTANT,
-                 interpolate_mode=cv2.INTER_LINEAR, 
+                 interpolate_mode=cv2.INTER_LINEAR,
                  ):
     """
     Resizes an image and returns it as a np.array
-    
+
     Arguments:
     image --  numpy.ndarray
     height -- height of new image
@@ -486,7 +486,7 @@ def resize_image( img, height, width,
     # convert to array
     image = cunsqueeze( np.copy(img) )
     #image = image_to_array(image, channels)
-    
+
 
     # No need to resize
     if image.shape[0] == height and image.shape[1] == width:
@@ -497,7 +497,7 @@ def resize_image( img, height, width,
 
     width_ratio  = float(image.shape[1]) / width
     height_ratio = float(image.shape[0]) / height
-    
+
     if resize_mode == 'squash' or width_ratio == height_ratio:
         image = cv2.resize(image, (width, height) , interpolation = interpolate_mode)
         image = cunsqueeze(image)
@@ -511,24 +511,24 @@ def resize_image( img, height, width,
         else:
             resize_width = width
             resize_height = int(round(image.shape[0] / width_ratio))
-        image = cv2.resize(image, (resize_width, resize_height) , interpolation = interpolate_mode) 
+        image = cv2.resize(image, (resize_width, resize_height) , interpolation = interpolate_mode)
         image = cunsqueeze(image)
         return image
-        
-    elif resize_mode == 'square':        
-        w, h, channels = image.shape; 
-        if w == h: return image  
-        if w>h:        
+
+    elif resize_mode == 'square':
+        w, h, channels = image.shape;
+        if w == h: return image
+        if w>h:
             padxL = int(np.floor( (w-h) / 2.0));
             padxR = int(np.ceil( (w-h) / 2.0)) ;
-            padyT, padyB = 0,0 
+            padyT, padyB = 0,0
         else:
             padxL, padxR = 0,0;
             padyT = int(np.floor( (h-w) / 2.0));
             padyB = int(np.ceil( (h-w) / 2.0));
-            
+
         image = cv2.copyMakeBorder(image, padyT, padyB, padxL, padxR, borderType=padding_mode)
-        image = cv2.resize(image, (width, height) , interpolation = interpolate_mode)  
+        image = cv2.resize(image, (width, height) , interpolation = interpolate_mode)
         image = cunsqueeze(image)
         return image
 
@@ -540,9 +540,9 @@ def resize_image( img, height, width,
         else:
             resize_width = width
             resize_height = int(round(image.shape[0] / width_ratio))
-        image = cv2.resize(image, (resize_width, resize_height) , interpolation = interpolate_mode) 
+        image = cv2.resize(image, (resize_width, resize_height) , interpolation = interpolate_mode)
         image = cunsqueeze(image)
-        
+
 
         # chop off ends of dimension that is still too long
         if width_ratio > height_ratio:
@@ -564,7 +564,7 @@ def resize_image( img, height, width,
                 resize_width = int(round(image.shape[1] / height_ratio))
                 if (width - resize_width) % 2 == 1:
                     resize_width += 1
-            image = cv2.resize(image, (resize_width, resize_height) , interpolation = interpolate_mode) 
+            image = cv2.resize(image, (resize_width, resize_height) , interpolation = interpolate_mode)
             image = cunsqueeze(image)
 
         elif resize_mode == 'half_crop':
@@ -576,7 +576,7 @@ def resize_image( img, height, width,
                 resize_height += 1
             elif width_ratio < height_ratio and (width - resize_width) % 2 == 1:
                 resize_width += 1
-            image = cv2.resize(image, (resize_width, resize_height) , interpolation = interpolate_mode) 
+            image = cv2.resize(image, (resize_width, resize_height) , interpolation = interpolate_mode)
             image = cunsqueeze(image)
 
             # chop off ends of dimension that is still too long
@@ -607,79 +607,79 @@ def resize_image( img, height, width,
 
         return cunsqueeze(image)
 
-def compute_norm_mat(base_width, base_height): 
-    # normalization matrix used in image pre-processing 
+def compute_norm_mat(base_width, base_height):
+    # normalization matrix used in image pre-processing
     x      = np.arange(base_width)
     y      = np.arange(base_height)
     X, Y   = np.meshgrid(x, y)
     X      = X.flatten()
-    Y      = Y.flatten() 
-    A      = np.array([X*0+1, X, Y]).T 
+    Y      = Y.flatten()
+    A      = np.array([X*0+1, X, Y]).T
     A_pinv = np.linalg.pinv(A)
     return A, A_pinv
 
 def equalization(image, A, A_pinv):
-    
+
     image_new = []
     image = image.transpose( (2,0,1) )
 
     for img in image:
 
-        # compute image histogram 
+        # compute image histogram
         img_flat = img.flatten()
         img_hist = np.bincount(img_flat, minlength = 256)
 
-        # cumulative distribution function 
-        cdf = img_hist.cumsum() 
-        cdf = cdf * (2.0 / cdf[-1]) - 1.0 # normalize 
+        # cumulative distribution function
+        cdf = img_hist.cumsum()
+        cdf = cdf * (2.0 / cdf[-1]) - 1.0 # normalize
 
-        # histogram equalization 
-        img_eq = cdf[img_flat] 
+        # histogram equalization
+        img_eq = cdf[img_flat]
 
         diff = img_eq - np.dot(A, np.dot(A_pinv, img_eq))
 
-        # after plane fitting, the mean of diff is already 0 
+        # after plane fitting, the mean of diff is already 0
         std = np.sqrt(np.dot(diff,diff)/diff.size)
-        if std > 1e-6: 
+        if std > 1e-6:
             diff = diff/std
         img = diff.reshape(img.shape)
         image_new.append(img)
 
     return np.stack(image_new, 0).transpose( (1,2,0) )
 
-def distort_img(img, roi, out_width, out_height, max_shift, max_scale, max_angle, max_skew, flip=True): 
+def distort_img(img, roi, out_width, out_height, max_shift, max_scale, max_angle, max_skew, flip=True):
     shift_y = out_height*max_shift*rnd.uniform(-1.0,1.0)
     shift_x = out_width*max_shift*rnd.uniform(-1.0,1.0)
 
-    # rotation angle 
+    # rotation angle
     angle = max_angle*rnd.uniform(-1.0,1.0)
 
-    #skew 
+    #skew
     sk_y = max_skew*rnd.uniform(-1.0, 1.0)
     sk_x = max_skew*rnd.uniform(-1.0, 1.0)
 
-    # scale 
-    scale_y = rnd.uniform(1.0, max_scale) 
-    if rnd.choice([True, False]): 
-        scale_y = 1.0/scale_y 
-    scale_x = rnd.uniform(1.0, max_scale) 
-    if rnd.choice([True, False]): 
-        scale_x = 1.0/scale_x 
+    # scale
+    scale_y = rnd.uniform(1.0, max_scale)
+    if rnd.choice([True, False]):
+        scale_y = 1.0/scale_y
+    scale_x = rnd.uniform(1.0, max_scale)
+    if rnd.choice([True, False]):
+        scale_x = 1.0/scale_x
     T_im = crop_img(img, roi, out_width, out_height, shift_x, shift_y, scale_x, scale_y, angle, sk_x, sk_y)
-    if flip and rnd.choice([True, False]): 
+    if flip and rnd.choice([True, False]):
         T_im = np.fliplr(T_im)
     return T_im
 
 def crop_img(img, roi, crop_width, crop_height, shift_x, shift_y, scale_x, scale_y, angle, skew_x, skew_y):
-    # current face center 
+    # current face center
     ctr_in = np.array((roi.center().y, roi.center().x))
     ctr_out = np.array((crop_height/2.0+shift_y, crop_width/2.0+shift_x))
     out_shape = (crop_height, crop_width)
     s_y = scale_y*(roi.height()-1)*1.0/(crop_height-1)
     s_x = scale_x*(roi.width()-1)*1.0/(crop_width-1)
-    
-    # rotation and scale 
-    ang = angle*np.pi/180.0 
+
+    # rotation and scale
+    ang = angle*np.pi/180.0
     transform = np.array([[np.cos(ang), -np.sin(ang)], [np.sin(ang), np.cos(ang)]])
     transform = transform.dot(np.array([[1.0, skew_y], [0.0, 1.0]]))
     transform = transform.dot(np.array([[1.0, 0.0], [skew_x, 1.0]]))
@@ -687,12 +687,12 @@ def crop_img(img, roi, crop_width, crop_height, shift_x, shift_y, scale_x, scale
     offset = ctr_in-ctr_out.dot(transform)
 
     # each point p in the output image is transformed to pT+s, where T is the matrix and s is the offset
-    T_im = ndimage.interpolation.affine_transform(input = img, 
-                                                  matrix = np.transpose(transform), 
-                                                  offset = offset, 
-                                                  output_shape = out_shape, 
-                                                  order = 1,   # bilinear interpolation 
-                                                  mode = 'reflect', 
+    T_im = ndimage.interpolation.affine_transform(input = img,
+                                                  matrix = np.transpose(transform),
+                                                  offset = offset,
+                                                  output_shape = out_shape,
+                                                  order = 1,   # bilinear interpolation
+                                                  mode = 'reflect',
                                                   prefilter = False)
     return T_im
 
@@ -706,17 +706,17 @@ def resize_box(box, fx, fy, ofx=0, ofy=0):
     box[:,3] = box[:,3]*fy + ofy
     return box
 
-def resize_image_box( 
-        img, 
-        boxs, 
+def resize_image_box(
+        img,
+        boxs,
         height, width,
         resize_mode=None,
         padding_mode=cv2.BORDER_CONSTANT,
-        interpolate_mode=cv2.INTER_LINEAR, 
+        interpolate_mode=cv2.INTER_LINEAR,
         ):
     """
     Resizes an image and returns it as a np.array
-    
+
     Arg:
         image --  numpy.ndarray
         box   --  numpy.array [x1, y1, x2, y2]
@@ -737,7 +737,7 @@ def resize_image_box(
     image = np.copy(img)
     box   = np.copy(boxs)
     h,w = image.shape[:2]
-    
+
     # No need to resize
     if h == height and w == width:
         return image, box
@@ -746,7 +746,7 @@ def resize_image_box(
     fy = float(h) / height
 
     if resize_mode == 'squash' or fx == fy:
-        
+
         image = cv2.resize(image, (width, height) , interpolation = interpolate_mode)
         image = cunsqueeze(image)
         return image, resize_box(box, 1/fx, 1/fy)
@@ -757,34 +757,34 @@ def resize_image_box(
             width  = int(round(w / fy))
         else:
             height = int(round(h / fy))
-        
-        image = cv2.resize(image, (width, height) , interpolation = interpolate_mode) 
-        image = cunsqueeze(image)        
+
+        image = cv2.resize(image, (width, height) , interpolation = interpolate_mode)
+        image = cunsqueeze(image)
         fx = float(w) / width
         fy = float(h) / height
         return image, resize_box(box, 1/fx, 1/fy)
 
-        
-    elif resize_mode == 'square':        
 
-        if w != h: 
-            if w>h:        
+    elif resize_mode == 'square':
+
+        if w != h:
+            if w>h:
                 padxL = int(np.floor( (w-h) / 2.0));
                 padxR = int(np.ceil( (w-h) / 2.0)) ;
-                padyT, padyB = 0,0 
+                padyT, padyB = 0,0
                 fy=fx
             else:
                 padxL, padxR = 0,0;
                 padyT = int(np.floor( (h-w) / 2.0));
                 padyB = int(np.ceil( (h-w) / 2.0));
                 fx=fy
-            
+
             image = cv2.copyMakeBorder(image, padxL, padxR, padyT, padyB, borderType=padding_mode)
-            image = cv2.resize(image, (width, height) , interpolation = interpolate_mode)  
+            image = cv2.resize(image, (width, height) , interpolation = interpolate_mode)
             image = cunsqueeze(image)
 
         box = resize_box(box, 1, 1, padyT, padxL)
-        box = resize_box(box, 1/fx, 1/fy, 0 , 0)       
+        box = resize_box(box, 1/fx, 1/fy, 0 , 0)
         return image, box
 
     elif resize_mode == 'crop':
@@ -795,10 +795,10 @@ def resize_image_box(
         else:
             resize_width = width
             resize_height = int(round(image.shape[0] / fx))
-        
-        image = cv2.resize(image, (resize_width, resize_height) , interpolation = interpolate_mode) 
+
+        image = cv2.resize(image, (resize_width, resize_height) , interpolation = interpolate_mode)
         image = cunsqueeze(image)
-    
+
 
         # chop off ends of dimension that is still too long
         if fx > fy:
