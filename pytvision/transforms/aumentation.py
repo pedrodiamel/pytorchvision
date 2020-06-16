@@ -876,7 +876,7 @@ class ObjectImage2ImageTransform(ObjectTransform):
 
     ##interface of dict output
     def to_dict(self):
-        return { 'x':x, 'y':y }
+        return { 'x':self.x, 'y':self.y }
 
     ##interface of value/tupla output
     def to_value(self):
