@@ -1,13 +1,13 @@
 import torch
 import torch.nn as nn
-import torch.nn.init as init
 import torch.nn.functional as F
+import torch.nn.init as init
 
 from torch.utils import model_zoo
 from torchvision import models
 
-class FCN8(nn.Module):
 
+class FCN8(nn.Module):
     def __init__(self, num_classes=1, in_channels=3):
         super().__init__()
 
@@ -52,8 +52,8 @@ class FCN8(nn.Module):
 
         return F.upsample_bilinear(score, x.size()[2:])
 
+
 class FCN16(nn.Module):
-    
     def __init__(self, num_classes=1, in_channels=3):
         super().__init__()
 
@@ -86,8 +86,8 @@ class FCN16(nn.Module):
 
         return F.upsample_bilinear(score, x.size()[2:])
 
+
 class FCN32(nn.Module):
-    
     def __init__(self, num_classes=1, in_channels=3):
         super().__init__()
 
@@ -109,32 +109,32 @@ class FCN32(nn.Module):
 
         return F.upsample_bilinear(score, x.size()[2:])
 
-__all__ = ['FCN8', 'fcn8', 'FCN16', 'fcn16','FCN32', 'fcn32']
+
+__all__ = ["FCN8", "fcn8", "FCN16", "fcn16", "FCN32", "fcn32"]
+
 
 def fcn8(pretrained=False, **kwargs):
-    r"""FCN8 model architecture
-    """
+    r"""FCN8 model architecture"""
     model = FCN8(**kwargs)
     if pretrained:
         pass
-        #model.load_state_dict(model_zoo.load_url(model_urls['unet']))
+        # model.load_state_dict(model_zoo.load_url(model_urls['unet']))
     return model
 
+
 def fcn16(pretrained=False, **kwargs):
-    r"""FCN16 model architecture
-    """
+    r"""FCN16 model architecture"""
     model = FCN16(**kwargs)
     if pretrained:
         pass
-        #model.load_state_dict(model_zoo.load_url(model_urls['unet']))
+        # model.load_state_dict(model_zoo.load_url(model_urls['unet']))
     return model
 
+
 def fcn32(pretrained=False, **kwargs):
-    r"""FCN32 model architecture
-    """
+    r"""FCN32 model architecture"""
     model = FCN32(**kwargs)
     if pretrained:
         pass
-        #model.load_state_dict(model_zoo.load_url(model_urls['unet']))
+        # model.load_state_dict(model_zoo.load_url(model_urls['unet']))
     return model
-

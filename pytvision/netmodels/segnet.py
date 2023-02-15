@@ -1,26 +1,24 @@
-
-
 import torch
 import torch.nn as nn
-import torch.nn.init as init
 import torch.nn.functional as F
+import torch.nn.init as init
 
 from torch.utils import model_zoo
 from torchvision import models
 
-__all__ = ['SegNet', 'segnet']
+__all__ = ["SegNet", "segnet"]
+
 
 def segnet(pretrained=False, **kwargs):
-    r"""SegNet model architecture
-    """
+    r"""SegNet model architecture"""
     model = SegNet(**kwargs)
     if pretrained:
         pass
-        #model.load_state_dict(model_zoo.load_url(model_urls['segnet']))
+        # model.load_state_dict(model_zoo.load_url(model_urls['segnet']))
     return model
 
+
 class SegNetEnc(nn.Module):
-    
     def __init__(self, in_channels, out_channels, num_layers):
         super().__init__()
 
@@ -45,8 +43,8 @@ class SegNetEnc(nn.Module):
     def forward(self, x):
         return self.encode(x)
 
-class SegNet(nn.Module):
 
+class SegNet(nn.Module):
     def __init__(self, num_classes=1, in_channels=3):
         super().__init__()
 
@@ -77,7 +75,6 @@ class SegNet(nn.Module):
         self.final = nn.Conv2d(64, num_classes, 3, padding=1)
 
     def forward(self, x):
-        
         dec1 = self.dec1(x)
         dec2 = self.dec2(dec1)
         dec3 = self.dec3(dec2)

@@ -1,20 +1,18 @@
-
-
+import torch
+import torchvision
 from torch import nn
 from torch.nn import functional as F
-import torch
 from torchvision import models
-import torchvision
 
-__all__ = ['UNetVGG16', 'unetvgg16']
+__all__ = ["UNetVGG16", "unetvgg16"]
+
 
 def unetvgg16(pretrained=False, **kwargs):
-    """"UNetVGG16 model architecture
-    """
+    """ "UNetVGG16 model architecture"""
     model = UNetVGG16(pretrained=pretrained, **kwargs)
 
     if pretrained == True:
-        #model.load_state_dict(state['model'])
+        # model.load_state_dict(state['model'])
         pass
     return model
 
@@ -26,25 +24,27 @@ class DecoderBlockV2(nn.Module):
 
         if is_deconv:
             """
-                Paramaters for Deconvolution were chosen to avoid artifacts, following
-                link https://distill.pub/2016/deconv-checkerboard/
+            Paramaters for Deconvolution were chosen to avoid artifacts, following
+            link https://distill.pub/2016/deconv-checkerboard/
             """
 
             self.block = nn.Sequential(
                 ConvRelu(in_channels, middle_channels),
-                nn.ConvTranspose2d(middle_channels, out_channels, kernel_size=4, stride=2,
-                                   padding=1),
-                nn.ReLU(inplace=True)
+                nn.ConvTranspose2d(
+                    middle_channels, out_channels, kernel_size=4, stride=2, padding=1
+                ),
+                nn.ReLU(inplace=True),
             )
         else:
             self.block = nn.Sequential(
-                nn.Upsample(scale_factor=2, mode='bilinear'),
+                nn.Upsample(scale_factor=2, mode="bilinear"),
                 ConvRelu(in_channels, middle_channels),
                 ConvRelu(middle_channels, out_channels),
             )
 
     def forward(self, x):
         return self.block(x)
+
 
 class UNetVGG16(nn.Module):
     """PyTorch U-Net model using VGG16 encoder.
@@ -67,7 +67,16 @@ class UNetVGG16(nn.Module):
                 Defaults to False.
 
     """
-    def __init__(self, num_classes=1, in_channels=3, num_filters=32, dropout_2d=0.2, pretrained=False, is_deconv=False):
+
+    def __init__(
+        self,
+        num_classes=1,
+        in_channels=3,
+        num_filters=32,
+        dropout_2d=0.2,
+        pretrained=False,
+        is_deconv=False,
+    ):
         super().__init__()
         self.num_classes = num_classes
         self.dropout_2d = dropout_2d
@@ -78,43 +87,57 @@ class UNetVGG16(nn.Module):
 
         self.relu = nn.ReLU(inplace=True)
 
-        self.conv1 = nn.Sequential(self.encoder[0],
-                                   self.relu,
-                                   self.encoder[2],
-                                   self.relu)
+        self.conv1 = nn.Sequential(
+            self.encoder[0], self.relu, self.encoder[2], self.relu
+        )
 
-        self.conv2 = nn.Sequential(self.encoder[5],
-                                   self.relu,
-                                   self.encoder[7],
-                                   self.relu)
+        self.conv2 = nn.Sequential(
+            self.encoder[5], self.relu, self.encoder[7], self.relu
+        )
 
-        self.conv3 = nn.Sequential(self.encoder[10],
-                                   self.relu,
-                                   self.encoder[12],
-                                   self.relu,
-                                   self.encoder[14],
-                                   self.relu)
+        self.conv3 = nn.Sequential(
+            self.encoder[10],
+            self.relu,
+            self.encoder[12],
+            self.relu,
+            self.encoder[14],
+            self.relu,
+        )
 
-        self.conv4 = nn.Sequential(self.encoder[17],
-                                   self.relu,
-                                   self.encoder[19],
-                                   self.relu,
-                                   self.encoder[21],
-                                   self.relu)
+        self.conv4 = nn.Sequential(
+            self.encoder[17],
+            self.relu,
+            self.encoder[19],
+            self.relu,
+            self.encoder[21],
+            self.relu,
+        )
 
-        self.conv5 = nn.Sequential(self.encoder[24],
-                                   self.relu,
-                                   self.encoder[26],
-                                   self.relu,
-                                   self.encoder[28],
-                                   self.relu)
+        self.conv5 = nn.Sequential(
+            self.encoder[24],
+            self.relu,
+            self.encoder[26],
+            self.relu,
+            self.encoder[28],
+            self.relu,
+        )
 
-        self.center = DecoderBlockV2(512, num_filters * 8 * 2, num_filters * 8, is_deconv)
+        self.center = DecoderBlockV2(
+            512, num_filters * 8 * 2, num_filters * 8, is_deconv
+        )
 
-        self.dec5 = DecoderBlockV2(512 + num_filters * 8, num_filters * 8 * 2, num_filters * 8, is_deconv)
-        self.dec4 = DecoderBlockV2(512 + num_filters * 8, num_filters * 8 * 2, num_filters * 8, is_deconv)
-        self.dec3 = DecoderBlockV2(256 + num_filters * 8, num_filters * 4 * 2, num_filters * 2, is_deconv)
-        self.dec2 = DecoderBlockV2(128 + num_filters * 2, num_filters * 2 * 2, num_filters, is_deconv)
+        self.dec5 = DecoderBlockV2(
+            512 + num_filters * 8, num_filters * 8 * 2, num_filters * 8, is_deconv
+        )
+        self.dec4 = DecoderBlockV2(
+            512 + num_filters * 8, num_filters * 8 * 2, num_filters * 8, is_deconv
+        )
+        self.dec3 = DecoderBlockV2(
+            256 + num_filters * 8, num_filters * 4 * 2, num_filters * 2, is_deconv
+        )
+        self.dec2 = DecoderBlockV2(
+            128 + num_filters * 2, num_filters * 2 * 2, num_filters, is_deconv
+        )
         self.dec1 = ConvRelu(64 + num_filters, num_filters)
         self.final = nn.Conv2d(num_filters, num_classes, kernel_size=1)
 
@@ -135,4 +158,3 @@ class UNetVGG16(nn.Module):
         dec1 = self.dec1(torch.cat([dec2, conv1], 1))
 
         return self.final(F.dropout2d(dec1, p=self.dropout_2d))
-

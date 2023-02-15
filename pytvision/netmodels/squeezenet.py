@@ -1,53 +1,56 @@
 import math
+
 import torch
 import torch.nn as nn
 import torch.nn.init as init
 import torch.utils.model_zoo as model_zoo
 
 
-__all__ = ['SqueezeNet', 'squeezenet1_0', 'squeezenet1_1']
+__all__ = ["SqueezeNet", "squeezenet1_0", "squeezenet1_1"]
 
 
 model_urls = {
-    'squeezenet1_0': 'https://download.pytorch.org/models/squeezenet1_0-a815701f.pth',
-    'squeezenet1_1': 'https://download.pytorch.org/models/squeezenet1_1-f364aa15.pth',
+    "squeezenet1_0": "https://download.pytorch.org/models/squeezenet1_0-a815701f.pth",
+    "squeezenet1_1": "https://download.pytorch.org/models/squeezenet1_1-f364aa15.pth",
 }
 
 
 class Fire(nn.Module):
-
-    def __init__(self, inplanes, squeeze_planes,
-                 expand1x1_planes, expand3x3_planes):
+    def __init__(self, inplanes, squeeze_planes, expand1x1_planes, expand3x3_planes):
         super(Fire, self).__init__()
         self.inplanes = inplanes
         self.squeeze = nn.Conv2d(inplanes, squeeze_planes, kernel_size=1)
         self.squeeze_activation = nn.ReLU(inplace=True)
-        self.expand1x1 = nn.Conv2d(squeeze_planes, expand1x1_planes,
-                                   kernel_size=1)
+        self.expand1x1 = nn.Conv2d(squeeze_planes, expand1x1_planes, kernel_size=1)
         self.expand1x1_activation = nn.ReLU(inplace=True)
-        self.expand3x3 = nn.Conv2d(squeeze_planes, expand3x3_planes,
-                                   kernel_size=3, padding=1)
+        self.expand3x3 = nn.Conv2d(
+            squeeze_planes, expand3x3_planes, kernel_size=3, padding=1
+        )
         self.expand3x3_activation = nn.ReLU(inplace=True)
 
     def forward(self, x):
         x = self.squeeze_activation(self.squeeze(x))
-        return torch.cat([
-            self.expand1x1_activation(self.expand1x1(x)),
-            self.expand3x3_activation(self.expand3x3(x))
-        ], 1)
+        return torch.cat(
+            [
+                self.expand1x1_activation(self.expand1x1(x)),
+                self.expand3x3_activation(self.expand3x3(x)),
+            ],
+            1,
+        )
 
 
 class SqueezeNet(nn.Module):
-
     def __init__(self, version=1.0, num_classes=1000, num_channels=3):
         super(SqueezeNet, self).__init__()
         if version not in [1.0, 1.1]:
-            raise ValueError("Unsupported SqueezeNet version {version}:"
-                             "1.0 or 1.1 expected".format(version=version))
-        
+            raise ValueError(
+                "Unsupported SqueezeNet version {version}:"
+                "1.0 or 1.1 expected".format(version=version)
+            )
+
         self.num_classes = num_classes
         self.num_channels = num_channels
-        self.size_input=227 
+        self.size_input = 227
         self.dim = 1000
 
         if version == 1.0:
@@ -88,7 +91,7 @@ class SqueezeNet(nn.Module):
             nn.Dropout(p=0.5),
             final_conv,
             nn.ReLU(inplace=True),
-            nn.AvgPool2d(13, stride=1)
+            nn.AvgPool2d(13, stride=1),
         )
 
         for m in self.modules():
@@ -116,7 +119,7 @@ def squeezenet1_0(pretrained=False, **kwargs):
     """
     model = SqueezeNet(version=1.0, **kwargs)
     if pretrained:
-        model.load_state_dict(model_zoo.load_url(model_urls['squeezenet1_0']))
+        model.load_state_dict(model_zoo.load_url(model_urls["squeezenet1_0"]))
     return model
 
 
@@ -131,5 +134,5 @@ def squeezenet1_1(pretrained=False, **kwargs):
     """
     model = SqueezeNet(version=1.1, **kwargs)
     if pretrained:
-        model.load_state_dict(model_zoo.load_url(model_urls['squeezenet1_1']))
+        model.load_state_dict(model_zoo.load_url(model_urls["squeezenet1_1"]))
     return model
