@@ -1,20 +1,17 @@
-
-
 import torch
 import torch.nn as nn
 
 
-__all__ = ['SimpleSegNet', 'simpletsegnet']
+__all__ = ["SimpleSegNet", "simpletsegnet"]
+
 
 def simpletsegnet(pretrained=False, **kwargs):
-    r"""SimpleSegNet model architecture
-    """
+    r"""SimpleSegNet model architecture"""
     model = SimpleSegNet(**kwargs)
     if pretrained:
         pass
-        #model.load_state_dict(model_zoo.load_url(model_urls['unet']))
+        # model.load_state_dict(model_zoo.load_url(model_urls['unet']))
     return model
-
 
 
 class SimpleSegNet(nn.Module):
@@ -58,20 +55,24 @@ class SimpleSegNet(nn.Module):
         x = self.dec_1(x)
         # Output
         x = self.conv_final(x)
-        
-        #b = self.patch_border
-        #x = F.sigmoid(x[:, :, b:-b, b:-b])
 
-        return x 
+        # b = self.patch_border
+        # x = F.sigmoid(x[:, :, b:-b, b:-b])
 
+        return x
 
 
 class BasicConv2d(nn.Module):
     def __init__(self, in_planes, out_planes, kernel_size, stride=1, padding=0):
         super().__init__()
         self.conv = nn.Conv2d(
-            in_planes, out_planes,
-            kernel_size=kernel_size, stride=stride, padding=padding, bias=False)
+            in_planes,
+            out_planes,
+            kernel_size=kernel_size,
+            stride=stride,
+            padding=padding,
+            bias=False,
+        )
         self.bn = nn.BatchNorm2d(out_planes)
         self.relu = nn.ReLU(inplace=True)
 
@@ -80,4 +81,3 @@ class BasicConv2d(nn.Module):
         x = self.bn(x)
         x = self.relu(x)
         return x
-

@@ -1,9 +1,9 @@
 # PyTVision
+
 [![Documentation Status](https://readthedocs.org/projects/pytorchvision/badge/?version=latest)](https://pytorchvision.readthedocs.io/en/latest/?badge=latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 The pytvision package consists of my datasets, models, and image transformations methods for computer vision projects. This package also containing the synthetic render methods. The backend transforms using opencv.
-
 
 ## Requirements
 
@@ -12,14 +12,12 @@ The pytvision package consists of my datasets, models, and image transformations
     cd vision
     python setup.py install
 
-
 ## Installation
 
 From source:
 
     python setup.py build_ext --inplace
     python setup.py install
-
 
 ## Books
 
@@ -37,11 +35,12 @@ From source:
 - [kaggle-tgs-salt-identification](https://github.com/pedrodiamel/kaggle-tgs-salt-identification)
 
 ## Documentation
+
 The full documentation is available at [doc](https://pytorchvision.readthedocs.io/en/latest/)
 
 ## Dataset
 
-- cars169 
+- cars169
 - cub2011
 - StanfordOnlineProducts
 - fer+
@@ -60,12 +59,11 @@ The full documentation is available at [doc](https://pytorchvision.readthedocs.i
 - Geometrical transformation
 - Blur + Noise transformation
 
-## Similar projects 
+## Similar projects
 
-- https://github.com/albu/albumentations
+- <https://github.com/albu/albumentations>
 
-
-<!-- 
+<!--
 
 https://www.youtube.com/watch?v=oJsUvBQyHBs
 
@@ -82,7 +80,5 @@ pip install -r requirements.txt
 ```
 make html
 ```
-4. Open `_build/html/index.html` in browser. 
+4. Open `_build/html/index.html` in browser.
 -->
-
-

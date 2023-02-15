@@ -6,16 +6,17 @@ from utils import decompose
 
 
 def iou(gt, pred):
-    gt[gt > 0] = 1.
-    pred[pred > 0] = 1.
+    gt[gt > 0] = 1.0
+    pred[pred > 0] = 1.0
     intersection = gt * pred
     union = gt + pred
-    union[union > 0] = 1.
+    union[union > 0] = 1.0
     intersection = np.sum(intersection)
     union = np.sum(union)
     if union == 0:
         union = 1e-09
     return intersection / union
+
 
 def compute_ious(gt, predictions):
     gt_ = decompose(gt)

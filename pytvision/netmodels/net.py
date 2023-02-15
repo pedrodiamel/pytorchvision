@@ -1,14 +1,13 @@
 import torch
 import torch.nn as nn
-import torch.nn.init as init
 import torch.nn.functional as F
+import torch.nn.init as init
 
 from torch.utils import model_zoo
 from torchvision import models
 
 
 class UNetEnc(nn.Module):
-
     def __init__(self, in_channels, features, out_channels):
         super().__init__()
 
@@ -26,7 +25,6 @@ class UNetEnc(nn.Module):
 
 
 class UNetDec(nn.Module):
-
     def __init__(self, in_channels, out_channels, dropout=False):
         super().__init__()
 
@@ -37,7 +35,7 @@ class UNetDec(nn.Module):
             nn.ReLU(inplace=True),
         ]
         if dropout:
-            layers += [nn.Dropout(.5)]
+            layers += [nn.Dropout(0.5)]
         layers += [nn.MaxPool2d(2, stride=2, ceil_mode=True)]
 
         self.down = nn.Sequential(*layers)
@@ -47,7 +45,6 @@ class UNetDec(nn.Module):
 
 
 class UNet(nn.Module):
-
     def __init__(self, num_classes):
         super().__init__()
 
@@ -81,18 +78,17 @@ class UNet(nn.Module):
         dec3 = self.dec3(dec2)
         dec4 = self.dec4(dec3)
         center = self.center(dec4)
-        enc4 = self.enc4(torch.cat([
-            center, F.upsample_bilinear(dec4, center.size()[2:])], 1))
-        enc3 = self.enc3(torch.cat([
-            enc4, F.upsample_bilinear(dec3, enc4.size()[2:])], 1))
-        enc2 = self.enc2(torch.cat([
-            enc3, F.upsample_bilinear(dec2, enc3.size()[2:])], 1))
-        enc1 = self.enc1(torch.cat([
-            enc2, F.upsample_bilinear(dec1, enc2.size()[2:])], 1))
+        enc4 = self.enc4(
+            torch.cat([center, F.upsample_bilinear(dec4, center.size()[2:])], 1)
+        )
+        enc3 = self.enc3(
+            torch.cat([enc4, F.upsample_bilinear(dec3, enc4.size()[2:])], 1)
+        )
+        enc2 = self.enc2(
+            torch.cat([enc3, F.upsample_bilinear(dec2, enc3.size()[2:])], 1)
+        )
+        enc1 = self.enc1(
+            torch.cat([enc2, F.upsample_bilinear(dec1, enc2.size()[2:])], 1)
+        )
 
         return F.upsample_bilinear(self.final(enc1), x.size()[2:])
-
-
-
-
-

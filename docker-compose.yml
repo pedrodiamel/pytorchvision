@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+  pytorchvision:
+    tty: true
+    container_name: pytv-dev
+    image: pytv
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all # or device number (e.g. 0) to allow a single gpu
+    ports:
+      - "8080:8080" # port for JupyterLab (or JupyterNotebook)
+      - "6006:6006" # tensrborad
+    volumes:
+      - .:/workspace/pytv
+      - /thor/.datasets:/.datasets

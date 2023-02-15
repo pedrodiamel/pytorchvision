@@ -1,26 +1,28 @@
 """
 all credits to @nizhib
 """
+import math
+
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
+import torch.utils.model_zoo as model_zoo
 from torch.autograd import Variable
 from torchvision import models
-import torch.nn.functional as F
-import math
-import torch.utils.model_zoo as model_zoo
 
 nonlinearity = nn.ReLU
 
-__all__ = ['LinkNet34', 'linknet34']
+__all__ = ["LinkNet34", "linknet34"]
+
 
 def linknet34(pretrained=False, **kwargs):
-    r"""LinkNet34 model architecture
-    """
+    r"""LinkNet34 model architecture"""
     model = LinkNet34(**kwargs)
     if pretrained:
         pass
-        #model.load_state_dict(model_zoo.load_url(model_urls['unet']))
+        # model.load_state_dict(model_zoo.load_url(model_urls['unet']))
     return model
+
 
 class DecoderBlock(nn.Module):
     def __init__(self, in_channels, n_filters):
@@ -32,8 +34,9 @@ class DecoderBlock(nn.Module):
         self.relu1 = nonlinearity(inplace=True)
 
         # B, C/4, H, W -> B, C/4, H, W
-        self.deconv2 = nn.ConvTranspose2d(in_channels // 4, in_channels // 4, 3,
-                                          stride=2, padding=1, output_padding=1)
+        self.deconv2 = nn.ConvTranspose2d(
+            in_channels // 4, in_channels // 4, 3, stride=2, padding=1, output_padding=1
+        )
         self.norm2 = nn.BatchNorm2d(in_channels // 4)
         self.relu2 = nonlinearity(inplace=True)
 
@@ -54,11 +57,13 @@ class DecoderBlock(nn.Module):
         x = self.relu3(x)
         return x
 
+
 class LinkNet34(nn.Module):
-    
-    def __init__(self, num_classes=1, in_channels=3 ):
+    def __init__(self, num_classes=1, in_channels=3):
         super().__init__()
-        assert in_channels == 3, "num channels not used now. to use changle first conv layer to support num channels other then 3"
+        assert (
+            in_channels == 3
+        ), "num channels not used now. to use changle first conv layer to support num channels other then 3"
         filters = [64, 128, 256, 512]
         resnet = models.resnet34(pretrained=True)
 
@@ -86,7 +91,6 @@ class LinkNet34(nn.Module):
 
     # noinspection PyCallingNonCallable
     def forward(self, x):
-        
         # Encoder
         x = self.firstconv(x)
         x = self.firstbn(x)

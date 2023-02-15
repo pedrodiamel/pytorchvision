@@ -1,14 +1,14 @@
-
 import torch
 import torch.nn as nn
 import torch.utils.model_zoo as model_zoo
+
 from . import utility as utl
 
-__all__ = ['AlexNet', 'alexnet']
+__all__ = ["AlexNet", "alexnet"]
 
 
 model_urls = {
-    'alexnet': 'https://download.pytorch.org/models/alexnet-owt-4df8aa71.pth',
+    "alexnet": "https://download.pytorch.org/models/alexnet-owt-4df8aa71.pth",
 }
 
 
@@ -21,21 +21,22 @@ def alexnet(pretrained=False, **kwargs):
     """
     model = AlexNet(**kwargs)
     if pretrained:
-        #model.load_state_dict(model_zoo.load_url(model_urls['alexnet']))
-        utl.load_state_dict(model.state_dict(), model_zoo.load_url(model_urls['alexnet']))
+        # model.load_state_dict(model_zoo.load_url(model_urls['alexnet']))
+        utl.load_state_dict(
+            model.state_dict(), model_zoo.load_url(model_urls["alexnet"])
+        )
 
     return model
 
 
 class AlexNet(nn.Module):
-
     def __init__(self, num_classes=8, num_channels=1):
         super(AlexNet, self).__init__()
 
         self.num_classes = num_classes
         self.num_channels = num_channels
         self.size_input = 227
-        self.dim = 256 * 6 * 6 # output layer of representation
+        self.dim = 256 * 6 * 6  # output layer of representation
 
         self.features = nn.Sequential(
             nn.Conv2d(num_channels, 64, kernel_size=11, stride=4, padding=2),
@@ -52,7 +53,7 @@ class AlexNet(nn.Module):
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=3, stride=2),
         )
-        
+
         self.classifier = nn.Sequential(
             nn.Dropout(),
             nn.Linear(256 * 6 * 6, 4096),
@@ -65,7 +66,7 @@ class AlexNet(nn.Module):
 
     def forward(self, x):
         x = self.features(x)
-        x = x.view(x.size(0), -1 )
+        x = x.view(x.size(0), -1)
         x = self.classifier(x)
         return x
 
@@ -73,4 +74,3 @@ class AlexNet(nn.Module):
         x = self.features(x)
         x = x.view(x.size(0), -1)
         return x
-

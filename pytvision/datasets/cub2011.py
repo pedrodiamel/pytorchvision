@@ -1,19 +1,22 @@
 import os
+
+import numpy as np
 import torch
 import torch.utils.data as data
 from PIL import Image
-import numpy as np
 
-from .utility import download_url, check_integrity
+from .utility import check_integrity, download_url
 
 
-IMG_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.ppm', '.bmp', '.pgm', '.tif']
+IMG_EXTENSIONS = [".jpg", ".jpeg", ".png", ".ppm", ".bmp", ".pgm", ".tif"]
+
 
 def pil_loader(path):
     # open path as file to avoid ResourceWarning (https://github.com/python-pillow/Pillow/issues/835)
-    with open(path, 'rb') as f:
+    with open(path, "rb") as f:
         img = Image.open(f)
-        return img.convert('RGB')
+        return img.convert("RGB")
+
 
 def has_file_allowed_extension(filename, extensions):
     """Checks if a file is an allowed extension.
@@ -66,50 +69,54 @@ def make_dataset(dir, class_to_idx, extensions):
     return images
 
 
+class CUB2011(data.Dataset):
+    base_folder = "CUB_200_2011"
+    url = "http://www.vision.caltech.edu/visipedia-data/CUB-200-2011/CUB_200_2011.tgz"
+    filename = "CUB_200_2011.tgz"
+    tgz_md5 = "97eceeb196236b17998738112f37df78"
+    train_test_split = "train_test_split"
 
-class CUB2011( data.Dataset ):
-    
-    base_folder = 'CUB_200_2011'
-    url = 'http://www.vision.caltech.edu/visipedia-data/CUB-200-2011/CUB_200_2011.tgz'
-    filename = 'CUB_200_2011.tgz'
-    tgz_md5 = '97eceeb196236b17998738112f37df78'
-    train_test_split='train_test_split'
-    
-    def __init__(self, 
-            root, 
-            train, 
-            extensions=IMG_EXTENSIONS, 
-            loader=pil_loader, 
-            transform=None, 
-            target_transform=None, 
-            download=False 
-            ):
-        
-        self.root = os.path.expanduser( root )
+    def __init__(
+        self,
+        root,
+        train,
+        extensions=IMG_EXTENSIONS,
+        loader=pil_loader,
+        transform=None,
+        target_transform=None,
+        download=False,
+    ):
+        self.root = os.path.expanduser(root)
 
         if download:
-        	self.download()
+            self.download()
 
-        pathimage = os.path.join( self.root,  self.base_folder, 'images' ) 
-        classes, class_to_idx = find_classes( pathimage )
+        pathimage = os.path.join(self.root, self.base_folder, "images")
+        classes, class_to_idx = find_classes(pathimage)
         samples = make_dataset(pathimage, class_to_idx, extensions)
 
         if len(samples) == 0:
-            raise RuntimeError( 'Dataset not found or corrupted. You can use download=True to download it' )
+            raise RuntimeError(
+                "Dataset not found or corrupted. You can use download=True to download it"
+            )
 
-        ids, train_index = np.loadtxt( os.path.join(self.root, self.base_folder,'{}.txt'.format( self.train_test_split ) ), unpack=True )           
-        self.index = np.where(train_index == train)[0] 
+        ids, train_index = np.loadtxt(
+            os.path.join(
+                self.root, self.base_folder, "{}.txt".format(self.train_test_split)
+            ),
+            unpack=True,
+        )
+        self.index = np.where(train_index == train)[0]
 
         self.loader = loader
-        self.extensions = extensions 
-        self.classes = classes 
-        self.class_to_idx = class_to_idx 
-        self.samples = samples 
+        self.extensions = extensions
+        self.classes = classes
+        self.class_to_idx = class_to_idx
+        self.samples = samples
         self.targets = np.array([s[1] for s in samples])
 
         self.transform = transform
         self.target_transform = target_transform
-
 
     def __getitem__(self, idx):
         """
@@ -119,7 +126,7 @@ class CUB2011( data.Dataset ):
         Returns:
         tuple: (sample, target) where target is class_index of the target class.
         """
-        path, target = self.samples[  self.index[idx]  ]
+        path, target = self.samples[self.index[idx]]
         sample = self.loader(path)
 
         if self.transform is not None:
@@ -133,7 +140,7 @@ class CUB2011( data.Dataset ):
         return len(self.index)
 
     def _check_integrity(self):
-        return os.path.exists( os.path.join(self.root, self.filename))
+        return os.path.exists(os.path.join(self.root, self.filename))
 
         # for fentry in (self.train_list + self.test_list):
         # 	filename, md5 = fentry[0], fentry[1]
@@ -146,7 +153,7 @@ class CUB2011( data.Dataset ):
         import tarfile
 
         if self._check_integrity():
-            print('Files already downloaded and verified')
+            print("Files already downloaded and verified")
             return
 
         root = self.root
@@ -161,48 +168,59 @@ class CUB2011( data.Dataset ):
         os.chdir(cwd)
 
     def __repr__(self):
-        fmt_str = 'Dataset ' + self.__class__.__name__ + '\n'
+        fmt_str = "Dataset " + self.__class__.__name__ + "\n"
         return fmt_str
 
 
-
-class CUB2011MetricLearning( CUB2011 ):
-    
+class CUB2011MetricLearning(CUB2011):
     num_training_classes = 100
 
-    def __init__(self, 
-            root, 
-            train,
-            extensions=IMG_EXTENSIONS, 
-            loader=pil_loader , 
-            transform=None, 
-            target_transform=None, 
-            download=False,
-        ):
+    def __init__(
+        self,
+        root,
+        train,
+        extensions=IMG_EXTENSIONS,
+        loader=pil_loader,
+        transform=None,
+        target_transform=None,
+        download=False,
+    ):
+        super(CUB2011MetricLearning, self).__init__(
+            root,
+            True,
+            transform=transform,
+            target_transform=target_transform,
+            download=download,
+        )
 
-        super(CUB2011MetricLearning, self).__init__( root, True, transform=transform, target_transform=target_transform, download=download  )
-        
-        classes = self.classes[:self.num_training_classes] if train else self.classes[self.num_training_classes:(self.num_training_classes+self.num_training_classes)  ]
-        
+        classes = (
+            self.classes[: self.num_training_classes]
+            if train
+            else self.classes[
+                self.num_training_classes : (
+                    self.num_training_classes + self.num_training_classes
+                )
+            ]
+        )
+
         index = np.array([], dtype=int)
         for c in classes:
-            index = np.append(index, np.where( self.targets == self.class_to_idx[c] )[0], axis=0 )           
+            index = np.append(
+                index, np.where(self.targets == self.class_to_idx[c])[0], axis=0
+            )
 
-        class_to_idx = {classes[i]: i for i in range(len(classes))} 
+        class_to_idx = {classes[i]: i for i in range(len(classes))}
         samples = []
         for i in index:
             path = self.samples[i][0]
             c = self.classes[self.samples[i][1]]
-            samples.append( (path, class_to_idx[c])  )
+            samples.append((path, class_to_idx[c]))
 
-
-        self.index =  np.array( [ i for i in range(len(index)) ] )
+        self.index = np.array([i for i in range(len(index))])
         self.classes = classes
         self.class_to_idx = class_to_idx
         self.samples = samples
         self.targets = np.array([s[1] for s in samples])
 
-
-        #self.class_to_idx = {class_label: class_label_ind for class_label, class_label_ind in self.class_to_idx.items() if class_label in self.classes}
-        #self.imgs = [(image_file_path, class_label_ind) for image_file_path, class_label_ind in self.imgs if class_label_ind in self.class_to_idx.values()]
-
+        # self.class_to_idx = {class_label: class_label_ind for class_label, class_label_ind in self.class_to_idx.items() if class_label in self.classes}
+        # self.imgs = [(image_file_path, class_label_ind) for image_file_path, class_label_ind in self.imgs if class_label_ind in self.class_to_idx.values()]

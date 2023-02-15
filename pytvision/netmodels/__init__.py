@@ -1,9 +1,7 @@
-
-
-from .simpletsegnet import * 
+from .simpletsegnet import *
 from .unet import *
 from .dunet import *
-from .unet11 import * 
+from .unet11 import *
 from .unetresnet import *
 
 from .alexnet import *
@@ -21,4 +19,3 @@ from .simplet import *
 from .cvgg import *
 from .fmp import *
 from .ferattentionnet import *
-
