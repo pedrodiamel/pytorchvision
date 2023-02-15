@@ -16,6 +16,7 @@ The Python project code should be formatted by Black, and checked against Pep8 c
 
     pip install flake8 typing mypy pytest pytest-mock
     pip install ufmt==1.3.2 black==22.3.0 usort==1.0.2
+    pip install pre-commit
 
 ### Code formatting
 
@@ -32,6 +33,9 @@ For the vast majority of cases, this is all you should need to run. For the form
 For convenience and purely optionally, you can rely on pre-commit hooks, which will run both ufmt and flake8 prior to every commit.
 
 First, install the pre-commit package with pip install pre-commit, and then run pre-commit install at the root of the repo for the hooks to be set up - that's it.
+
+    pip install pre-commit
+    pre-commit install
 
 Read the pre-commit docs to learn more and improve your workflow. You'll see, for example, that pre-commit run --all-files will run both ufmt and flake8 without the need for you to commit anything and that the --no-verify flag can be added to git commit to temporarily deactivate the hooks.
 
