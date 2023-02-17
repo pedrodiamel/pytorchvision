@@ -1,14 +1,26 @@
+import os
+
 import cv2
 import numpy as np
 from visdom import Visdom
 
 
-class VisdomLinePlotter(object):
+class VisdomLogger(object):
+    def __init__(self, env_name="main", server=None, port=None) -> None:
+        if server is None:
+            server = os.environ.get("VISDOM_SERVER_URL", "localhost")
+        if port is None:
+            port = int(os.environ.get("VISDOM_PORT", 8097))
+
+        self.viz = Visdom(server=server, port=port, use_incoming_socket=False)
+        self.env = env_name
+
+
+class VisdomLinePlotter(VisdomLogger):
     """Plots to Visdom"""
 
-    def __init__(self, env_name="main"):
-        self.viz = Visdom(use_incoming_socket=False)
-        self.env = env_name
+    def __init__(self, env_name="main", server=None, port=None):
+        super(VisdomLinePlotter, self).__init__(env_name, server, port)
         self.plots = {}
 
     def plot(self, var_name, split_name, x, y):
@@ -44,12 +56,11 @@ class VisdomLinePlotter(object):
             #     )
 
 
-class VisdomScatter(object):
+class VisdomScatter(VisdomLogger):
     """Scatter to Visdom"""
 
-    def __init__(self, env_name="main"):
-        self.viz = Visdom(use_incoming_socket=False)
-        self.env = env_name
+    def __init__(self, env_name="main", server=None, port=None):
+        super(VisdomScatter, self).__init__(env_name, server, port)
         self.scatters = {}
 
     def scatter(self, X, Y, title, legend, markersize=10):
@@ -78,12 +89,11 @@ class VisdomScatter(object):
             )
 
 
-class HeatMapVisdom(object):
+class HeatMapVisdom(VisdomLogger):
     """Heat Map to Visdom"""
 
-    def __init__(self, env_name="main", heatsize=None):
-        self.vis = Visdom(use_incoming_socket=False)
-        self.env = env_name
+    def __init__(self, env_name="main", heatsize=None, server=None, port=None):
+        super(HeatMapVisdom, self).__init__(env_name, server, port)
         self.hmaps = {}
         self.heatsize = heatsize
 
@@ -92,21 +102,16 @@ class HeatMapVisdom(object):
             image = cv2.resize(image, self.heatsize, interpolation=cv2.INTER_LINEAR)
 
         if title not in self.hmaps:
-            self.hmaps[title] = self.vis.heatmap(
-                image, env=self.env, opts=dict(title=title)
-            )
+            self.hmaps[title] = self.vis.heatmap(image, env=self.env, opts=dict(title=title))
         else:
-            self.vis.heatmap(
-                image, env=self.env, win=self.hmaps[title], opts=dict(title=title)
-            )
+            self.vis.heatmap(image, env=self.env, win=self.hmaps[title], opts=dict(title=title))
 
 
-class ImageVisdom(object):
+class ImageVisdom(VisdomLogger):
     """Images to Visdom"""
 
-    def __init__(self, env_name="main", imsize=None):
-        self.vis = Visdom(use_incoming_socket=False)
-        self.env = env_name
+    def __init__(self, env_name="main", imsize=None, server=None, port=None):
+        super(ImageVisdom, self).__init__(env_name, server, port)
         self.images = {}
         self.imsize = imsize
 
@@ -117,10 +122,6 @@ class ImageVisdom(object):
         image = np.transpose(image, (2, 0, 1))
 
         if title not in self.images:
-            self.images[title] = self.vis.image(
-                image, env=self.env, opts=dict(title=title)
-            )
+            self.images[title] = self.vis.image(image, env=self.env, opts=dict(title=title))
         else:
-            self.vis.image(
-                image, env=self.env, win=self.images[title], opts=dict(title=title)
-            )
+            self.vis.image(image, env=self.env, win=self.images[title], opts=dict(title=title))

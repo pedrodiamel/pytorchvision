@@ -19,6 +19,9 @@ RUN apt-get update && \
     ca-certificates \
     locales \
     python3-opencv \
+    libgtk2.0-dev \
+    libjpeg-dev \
+    libpng-dev \
     byobu \
     vim && \
     # Remove the effect of `apt-get update`
