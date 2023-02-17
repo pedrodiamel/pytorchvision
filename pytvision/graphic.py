@@ -10,7 +10,7 @@ class VisdomLogger(object):
         if server is None:
             server = os.environ.get("VISDOM_SERVER_URL", "localhost")
         if port is None:
-            port = int(os.environ.get("VISDOM_PORT", 8097))
+            port = int(os.environ.get("VISDOM_PORT", 6006))
 
         self.viz = Visdom(server=server, port=port, use_incoming_socket=False)
         self.env = env_name
@@ -102,9 +102,9 @@ class HeatMapVisdom(VisdomLogger):
             image = cv2.resize(image, self.heatsize, interpolation=cv2.INTER_LINEAR)
 
         if title not in self.hmaps:
-            self.hmaps[title] = self.vis.heatmap(image, env=self.env, opts=dict(title=title))
+            self.hmaps[title] = self.viz.heatmap(image, env=self.env, opts=dict(title=title))
         else:
-            self.vis.heatmap(image, env=self.env, win=self.hmaps[title], opts=dict(title=title))
+            self.viz.heatmap(image, env=self.env, win=self.hmaps[title], opts=dict(title=title))
 
 
 class ImageVisdom(VisdomLogger):
@@ -122,6 +122,6 @@ class ImageVisdom(VisdomLogger):
         image = np.transpose(image, (2, 0, 1))
 
         if title not in self.images:
-            self.images[title] = self.vis.image(image, env=self.env, opts=dict(title=title))
+            self.images[title] = self.viz.image(image, env=self.env, opts=dict(title=title))
         else:
-            self.vis.image(image, env=self.env, win=self.images[title], opts=dict(title=title))
+            self.viz.image(image, env=self.env, win=self.images[title], opts=dict(title=title))
