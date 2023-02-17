@@ -6,7 +6,6 @@ tqdm
 scipy
 visdom
 scikit-image
-sklearn
-scikit-fmm
 scikit-learn
+scikit-fmm
 opencv-python

@@ -1,5 +1,6 @@
 ARG UBUNTU_VERSION=18.04
-ARG CUDA_VERSION=11.7.0
+ARG CUDA_VERSION=11.6.0
+ARG PYTORCH_CUDA=11.6
 FROM nvidia/cuda:${CUDA_VERSION}-base-ubuntu${UBUNTU_VERSION}
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -23,6 +24,7 @@ RUN apt-get update && \
     libjpeg-dev \
     libpng-dev \
     byobu \
+    htop \
     vim && \
     # Remove the effect of `apt-get update`
     rm -rf /var/lib/apt/lists/* && \
@@ -42,7 +44,7 @@ RUN curl -o miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-L
     ./miniconda.sh -b -p conda && \
     rm miniconda.sh && \
     conda/bin/conda install -y python=$PYTHON_VERSION jupyter jupyterlab && \
-    conda/bin/conda install -y pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvidia && \
+    conda/bin/conda install -y pytorch torchvision torchaudio pytorch-cuda=$PYTORCH_CUDA -c pytorch -c nvidia && \
     conda/bin/conda clean -ya
 ENV PATH $HOME/conda/bin:$PATH
 
