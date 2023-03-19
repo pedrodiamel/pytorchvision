@@ -93,9 +93,7 @@ class BlurRender(object):
         texp = self.texp
 
         # create trajectoria 2d
-        x, l = self._trajetory_2d(
-            trajSize=pSFsize, anxiety=anxiety, numT=numT, maxTotalLength=maxTotalLength
-        )
+        x, l = self._trajetory_2d(trajSize=pSFsize, anxiety=anxiety, numT=numT, maxTotalLength=maxTotalLength)
         # create kernel
         psf, power = self._motionnolinealkernel(x, texp=texp, pSFsize=pSFsize)
         # blur
@@ -242,17 +240,14 @@ class BlurRender(object):
             # determine if there is an abrupt (impulsive) shake
             if random.random() < freqBigShakes * anxiety:
                 # if yes, determine the next direction which is likely to be opposite to the previous one
-                nextDirection = (
-                    2 * v * (np.exp(1j * (np.pi + (np.random.rand(1) - 0.5))))
-                )
+                nextDirection = 2 * v * (np.exp(1j * (np.pi + (np.random.rand(1) - 0.5))))
                 abruptShakesCounter = abruptShakesCounter + 1
             else:
                 nextDirection = 0
 
             # determine the random component motion vector at the next step
             dv = nextDirection + anxiety * (
-                gaussianTerm * (random.random() + 1j * random.random())
-                - centripetal * x[t]
+                gaussianTerm * (random.random() + 1j * random.random()) - centripetal * x[t]
             ) * (maxTotalLength / (numT - 1))
             v = v + dv
 
@@ -266,18 +261,8 @@ class BlurRender(object):
         x = x - 1j * np.min(np.imag(x)) - np.min(np.real(x))
 
         # center the Trajectory
-        x = (
-            x
-            - 1j * np.remainder(np.imag(x[0]), 1)
-            - np.remainder(np.real(x[0]), 1)
-            + 1
-            + 1j
-        )
-        x = (
-            x
-            + 1j * np.ceil((trajSize - np.max(np.imag(x))) / 2)
-            + np.ceil((trajSize - np.max(np.real(x))) / 2)
-        )
+        x = x - 1j * np.remainder(np.imag(x[0]), 1) - np.remainder(np.real(x[0]), 1) + 1 + 1j
+        x = x + 1j * np.ceil((trajSize - np.max(np.imag(x))) / 2) + np.ceil((trajSize - np.max(np.real(x))) / 2)
 
         return x, length
 
@@ -318,9 +303,7 @@ class BlurRender(object):
         ISNR
         Improvement in Signal to Noise Ratio
         """
-        return 10.0 * np.log10(
-            F.norm_fro(original, noisy) / F.norm_fro(original, restore)
-        )
+        return 10.0 * np.log10(F.norm_fro(original, noisy) / F.norm_fro(original, restore))
 
     def _psnr(self, original, restore):
         """

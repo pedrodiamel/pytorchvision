@@ -105,21 +105,11 @@ class UNet11(nn.Module):
         self.conv5s = self.encoder[16]
         self.conv5 = self.encoder[18]
 
-        self.center = DecoderBlock(
-            num_filters * 8 * 2, num_filters * 8 * 2, num_filters * 8
-        )
-        self.dec5 = DecoderBlock(
-            num_filters * (16 + 8), num_filters * 8 * 2, num_filters * 8
-        )
-        self.dec4 = DecoderBlock(
-            num_filters * (16 + 8), num_filters * 8 * 2, num_filters * 4
-        )
-        self.dec3 = DecoderBlock(
-            num_filters * (8 + 4), num_filters * 4 * 2, num_filters * 2
-        )
-        self.dec2 = DecoderBlock(
-            num_filters * (4 + 2), num_filters * 2 * 2, num_filters
-        )
+        self.center = DecoderBlock(num_filters * 8 * 2, num_filters * 8 * 2, num_filters * 8)
+        self.dec5 = DecoderBlock(num_filters * (16 + 8), num_filters * 8 * 2, num_filters * 8)
+        self.dec4 = DecoderBlock(num_filters * (16 + 8), num_filters * 8 * 2, num_filters * 4)
+        self.dec3 = DecoderBlock(num_filters * (8 + 4), num_filters * 4 * 2, num_filters * 2)
+        self.dec2 = DecoderBlock(num_filters * (4 + 2), num_filters * 2 * 2, num_filters)
         self.dec1 = ConvRelu(num_filters * (2 + 1), num_filters)
 
         self.final = nn.Conv2d(num_filters, num_classes, kernel_size=1)

@@ -20,9 +20,7 @@ def inception_v4(pretrained=False, **kwargs):
         if "transform_input" not in kwargs:
             kwargs["transform_input"] = True
         model = InceptionV4(**kwargs)
-        utl.load_state_dict(
-            model.state_dict(), model_zoo.load_url(model_urls["inception_v4_google"])
-        )
+        utl.load_state_dict(model.state_dict(), model_zoo.load_url(model_urls["inception_v4_google"]))
         return model
     return InceptionV4(**kwargs)
 
@@ -219,26 +217,14 @@ class Inception_C(nn.Module):
         self.branch0 = BasicConv2d(1536, 256, kernel_size=1, stride=1)
 
         self.branch1_0 = BasicConv2d(1536, 384, kernel_size=1, stride=1)
-        self.branch1_1a = BasicConv2d(
-            384, 256, kernel_size=(1, 3), stride=1, padding=(0, 1)
-        )
-        self.branch1_1b = BasicConv2d(
-            384, 256, kernel_size=(3, 1), stride=1, padding=(1, 0)
-        )
+        self.branch1_1a = BasicConv2d(384, 256, kernel_size=(1, 3), stride=1, padding=(0, 1))
+        self.branch1_1b = BasicConv2d(384, 256, kernel_size=(3, 1), stride=1, padding=(1, 0))
 
         self.branch2_0 = BasicConv2d(1536, 384, kernel_size=1, stride=1)
-        self.branch2_1 = BasicConv2d(
-            384, 448, kernel_size=(3, 1), stride=1, padding=(1, 0)
-        )
-        self.branch2_2 = BasicConv2d(
-            448, 512, kernel_size=(1, 3), stride=1, padding=(0, 1)
-        )
-        self.branch2_3a = BasicConv2d(
-            512, 256, kernel_size=(1, 3), stride=1, padding=(0, 1)
-        )
-        self.branch2_3b = BasicConv2d(
-            512, 256, kernel_size=(3, 1), stride=1, padding=(1, 0)
-        )
+        self.branch2_1 = BasicConv2d(384, 448, kernel_size=(3, 1), stride=1, padding=(1, 0))
+        self.branch2_2 = BasicConv2d(448, 512, kernel_size=(1, 3), stride=1, padding=(0, 1))
+        self.branch2_3a = BasicConv2d(512, 256, kernel_size=(1, 3), stride=1, padding=(0, 1))
+        self.branch2_3b = BasicConv2d(512, 256, kernel_size=(3, 1), stride=1, padding=(1, 0))
 
         self.branch3 = nn.Sequential(
             nn.AvgPool2d(3, stride=1, padding=1, count_include_pad=False),

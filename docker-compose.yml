@@ -15,5 +15,5 @@ services:
       - "8080:8080" # port for JupyterLab (or JupyterNotebook)
       - "6006:6006" # tensrborad
     volumes:
-      - .:/workspace/pytv
-      - /thor/.datasets:/.datasets
+      - .:/workspaces/pytv
+      - ${DATASETS}:/.datasets

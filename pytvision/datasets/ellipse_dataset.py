@@ -14,7 +14,7 @@ from ..transforms.aumentation import (
 )
 from ..transforms.ellipserender import CircleRender, EllipseRender
 
-from . import imageutl as imutl, utility, weightmaps as wmap
+from . import providers as imutl, utility, weightmaps as wmap
 
 
 class SyntethicCircleDataset(object):

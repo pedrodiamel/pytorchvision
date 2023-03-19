@@ -219,10 +219,7 @@ def download_url(url, root, filename, md5):
         except:
             if url[:5] == "https":
                 url = url.replace("https:", "http:")
-                print(
-                    "Failed download. Trying https -> http instead."
-                    " Downloading " + url + " to " + fpath
-                )
+                print("Failed download. Trying https -> http instead." " Downloading " + url + " to " + fpath)
                 urllib.request.urlretrieve(url, fpath)
 
 
@@ -235,9 +232,7 @@ def list_dir(root, prefix=False):
             only returns the name of the directories found
     """
     root = os.path.expanduser(root)
-    directories = list(
-        filter(lambda p: os.path.isdir(os.path.join(root, p)), os.listdir(root))
-    )
+    directories = list(filter(lambda p: os.path.isdir(os.path.join(root, p)), os.listdir(root)))
 
     if prefix is True:
         directories = [os.path.join(root, d) for d in directories]

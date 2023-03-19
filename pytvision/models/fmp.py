@@ -27,9 +27,7 @@ def fmp(pretrained=False, **kwargs):
 
 
 class FMPNet(nn.Module):
-    def __init__(
-        self, num_classes=8, num_channels=1, init_weights=True, batch_norm=False
-    ):
+    def __init__(self, num_classes=8, num_channels=1, init_weights=True, batch_norm=False):
         super(FMPNet, self).__init__()
 
         self.num_classes = num_classes

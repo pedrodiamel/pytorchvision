@@ -7,17 +7,36 @@ The pytvision package consists of my datasets, models, and image transformations
 
 ## Requirements
 
-    pytorch 0.4.1
-    git clone https://github.com/pytorch/vision.git
-    cd vision
-    python setup.py install
+```bash
+pytorch 0.4.1
+git clone https://github.com/pytorch/vision.git
+cd vision
+python setup.py install
+```
 
 ## Installation
 
 From source:
 
-    python setup.py build_ext --inplace
-    python setup.py install
+```bash
+python setup.py build_ext --inplace
+python setup.py install
+```
+
+### Docker
+
+```bash
+docker build -f "Dockerfile" -t pytv:latest .
+docker run -ti --privileged --ipc=host --name pytv-dev -p 8080:8080 -p 6006:6006 -v $DATASETS:/.datasets pytv:latest /bin/bash
+```
+
+### Dockercompose
+
+```bash
+docker-compose up --build -d
+docker-compose down
+docker exec -it pytv-dev /bin/bash
+```
 
 ## Books
 
@@ -64,7 +83,6 @@ The full documentation is available at [doc](https://pytorchvision.readthedocs.i
 - <https://github.com/albu/albumentations>
 
 <!--
-
 https://www.youtube.com/watch?v=oJsUvBQyHBs
 
 ## Building the documentation

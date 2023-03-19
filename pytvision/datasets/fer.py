@@ -3,10 +3,10 @@ import os
 import h5py
 import numpy as np
 
-from .imageutl import dataProvide
+from .providers import dataProvider
 
 
-class FERClassicDataset(dataProvide):
+class FERClassicDataset(dataProvider):
     """
     FER CLASSIC dataset
         -CK
@@ -89,9 +89,7 @@ class FERClassicDataset(dataProvide):
         if i < 0 and i > len(self.index):
             raise ValueError("Index outside range")
         i = self.index[i]
-        image = np.array(
-            self.data[i].reshape(self.imsize).transpose(1, 0), dtype=np.uint8
-        )
+        image = np.array(self.data[i].reshape(self.imsize).transpose(1, 0), dtype=np.uint8)
         label = self.labels[i]
         return image, label
 

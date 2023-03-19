@@ -1,18 +1,10 @@
 import os
+from enum import Enum
 
 import numpy as np
 from torchvision import datasets
 
-from . import (
-    afew,
-    affect,
-    cars196,
-    cub2011,
-    fer,
-    ferp,
-    imaterialist,
-    stanford_online_products,
-)
+from . import afew, affect, cars196, celeba, cub2011, fer, ferfolder, ferp, imaterialist, stanford_online_products
 
 
 def create_folder(pathname, name):
@@ -24,213 +16,177 @@ def create_folder(pathname, name):
 
 
 class FactoryDataset(object):
-    training = "train"
-    validation = "val"
-    test = "test"
 
-    mnist = "mnist"
-    fashion = "fashion"
-    emnist = "emnist"
-    cifar10 = "cifar10"
-    cifar100 = "cifar100"
-    stl10 = "stl10"
-    svhn = "svhn"
+    # Training subsets
+    class Subsets(Enum):
+        TRAIN = 1
+        VAL = 2
+        TEST = 3
 
-    imaterialist = "imaterialist"
+        def to_str(self):
+            return self.name.lower()
 
-    ferp = "ferp"
-    ck = "ck"
-    jaffe = "jaffe"
-    bu3dfe = "bu3dfe"
-    afew = "afew"
-    affect = "affectnet"
-    affectdark = "affectnetdark"
+    # DATASETS NAMES
+    class Datasets(Enum):
 
-    cub2011 = "cub2011"
-    cars196 = "cars196"
-    stanford_online_products = "stanford_online_products"
-    cub2011metric = "cub2011metric"
-    cars196metric = "cars196metric"
+        MNIST = 1
+        FASHION = 2
+        EMNIST = 3
+        CIFAR10 = 4
+        CIFAR100 = 5
+        STL10 = 6
+        SVHN = 7
+        IMATERIALIST = 8
+        FERP = 9
+        CK = 10
+        JAFFE = 11
+        BU3DFE = 12
+        AFEW = 13
+        CELBA = 14
+        CUB2011 = 16
+        CARS196 = 17
+        STANFORD_ONLINE_PRODUCTS = 18
+        CUB2011METRIC = 19
+        CARS196METRIC = 20
+        CKP = 21
+        AFFECTNET = 22
 
-    @classmethod
-    def _checksubset(self, subset):
-        return subset == "train" or subset == "val" or subset == "test"
+        def to_str(self):
+            return self.name.lower()
+
+        def to_dataset(self, name):
+            return self.str_to_dataset[name]
+
+    # Create str to dataset
+    # Exemplo
+    # {
+    #     Datasets.MNIST.to_str(): Datasets.MNIST
+    # }
+    str_to_dataset = {e.to_str(): e for e in Datasets.__members__.values()}
 
     @classmethod
     def factory(
         self,
-        pathname,
-        name,
-        subset="train",
+        pathname: str,
+        name: Datasets,
+        subset: Subsets = Subsets.TRAIN,
+        idenselect=[],
         download=False,
         transform=None,
     ):
-        """Factory dataset"""
+        """
+        Methodo factory to create dataset
+        Arguments:
+            pathname (str): path of the datasets
+            name (Datasets): enum datasets names support
+            subset (Subsets): TRAIN/VAL/TEST
+        """
 
-        assert self._checksubset(subset)
         pathname = os.path.expanduser(pathname)
+        btrain = subset == self.Subsets.TRAIN
 
-        # pythorch vision dataset soported
+        # create folder
+        pathname = create_folder(pathname, name.to_str())
 
-        if name == "mnist":
-            btrain = subset == "train"
-            pathname = create_folder(pathname, name)
-            data = datasets.MNIST(
-                pathname, train=btrain, transform=transform, download=download
-            )
+        data = None
+        # pythorch vision dataset suported
+        if name == self.Datasets.MNIST:
+            data = datasets.MNIST(pathname, train=btrain, transform=transform, download=download)
             data.labels = np.array(data.targets)
 
-        elif name == "fashion":
-            btrain = subset == "train"
-            pathname = create_folder(pathname, name)
-            data = datasets.FashionMNIST(
-                pathname, train=btrain, transform=transform, download=download
-            )
+        elif name == self.Datasets.FASHION:
+            data = datasets.FashionMNIST(pathname, train=btrain, transform=transform, download=download)
             data.labels = np.array(data.targets)
 
-        elif name == "emnist":
-            btrain = subset == "train"
-            pathname = create_folder(pathname, name)
-            data = datasets.EMNIST(
-                pathname,
-                split="byclass",
-                train=btrain,
-                transform=transform,
-                download=download,
-            )
+        elif name == self.Datasets.EMNIST:
+            data = datasets.EMNIST(pathname, split="byclass", train=btrain, transform=transform, download=download)
             data.labels = np.array(data.targets)
 
-        elif name == "cifar10":
-            btrain = subset == "train"
-            pathname = create_folder(pathname, name)
-            data = datasets.CIFAR10(
-                pathname, train=btrain, transform=transform, download=download
-            )
+        elif name == self.Datasets.CIFAR10:
+            data = datasets.CIFAR10(pathname, train=btrain, transform=transform, download=download)
             data.labels = np.array(data.targets)
 
-        elif name == "cifar100":
-            btrain = subset == "train"
-            pathname = create_folder(pathname, name)
-            data = datasets.CIFAR100(
-                pathname, train=btrain, transform=transform, download=download
-            )
+        elif name == self.Datasets.CIFAR100:
+            data = datasets.CIFAR100(pathname, train=btrain, transform=transform, download=download)
             data.labels = np.array(data.targets)
 
-        elif name == "stl10":
-            split = "train" if (subset == "train") else "test"
-            pathname = create_folder(pathname, name)
-            data = datasets.STL10(
-                pathname, split=split, transform=transform, download=download
-            )
+        elif name == self.Datasets.STL10:
+            split = "train" if (btrain) else "test"
+            data = datasets.STL10(pathname, split=split, transform=transform, download=download)
 
-        elif name == "svhn":
-            split = "train" if (subset == "train") else "test"
-            pathname = create_folder(pathname, name)
-            data = datasets.SVHN(
-                pathname, split=split, transform=transform, download=download
-            )
+        elif name == self.Datasets.SVHN:
+            split = "train" if (btrain) else "test"
+            data = datasets.SVHN(pathname, split=split, transform=transform, download=download)
             data.classes = np.unique(data.labels)
 
         # internet dataset
 
-        elif name == "cub2011":
-            btrain = subset == "train"
-            pathname = create_folder(pathname, name)
+        elif name == self.Datasets.CUB2011:
             data = cub2011.CUB2011(pathname, train=btrain, download=download)
             data.labels = np.array(data.targets)
 
-        elif name == "cars196":
-            btrain = subset == "train"
-            pathname = create_folder(pathname, name)
+        elif name == self.Datasets.CARS196:
             data = cars196.Cars196(pathname, train=btrain, download=download)
             data.labels = np.array(data.targets)
 
-        elif name == "stanford_online_products":
-            btrain = subset == "train"
-            pathname = create_folder(pathname, name)
-            data = stanford_online_products.StanfordOnlineProducts(
-                pathname, train=btrain, download=download
-            )
+        elif name == self.Datasets.STANFORD_ONLINE_PRODUCTS:
+            data = stanford_online_products.StanfordOnlineProducts(pathname, train=btrain, download=download)
             data.labels = np.array(data.targets)
             data.btrain = btrain
 
         # kaggle dataset
-        elif name == "imaterialist":
-            pathname = create_folder(pathname, name)
-            data = imaterialist.IMaterialistDatset(pathname, subset, "jpg")
+        elif name == self.Datasets.IMATERIALIST:
+            data = imaterialist.IMaterialistDatset(pathname, subset.to_str(), "jpg")
 
-        # fer datasets
+        # fer recognition datasets
 
-        elif name == "ferp":
-            pathname = create_folder(pathname, name)
-            if subset == "train":
+        elif name == self.Datasets.FERP:
+            if subset == self.Subsets.TRAIN:
                 subfolder = ferp.train
-            elif subset == "val":
+            elif subset == self.Subsets.VAL:
                 subfolder = ferp.valid
-            elif subset == "test":
+            elif subset == self.Subsets.TEST:
                 subfolder = ferp.test
             else:
-                assert False
+                raise ValueError("Dataset {} not suport the subset: ".format(subset.to_str()))
             data = ferp.FERPDataset(pathname, subfolder, download=download)
 
-        elif name == "ck":
-            btrain = subset == "train"
-            pathname = create_folder(pathname, name)
-            data = fer.FERClassicDataset(pathname, "ck", idenselect=[], train=btrain)
+        elif name == self.Datasets.CK:
+            idenselect = np.arange(20) + 0
+            data = fer.FERClassicDataset(pathname, "ck", idenselect=idenselect, train=btrain)
 
-        elif name == "ckp":
-            btrain = subset == "train"
-            pathname = create_folder(pathname, name)
-            data = fer.FERClassicDataset(pathname, "ckp", idenselect=[], train=btrain)
+        elif name == self.Datasets.CKP:
+            data = fer.FERClassicDataset(pathname, "ckp", idenselect=idenselect, train=btrain)
 
-        elif name == "jaffe":
-            btrain = subset == "train"
-            pathname = create_folder(pathname, name)
-            data = fer.FERClassicDataset(pathname, "jaffe", idenselect=[], train=btrain)
+        elif name == self.Datasets.JAFFE:
+            data = fer.FERClassicDataset(pathname, "jaffe", idenselect=idenselect, train=btrain)
 
-        elif name == "bu3dfe":
-            btrain = subset == "train"
-            pathname = create_folder(pathname, name)
-            data = fer.FERClassicDataset(
-                pathname, "bu3dfe", idenselect=[], train=btrain
-            )
+        elif name == self.Datasets.BU3DFE:
+            # idenselect = np.array([0,1,2,3,4,5,6,7,8,9]) + 0
+            data = fer.FERClassicDataset(pathname, "bu3dfe", idenselect=idenselect, train=btrain)
 
-        elif name == "afew":
-            btrain = subset == "train"
-            pathname = create_folder(pathname, name)
+        elif name == self.Datasets.AFEW:
             data = afew.Afew(pathname, train=btrain, download=download)
             data.labels = np.array(data.targets)
 
-        elif name == "affectnet":
-            btrain = subset == "train"
-            pathname = create_folder(pathname, name)
-            data = affect.create_affect(path=pathname, train=btrain)
+        elif name == self.Datasets.CELBA:
+            data = celeba.CelebaDataset(pathname, train=btrain, download=download)
 
-        elif name == "affectnetdark":
-            btrain = subset == "train"
-            pathname = create_folder(pathname, "affectnet")
-            data = affect.create_affectdark(path=pathname, train=btrain)
+        elif name == self.Datasets.AFFECTNET:
+            data = affect.create_affect(path=pathname, train=btrain)
 
         # metric learning dataset
 
-        elif name == "cub2011metric":
-            btrain = subset == "train"
-            pathname = create_folder(pathname, "cub2011")
-            data = cub2011.CUB2011MetricLearning(
-                pathname, train=btrain, download=download
-            )
+        elif name == self.Datasets.CUB2011METRIC:
+            data = cub2011.CUB2011MetricLearning(pathname, train=btrain, download=download)
             data.labels = np.array(data.targets)
 
-        elif name == "cars196metric":
-            btrain = subset == "train"
-            pathname = create_folder(pathname, "cars196")
-            data = cars196.Cars196MetricLearning(
-                pathname, train=btrain, download=download
-            )
+        elif name == self.Datasets.CARS196METRIC:
+            data = cars196.Cars196MetricLearning(pathname, train=btrain, download=download)
             data.labels = np.array(data.targets)
 
         else:
-            assert False
+            raise ValueError("Dataset {} not suport".format(name.to_str()))
 
-        data.btrain = subset == "train"
+        data.btrain = btrain
         return data

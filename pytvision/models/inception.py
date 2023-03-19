@@ -26,18 +26,14 @@ def inception_v3(pretrained=False, **kwargs):
             kwargs["transform_input"] = True
         model = Inception3(**kwargs)
         # model.load_state_dict(model_zoo.load_url(model_urls['inception_v3_google']))
-        utl.load_state_dict(
-            model.state_dict(), model_zoo.load_url(model_urls["inception_v3_google"])
-        )
+        utl.load_state_dict(model.state_dict(), model_zoo.load_url(model_urls["inception_v3_google"]))
         return model
 
     return Inception3(**kwargs)
 
 
 class Inception3(nn.Module):
-    def __init__(
-        self, num_classes=1000, num_channels=3, aux_logits=False, transform_input=False
-    ):
+    def __init__(self, num_classes=1000, num_channels=3, aux_logits=False, transform_input=False):
         super(Inception3, self).__init__()
         self.aux_logits = aux_logits
         self.transform_input = transform_input and num_channels == 3

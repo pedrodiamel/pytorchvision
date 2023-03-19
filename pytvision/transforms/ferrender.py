@@ -54,19 +54,11 @@ def param2theta(mat_r, mat_t, mat_w, w, h):
     return theta
 
 
-def transform(
-    image, mask, angle=360, translation=0.2, warp=0.0, padding=cv2.BORDER_CONSTANT
-):
+def transform(image, mask, angle=360, translation=0.2, warp=0.0, padding=cv2.BORDER_CONSTANT):
     imsize = image.shape[:2]
-    mat_r, mat_t, mat_w = F.get_geometric_random_transform(
-        imsize, angle, translation, warp
-    )
-    image = F.applay_geometrical_transform(
-        image, mat_r, mat_t, mat_w, cv2.INTER_LINEAR, padding
-    )
-    mask = F.applay_geometrical_transform(
-        mask, mat_r, mat_t, mat_w, cv2.INTER_NEAREST, padding
-    )
+    mat_r, mat_t, mat_w = F.get_geometric_random_transform(imsize, angle, translation, warp)
+    image = F.applay_geometrical_transform(image, mat_r, mat_t, mat_w, cv2.INTER_LINEAR, padding)
+    mask = F.applay_geometrical_transform(mask, mat_r, mat_t, mat_w, cv2.INTER_NEAREST, padding)
     h, w = image.shape[:2]
     theta = param2theta(mat_r, mat_t, mat_w, w, h)
     return image, mask, theta
@@ -87,9 +79,7 @@ def filtermask(mask, sz=7):
     se = cv2.getStructuringElement(cv2.MORPH_RECT, (sz, sz))
     mask = cv2.morphologyEx(mask * 1.0, cv2.MORPH_CLOSE, se)
     mask = cv2.erode(mask * 1.0, se, iterations=1) == 1
-    mask = (
-        ndi.morphology.binary_fill_holes(mask * 1.0, structure=np.ones((sz, sz))) == 1
-    )
+    mask = ndi.morphology.binary_fill_holes(mask * 1.0, structure=np.ones((sz, sz))) == 1
     return np.stack((mask, mask, mask), axis=2)
 
 
@@ -140,9 +130,7 @@ class Generator(object):
         # tranform
         image, mask = scale(image, mask, factor=factor)
         image, mask = hflip(image, mask)
-        image_t, mask_t, h = transform(
-            image, mask, angle=angle, translation=translation, warp=warp
-        )
+        image_t, mask_t, h = transform(image, mask, angle=angle, translation=translation, warp=warp)
         image_ilu = image_t.copy()
 
         # normalize illumination change

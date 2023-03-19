@@ -1,31 +1,22 @@
-import os
-import sys
-import numpy as np
-import matplotlib.pyplot as plt
 import random
-
-import torch
-from torchvision import transforms
-
-from PIL import Image
-import imageio
-import datetime
-
-import scipy.misc
-import cv2
 import time
 
+import cv2
+import imageio
+import matplotlib.pyplot as plt
+import numpy as np
 
-sys.path.append("../")
 import pytvision
-from pytvision.transforms import transforms as mtrans
 from pytvision.datasets.ellipse_dataset import SyntethicCircleDataset
+from pytvision.datasets.utility import to_rgb
+from pytvision.transforms import transforms as mtrans
 from pytvision.transforms.aumentation import (
+    ObjectImageAndMaskTransform,
     ObjectImageMaskAndWeightTransform,
     ObjectImageTransform,
-    ObjectImageAndMaskTransform,
 )
-from pytvision.datasets.utility import to_rgb
+
+from torchvision import transforms
 
 
 def create_gif(pathname, frames, duration=0.2):
@@ -48,9 +39,7 @@ def stand(image, imsize=(250, 250)):
     return cv2.resize(to_rgb(norm(image)), imsize, interpolation=cv2.INTER_LANCZOS4)
 
 
-def tranform_image_performs(
-    image, transform, num_transform=4, bsave=False, bshow=True, bgrid=False
-):
+def tranform_image_performs(image, transform, num_transform=4, bsave=False, bshow=True, bgrid=False):
 
     frames = []
     for i in range(num_transform):
@@ -86,9 +75,7 @@ def tranform_image_performs(
         print("save: ", filename)
 
 
-def tranform_image_and_mask_performs(
-    data, name, num_transform=4, bsave=False, bshow=True, bgrid=False
-):
+def tranform_image_and_mask_performs(data, name, num_transform=4, bsave=False, bshow=True, bgrid=False):
 
     frames = []
     for i in range(min(num_transform, len(data))):
@@ -135,9 +122,7 @@ def transform_aug():
             # mtrans.Rotate180(),
             # mtrans.Rotate270(),
             ## resize and crop
-            mtrans.ToResize(
-                (600, 600), resize_mode="asp", padding_mode=cv2.BORDER_CONSTANT
-            ),
+            mtrans.ToResize((600, 600), resize_mode="asp", padding_mode=cv2.BORDER_CONSTANT),
             # mtrans.ToPad( 20, 20, padding_mode=cv2.BORDER_CONSTANT ) ,
             # mtrans.CenterCrop( (200,200) ),
             # mtrans.RandomCrop( (400,400), limit=50, padding_mode=cv2.BORDER_REFLECT_101  ),

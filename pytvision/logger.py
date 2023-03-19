@@ -56,9 +56,7 @@ class Logger(object):
         self.title_name = title_name
 
         dloss = dict(zip(loss, [AverageFilterMeter() for _ in range(0, len(loss))]))
-        dmetrics = dict(
-            zip(metrics, [AverageFilterMeter() for _ in range(0, len(metrics))])
-        )
+        dmetrics = dict(zip(metrics, [AverageFilterMeter() for _ in range(0, len(metrics))]))
 
         self.info = {
             "loss": dloss,
@@ -81,9 +79,7 @@ class Logger(object):
         for t, k, v in self._get():
             v.reset()
 
-    def logger(
-        self, epoch, iterepoch, i, num, time, bplotter=True, bavg=False, bsummary=False
-    ):
+    def logger(self, epoch, iterepoch, i, num, time, bplotter=True, bavg=False, bsummary=False):
         strinfo = "|{}: {:4d}|{:4d}|{:4d} ".format(self.title_name, epoch, i, num)
         strinfo += "|time: {:8.4f} ".format(time.val)
         strsummary = "\nValidation:\n"
@@ -96,17 +92,11 @@ class Logger(object):
                 continue
 
             if bavg:
-                self.plotter.plot(
-                    t, "{}_{} (avg)".format(self.title_name, k), iterepoch, v.avg
-                )
+                self.plotter.plot(t, "{}_{} (avg)".format(self.title_name, k), iterepoch, v.avg)
             else:
-                self.plotter.plot(
-                    t, "{}_{} (avg)".format(self.title_name, k), iterepoch, v.favg
-                )
+                self.plotter.plot(t, "{}_{} (avg)".format(self.title_name, k), iterepoch, v.favg)
 
-            self.plotter.plot(
-                t, "{}_{} (val)".format(self.title_name, k), iterepoch, v.val
-            )
+            self.plotter.plot(t, "{}_{} (val)".format(self.title_name, k), iterepoch, v.val)
 
         print(strinfo, flush=True)
         if bsummary:
@@ -141,11 +131,7 @@ def summary(model, input_size):
                 params += th.prod(th.LongTensor(list(module.bias.size())))
             summary[m_key]["nb_params"] = params
 
-        if (
-            not isinstance(module, nn.Sequential)
-            and not isinstance(module, nn.ModuleList)
-            and not (module == model)
-        ):
+        if not isinstance(module, nn.Sequential) and not isinstance(module, nn.ModuleList) and not (module == model):
             hooks.append(module.register_forward_hook(hook))
 
     if th.cuda.is_available():

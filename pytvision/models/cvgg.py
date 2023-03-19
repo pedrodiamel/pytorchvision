@@ -25,9 +25,7 @@ def cvgg13(pretrained=False, **kwargs):
 
 
 class CVGG13(nn.Module):
-    def __init__(
-        self, num_classes=8, num_channels=1, init_weights=True, batch_norm=False
-    ):
+    def __init__(self, num_classes=8, num_channels=1, init_weights=True, batch_norm=False):
         super(CVGG13, self).__init__()
 
         self.num_classes = num_classes
@@ -35,9 +33,7 @@ class CVGG13(nn.Module):
         self.size_input = 64
         self.dim = 256 * 4 * 4  # output layer of representation
         cfg = [64, 64, "M", 128, 128, "M", 256, 256, 256, "M", 256, 256, 256, "M"]
-        self.features = self._create_features(
-            cfg, batch_norm=batch_norm, in_channels=num_channels
-        )
+        self.features = self._create_features(cfg, batch_norm=batch_norm, in_channels=num_channels)
 
         self.classifier = nn.Sequential(
             nn.Linear(256 * 4 * 4, 1024),

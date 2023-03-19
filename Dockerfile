@@ -1,6 +1,6 @@
 ARG UBUNTU_VERSION=18.04
-ARG CUDA_VERSION=11.6.0
-ARG PYTORCH_CUDA=11.6
+ARG CUDA_VERSION=11.7.0
+ARG PYTORCH_CUDA=11.7
 FROM nvidia/cuda:${CUDA_VERSION}-base-ubuntu${UBUNTU_VERSION}
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -56,5 +56,5 @@ RUN pip install ufmt==2.0.0 black==22.6.0 usort==1.0.4
 ADD requirements.txt .
 RUN pip install -r requirements.txt
 
-WORKDIR /workspace/pytv
-RUN python setup.py develop
+WORKDIR /workspaces/pytv
+RUN /bin/bash -c python /workspaces/pytv/setup.py develop

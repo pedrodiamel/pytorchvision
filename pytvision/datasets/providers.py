@@ -3,10 +3,8 @@ import os
 import numpy as np
 import PIL.Image
 
-from . import utility as utl
 
-
-class dataProvide(object):
+class dataProvider(object):
     def __init__(self):
         self.index = 0
         self.data = []
@@ -24,9 +22,7 @@ class dataProvide(object):
                 image = PIL.Image.open(pathname)
                 image.load()
             except IOError as e:
-                raise ValueError(
-                    'IOError: Trying to load "%s": %s' % (pathname, e.message)
-                )
+                raise ValueError('IOError: Trying to load "%s": %s' % (pathname, e.message))
         else:
             raise ValueError('"%s" not found' % pathname)
 
@@ -55,13 +51,13 @@ class dataProvide(object):
         return image
 
 
-class imageProvide(dataProvide):
+class imageProvider(dataProvider):
     """
     Management the image resources
     """
 
     def __init__(self, path, ext="jpg", fn_image=""):
-        super(imageProvide, self).__init__()
+        super(imageProvider, self).__init__()
 
         if os.path.isdir(path) is not True:
             raise ValueError("Path {} is not directory".format(path))
@@ -71,9 +67,7 @@ class imageProvide(dataProvide):
         self.pathimage = os.path.join(path, fn_image)
 
         # self.files = os.listdir(self.pathimage);
-        self.data = [
-            f for f in sorted(os.listdir(self.pathimage)) if f.split(".")[-1] == ext
-        ]
+        self.data = [f for f in sorted(os.listdir(self.pathimage)) if f.split(".")[-1] == ext]
         assert len(self.data)
         self.ext = ext
 
