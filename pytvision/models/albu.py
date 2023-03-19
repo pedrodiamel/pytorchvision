@@ -11,10 +11,26 @@ def albunet(pretrained=False, **kwargs):
     """ "AlbuNet model architecture"""
     model = AlbuNet(pretrained=pretrained, **kwargs)
 
-    if pretrained == True:
+    if pretrained:
         # model.load_state_dict(state['model'])
         pass
     return model
+
+
+def conv3x3(in_, out):
+    return nn.Conv2d(in_, out, 3, padding=1)
+
+
+class ConvRelu(nn.Module):
+    def __init__(self, in_, out):
+        super().__init__()
+        self.conv = conv3x3(in_, out)
+        self.activation = nn.ReLU(inplace=True)
+
+    def forward(self, x):
+        x = self.conv(x)
+        x = self.activation(x)
+        return x
 
 
 class DecoderBlockV2(nn.Module):
@@ -30,9 +46,7 @@ class DecoderBlockV2(nn.Module):
 
             self.block = nn.Sequential(
                 ConvRelu(in_channels, middle_channels),
-                nn.ConvTranspose2d(
-                    middle_channels, out_channels, kernel_size=4, stride=2, padding=1
-                ),
+                nn.ConvTranspose2d(middle_channels, out_channels, kernel_size=4, stride=2, padding=1),
                 nn.ReLU(inplace=True),
             )
         else:
@@ -80,34 +94,20 @@ class AlbuNet(nn.Module):
         self.encoder = torchvision.models.resnet34(pretrained=pretrained)
 
         self.relu = nn.ReLU(inplace=True)
-        self.conv1 = nn.Sequential(
-            self.encoder.conv1, self.encoder.bn1, self.encoder.relu, self.pool
-        )
+        self.conv1 = nn.Sequential(self.encoder.conv1, self.encoder.bn1, self.encoder.relu, self.pool)
 
         self.conv2 = self.encoder.layer1
         self.conv3 = self.encoder.layer2
         self.conv4 = self.encoder.layer3
         self.conv5 = self.encoder.layer4
 
-        self.center = DecoderBlockV2(
-            512, num_filters * 8 * 2, num_filters * 8, is_deconv
-        )
+        self.center = DecoderBlockV2(512, num_filters * 8 * 2, num_filters * 8, is_deconv)
 
-        self.dec5 = DecoderBlockV2(
-            512 + num_filters * 8, num_filters * 8 * 2, num_filters * 8, is_deconv
-        )
-        self.dec4 = DecoderBlockV2(
-            256 + num_filters * 8, num_filters * 8 * 2, num_filters * 8, is_deconv
-        )
-        self.dec3 = DecoderBlockV2(
-            128 + num_filters * 8, num_filters * 4 * 2, num_filters * 2, is_deconv
-        )
-        self.dec2 = DecoderBlockV2(
-            64 + num_filters * 2, num_filters * 2 * 2, num_filters * 2 * 2, is_deconv
-        )
-        self.dec1 = DecoderBlockV2(
-            num_filters * 2 * 2, num_filters * 2 * 2, num_filters, is_deconv
-        )
+        self.dec5 = DecoderBlockV2(512 + num_filters * 8, num_filters * 8 * 2, num_filters * 8, is_deconv)
+        self.dec4 = DecoderBlockV2(256 + num_filters * 8, num_filters * 8 * 2, num_filters * 8, is_deconv)
+        self.dec3 = DecoderBlockV2(128 + num_filters * 8, num_filters * 4 * 2, num_filters * 2, is_deconv)
+        self.dec2 = DecoderBlockV2(64 + num_filters * 2, num_filters * 2 * 2, num_filters * 2 * 2, is_deconv)
+        self.dec1 = DecoderBlockV2(num_filters * 2 * 2, num_filters * 2 * 2, num_filters, is_deconv)
         self.dec0 = ConvRelu(num_filters, num_filters)
         self.final = nn.Conv2d(num_filters, num_classes, kernel_size=1)
 

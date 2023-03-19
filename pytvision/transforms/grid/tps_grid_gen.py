@@ -34,9 +34,7 @@ class TPSGridGen(nn.Module):
 
         # create padded kernel matrix
         forward_kernel = torch.zeros(N + 3, N + 3)
-        target_control_partial_repr = compute_partial_repr(
-            target_control_points, target_control_points
-        )
+        target_control_partial_repr = compute_partial_repr(target_control_points, target_control_points)
         forward_kernel[:N, :N].copy_(target_control_partial_repr)
         forward_kernel[:N, -3].fill_(1)
         forward_kernel[-3, :N].fill_(1)
@@ -47,17 +45,13 @@ class TPSGridGen(nn.Module):
 
         # create target cordinate matrix
         HW = target_height * target_width
-        target_coordinate = list(
-            itertools.product(range(target_height), range(target_width))
-        )
+        target_coordinate = list(itertools.product(range(target_height), range(target_width)))
         target_coordinate = torch.Tensor(target_coordinate)  # HW x 2
         Y, X = target_coordinate.split(1, dim=1)
         Y = Y * 2 / (target_height - 1) - 1
         X = X * 2 / (target_width - 1) - 1
         target_coordinate = torch.cat([X, Y], dim=1)  # convert from (y, x) to (x, y)
-        target_coordinate_partial_repr = compute_partial_repr(
-            target_coordinate, target_control_points
-        )
+        target_coordinate_partial_repr = compute_partial_repr(target_coordinate, target_control_points)
         target_coordinate_repr = torch.cat(
             [target_coordinate_partial_repr, torch.ones(HW, 1), target_coordinate],
             dim=1,
@@ -82,7 +76,5 @@ class TPSGridGen(nn.Module):
             1,
         )
         mapping_matrix = torch.matmul(Variable(self.inverse_kernel), Y)
-        source_coordinate = torch.matmul(
-            Variable(self.target_coordinate_repr), mapping_matrix
-        )
+        source_coordinate = torch.matmul(Variable(self.target_coordinate_repr), mapping_matrix)
         return source_coordinate

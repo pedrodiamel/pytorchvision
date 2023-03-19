@@ -10,7 +10,7 @@ import torch
 
 from ..transforms.aumentation import ObjectImageAndLabelTransform, ObjectImageTransform
 from . import utility
-from .imageutl import imageProvide
+from .providers import imageProvider
 
 warnings.filterwarnings("ignore")
 
@@ -24,7 +24,7 @@ class Dataset(object):
         """
         Initialization
         Args:
-            @data: dataprovide class
+            @data: dataprovider class
             @num_channels:
             @tranform: tranform
         """
@@ -87,9 +87,7 @@ class ResampleDataset(object):
             self.labels_index.append(indx)
 
     def reset(self, weights):
-        self.dist_of_classes = np.array(
-            random.choices(self.classes, weights=weights, k=self.count)
-        )
+        self.dist_of_classes = np.array(random.choices(self.classes, weights=weights, k=self.count))
 
     def __len__(self):
         return self.count
@@ -181,9 +179,7 @@ class ODDataset(object):
         for index, (image, boxes) in enumerate(zip(image_group, boxs_group)):
             assert isinstance(
                 boxes, torch.Tensor
-            ), "'load_annotations' should return a list of numpy arrays, received: {}".format(
-                type(boxes)
-            )
+            ), "'load_annotations' should return a list of numpy arrays, received: {}".format(type(boxes))
 
             # test x2 < x1 | y2 < y1 | x1 < 0 | y1 < 0 | x2 <= 0 | y2 <= 0 | x2 >= image.shape[1] | y2 >= image.shape[0]
             invalid_indices = (

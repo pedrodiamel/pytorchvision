@@ -9,6 +9,7 @@ import PIL.Image as Image
 import PIL.ImageColor as ImageColor
 import PIL.ImageDraw as ImageDraw
 import PIL.ImageFont as ImageFont
+import scipy
 
 import torch
 from graphviz import Digraph
@@ -164,9 +165,7 @@ def draw_bounding_box(image, label, color="red", thickness=4):
     )
 
     try:
-        font = ImageFont.truetype(
-            "/usr/share/fonts/truetype/ttf-bitstream-vera/Vera.ttf", 32
-        )  #'arial.ttf'
+        font = ImageFont.truetype("/usr/share/fonts/truetype/ttf-bitstream-vera/Vera.ttf", 32)  #'arial.ttf'
     except IOError:
         font = ImageFont.load_default()
 
@@ -216,9 +215,7 @@ def draw_bounding_box_dic(image, label, color="red", thickness=4):
     )
 
     try:
-        font = ImageFont.truetype(
-            "/usr/share/fonts/truetype/ttf-bitstream-vera/Vera.ttf", 32
-        )  #'arial.ttf'
+        font = ImageFont.truetype("/usr/share/fonts/truetype/ttf-bitstream-vera/Vera.ttf", 32)  #'arial.ttf'
     except IOError:
         font = ImageFont.load_default()
 
@@ -351,9 +348,7 @@ def display_samples(dataloader, row=3, col=3, alphaback=0.3, alphaedge=0.2):
         for j in range(col):
             k = np.random.randint(len(dataloader))
             image, labels = dataloader[k]
-            imagecell = make_image_cell(
-                image, labels, alphaback=alphaback, alphaedge=alphaedge
-            )
+            imagecell = make_image_cell(image, labels, alphaback=alphaback, alphaedge=alphaedge)
 
             ax[i, j].imshow(imagecell)
             ax[i, j].set_title("Image Idx: %d" % (k,))
@@ -447,9 +442,7 @@ def visualizatedataset(data, num=25, imsize=(64, 64, 3), padding=1):
     for i in range(num):
         idx = np.random.randint(len(data))
         databatch[i, ...] = data[idx]["image"]
-    grid = utils.make_grid(
-        databatch, nrow=int(np.sqrt(num)), normalize=True, padding=padding
-    )
+    grid = utils.make_grid(databatch, nrow=int(np.sqrt(num)), normalize=True, padding=padding)
     plt.imshow(grid.numpy().transpose((1, 2, 0)))
 
 

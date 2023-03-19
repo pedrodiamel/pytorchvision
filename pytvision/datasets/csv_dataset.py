@@ -34,19 +34,13 @@ def _read_classes(csv_reader):
             class_name, class_id = row
         except ValueError:
             raise_from(
-                ValueError(
-                    "line {}: format should be 'class_name,class_id'".format(line)
-                ),
+                ValueError("line {}: format should be 'class_name,class_id'".format(line)),
                 None,
             )
-        class_id = _parse(
-            class_id, int, "line {}: malformed class ID: {{}}".format(line)
-        )
+        class_id = _parse(class_id, int, "line {}: malformed class ID: {{}}".format(line))
 
         if class_name in result:
-            raise ValueError(
-                "line {}: duplicate class name: '{}'".format(line, class_name)
-            )
+            raise ValueError("line {}: duplicate class name: '{}'".format(line, class_name))
         result[class_name] = class_id
     return result
 
@@ -62,9 +56,7 @@ def _read_annotations(csv_reader, classes):
         except ValueError:
             raise_from(
                 ValueError(
-                    "line {}: format should be 'img_file,x1,y1,x2,y2,class_name' or 'img_file,,,,,'".format(
-                        line
-                    )
+                    "line {}: format should be 'img_file,x1,y1,x2,y2,class_name' or 'img_file,,,,,'".format(line)
                 ),
                 None,
             )
@@ -83,25 +75,15 @@ def _read_annotations(csv_reader, classes):
 
         # Check that the bounding box is valid.
         if x2 <= x1:
-            raise ValueError(
-                "line {}: x2 ({}) must be higher than x1 ({})".format(line, x2, x1)
-            )
+            raise ValueError("line {}: x2 ({}) must be higher than x1 ({})".format(line, x2, x1))
         if y2 <= y1:
-            raise ValueError(
-                "line {}: y2 ({}) must be higher than y1 ({})".format(line, y2, y1)
-            )
+            raise ValueError("line {}: y2 ({}) must be higher than y1 ({})".format(line, y2, y1))
 
         # check if the current class name is correctly present
         if class_name not in classes:
-            raise ValueError(
-                "line {}: unknown class name: '{}' (classes: {})".format(
-                    line, class_name, classes
-                )
-            )
+            raise ValueError("line {}: unknown class name: '{}' (classes: {})".format(line, class_name, classes))
 
-        result[img_file].append(
-            {"x1": x1, "x2": x2, "y1": y1, "y2": y2, "class": class_name}
-        )
+        result[img_file].append({"x1": x1, "x2": x2, "y1": y1, "y2": y2, "class": class_name})
     return result
 
 
@@ -156,19 +138,15 @@ class ODCSVDatset(ODDataset):
         # csv with img_path, x1, y1, x2, y2, class_name
         try:
             with _open_for_csv(csv_data_file) as file:
-                self.image_data = _read_annotations(
-                    csv.reader(file, delimiter=","), self.classes
-                )
+                self.image_data = _read_annotations(csv.reader(file, delimiter=","), self.classes)
         except ValueError as e:
             raise_from(
-                ValueError(
-                    "invalid CSV annotations file: {}: {}".format(csv_data_file, e)
-                ),
+                ValueError("invalid CSV annotations file: {}: {}".format(csv_data_file, e)),
                 None,
             )
         self.image_names = list(self.image_data.keys())
 
-        super(OD_CSVDatset, self).__init__(**kwargs)
+        super(ODDataset, self).__init__(**kwargs)
 
     def size(self):
         """Size of the dataset."""

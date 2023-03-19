@@ -1,10 +1,9 @@
 import os
 
-import cv2
 import numpy as np  # linear algebra
 import pandas as pd  # data processing, CSV file I/O (e.g. pd.read_csv)
 
-from pytvision.datasets.imageutl import dataProvide
+from .providers import dataProvider
 
 
 def make_dataset(path, metadata, train, org):
@@ -14,20 +13,16 @@ def make_dataset(path, metadata, train, org):
     data = pd.read_csv(os.path.join(path, metadata))
     # filter dataset for only expression and valid image data
     # data = data[ [ exp in [0,1,2,3,4,5,6,7] for i,exp in enumerate(data['expression']) if (i != 235929 or i != 315313) ]   ]
-    ifilter = np.array(
-        [exp in [0, 1, 2, 3, 4, 5, 6, 7] for i, exp in enumerate(data["expression"])]
-    )
+    ifilter = np.array([exp in [0, 1, 2, 3, 4, 5, 6, 7] for i, exp in enumerate(data["expression"])])
 
     if train:
-        ifilter[
-            np.array([235929, 315313] if org else [235929, 315313, 87432, 126295])
-        ] = False
+        ifilter[np.array([235929, 315313] if org else [235929, 315313, 87432, 126295])] = False
 
     ifilter = np.where(ifilter == True)[0]
     return data, ifilter
 
 
-class AffectNetProvide(dataProvide):
+class AffectNetProvide(dataProvider):
     """Provide for AffectNet dataset
 
     Format
@@ -78,15 +73,8 @@ class AffectNetProvide(dataProvide):
         self.train = train
         self.org = org
 
-        self.data, self.indexs = make_dataset(
-            self.path, self.metadata, self.train, self.org
-        )
-        self.labels = np.array(
-            [
-                self.emo2ck[self.data["expression"][self.indexs[i]]]
-                for i in range(len(self.indexs))
-            ]
-        )
+        self.data, self.indexs = make_dataset(self.path, self.metadata, self.train, self.org)
+        self.labels = np.array([self.emo2ck[self.data["expression"][self.indexs[i]]] for i in range(len(self.indexs))])
         self.classes = np.unique(self.labels)
         self.numclass = len(self.classes)
 
@@ -118,9 +106,7 @@ class AffectNetProvide(dataProvide):
 
     def getlandamarks(self):
         i = self.index
-        return np.array(
-            [float(x) for x in self.data["facial_landmarks"][i].split(";")]
-        ).reshape(-1, 2)
+        return np.array([float(x) for x in self.data["facial_landmarks"][i].split(";")]).reshape(-1, 2)
 
     def bbox(self):
         i = self.index
@@ -135,9 +121,7 @@ class AffectNetProvide(dataProvide):
 def create_affect(path, train=True):
     folders_images = "Manually_Annotated/Manually_Annotated_Images"
     metadata = "training.csv" if train else "validation.csv"
-    return AffectNetProvide.create(
-        path=path, train=train, folders_images=folders_images, metadata=metadata
-    )
+    return AffectNetProvide.create(path=path, train=train, folders_images=folders_images, metadata=metadata)
 
 
 def create_affectdark(path, train):

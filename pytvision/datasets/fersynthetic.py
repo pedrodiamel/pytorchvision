@@ -10,7 +10,7 @@ import torch
 import torch.nn.functional
 import torch.utils.data as data
 
-from pytvision.datasets import imageutl as imutl, utility
+from pytvision.datasets import providers as imutl, utility
 from pytvision.transforms import functional as F
 
 from pytvision.transforms.aumentation import (
@@ -87,9 +87,7 @@ class SyntheticFaceDataset(data.Dataset):
         if self.bbackimage:
             idxk = random.randint(1, len(self.databack) - 1)
             back = self.databack[idxk]
-            back = F.resize_image(
-                back, 640, 1024, resize_mode="crop", interpolate_mode=cv2.INTER_LINEAR
-            )
+            back = F.resize_image(back, 640, 1024, resize_mode="crop", interpolate_mode=cv2.INTER_LINEAR)
             back = utility.to_channels(back, self.num_channels)
         else:
             back = np.ones((640, 1024, 3), dtype=np.uint8) * 255
@@ -218,9 +216,7 @@ class SecuencialSyntheticFaceDataset(data.Dataset):
         if self.bbackimage:
             idxk = random.randint(1, len(self.databack) - 1)
             back = self.databack[idxk]
-            back = F.resize_image(
-                back, 640, 1024, resize_mode="crop", interpolate_mode=cv2.INTER_LINEAR
-            )
+            back = F.resize_image(back, 640, 1024, resize_mode="crop", interpolate_mode=cv2.INTER_LINEAR)
             back = utility.to_channels(back, self.num_channels)
         else:
             back = np.ones((640, 1024, 3), dtype=np.uint8) * 255

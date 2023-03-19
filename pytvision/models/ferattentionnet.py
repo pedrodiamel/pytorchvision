@@ -256,27 +256,19 @@ class AttentionResNet(nn.Module):
             self.encoder = torchvision.models.resnet152(pretrained=pretrained)
             bottom_channel_nr = 2048
         else:
-            raise NotImplementedError(
-                "only 34, 101, 152 version of Resnet are implemented"
-            )
+            raise NotImplementedError("only 34, 101, 152 version of Resnet are implemented")
 
         # attention module
         self.pool = nn.MaxPool2d(2, 2)
         self.relu = nn.ReLU(inplace=True)
-        self.conv1 = nn.Sequential(
-            self.encoder.conv1, self.encoder.bn1, self.encoder.relu, self.pool
-        )
+        self.conv1 = nn.Sequential(self.encoder.conv1, self.encoder.bn1, self.encoder.relu, self.pool)
         self.conv2 = self.encoder.layer1
         self.conv3 = self.encoder.layer2
         self.conv4 = self.encoder.layer3
         self.conv5 = self.encoder.layer4
 
-        self.center = DecoderBlockV2(
-            bottom_channel_nr, num_filters * 8 * 2, num_filters * 8
-        )
-        self.dec5 = DecoderBlockV2(
-            bottom_channel_nr + num_filters * 8, num_filters * 8 * 2, num_filters * 8
-        )
+        self.center = DecoderBlockV2(bottom_channel_nr, num_filters * 8 * 2, num_filters * 8)
+        self.dec5 = DecoderBlockV2(bottom_channel_nr + num_filters * 8, num_filters * 8 * 2, num_filters * 8)
         self.dec4 = DecoderBlockV2(
             bottom_channel_nr // 2 + num_filters * 8,
             num_filters * 8 * 2,
@@ -292,9 +284,7 @@ class AttentionResNet(nn.Module):
             num_filters * 2 * 2,
             num_filters * 2 * 2,
         )
-        self.dec1 = DecoderBlockV2(
-            num_filters * 2 * 2, num_filters * 2 * 2, num_filters
-        )
+        self.dec1 = DecoderBlockV2(num_filters * 2 * 2, num_filters * 2 * 2, num_filters)
 
         self.attention_map = nn.Sequential(
             ConvRelu(num_filters, num_filters),
@@ -333,9 +323,7 @@ class FERAttentionNet(nn.Module):
 
         # ////////
         # attention module
-        self.attention_map = AttentionResNet(
-            in_channels=num_channels, out_channels=num_classes, pretrained=True
-        )
+        self.attention_map = AttentionResNet(in_channels=num_channels, out_channels=num_classes, pretrained=True)
 
         # feature module
         self.conv_input = nn.Conv2d(
@@ -376,9 +364,7 @@ class FERAttentionNet(nn.Module):
         # classification and reconstruction
         # TODO March 01, 2019: Select of classification and representation module
         if self.backcoder == "preactresnet":
-            self.netclass = preactresnet.preactresnet18(
-                num_classes=num_classes, num_channels=num_channels
-            )
+            self.netclass = preactresnet.preactresnet18(num_classes=num_classes, num_channels=num_channels)
         elif self.backcoder == "inception":
             self.netclass = inception.inception_v3(
                 num_classes=num_classes,
@@ -387,13 +373,9 @@ class FERAttentionNet(nn.Module):
                 pretrained=True,
             )
         elif self.backcoder == "resnet":
-            self.netclass = resnet.resnet18(
-                num_classes=num_classes, num_channels=num_channels
-            )
+            self.netclass = resnet.resnet18(num_classes=num_classes, num_channels=num_channels)
         elif self.backcoder == "cvgg":
-            self.netclass = cvgg.cvgg13(
-                num_classes=num_classes, num_channels=num_channels
-            )
+            self.netclass = cvgg.cvgg13(num_classes=num_classes, num_channels=num_channels)
         else:
             assert False
 
@@ -425,13 +407,9 @@ class FERAttentionNet(nn.Module):
         if self.backcoder == "preactresnet":
             att_pool = F.avg_pool2d(att_out, 2)  # if preactresnet
         elif self.backcoder == "inception":
-            att_pool = F.interpolate(
-                att_out, size=(299, 299), mode="bilinear", align_corners=False
-            )  # if inseption
+            att_pool = F.interpolate(att_out, size=(299, 299), mode="bilinear", align_corners=False)  # if inseption
         elif self.backcoder == "resnet":
-            att_pool = F.interpolate(
-                att_out, size=(224, 224), mode="bilinear", align_corners=False
-            )  # if resnet
+            att_pool = F.interpolate(att_out, size=(224, 224), mode="bilinear", align_corners=False)  # if resnet
         elif self.backcoder == "cvgg":
             att_pool = att_out  # if vgg
         else:
@@ -453,9 +431,7 @@ class FERAttentionSTNNet(nn.Module):
 
         # ////////
         # attention module
-        self.attention_map = AttentionResNet(
-            in_channels=num_channels, out_channels=num_classes, pretrained=True
-        )
+        self.attention_map = AttentionResNet(in_channels=num_channels, out_channels=num_classes, pretrained=True)
 
         # feature module
         self.conv_input = nn.Conv2d(
@@ -498,9 +474,7 @@ class FERAttentionSTNNet(nn.Module):
 
         # classification and reconstruction
         if self.backcoder == "preactresnet":
-            self.netclass = preactresnet.preactresnet18(
-                num_classes=num_classes, num_channels=num_channels
-            )
+            self.netclass = preactresnet.preactresnet18(num_classes=num_classes, num_channels=num_channels)
         elif self.backcoder == "inception":
             self.netclass = inception.inception_v3(
                 num_classes=num_classes,
@@ -509,13 +483,9 @@ class FERAttentionSTNNet(nn.Module):
                 pretrained=True,
             )
         elif self.backcoder == "resnet":
-            self.netclass = resnet.resnet18(
-                num_classes=num_classes, num_channels=num_channels
-            )
+            self.netclass = resnet.resnet18(num_classes=num_classes, num_channels=num_channels)
         elif self.backcoder == "cvgg":
-            self.netclass = cvgg.cvgg13(
-                num_classes=num_classes, num_channels=num_channels
-            )
+            self.netclass = cvgg.cvgg13(num_classes=num_classes, num_channels=num_channels)
         else:
             assert False
 
@@ -551,13 +521,9 @@ class FERAttentionSTNNet(nn.Module):
         if self.backcoder == "preactresnet":
             att_pool = F.avg_pool2d(att_t, 2)  # if preactresnet
         elif self.backcoder == "inception":
-            att_pool = F.interpolate(
-                att_t, size=(299, 299), mode="bilinear", align_corners=False
-            )  # if inseption
+            att_pool = F.interpolate(att_t, size=(299, 299), mode="bilinear", align_corners=False)  # if inseption
         elif self.backcoder == "resnet":
-            att_pool = F.interpolate(
-                att_t, size=(224, 224), mode="bilinear", align_corners=False
-            )  # if resnet
+            att_pool = F.interpolate(att_t, size=(224, 224), mode="bilinear", align_corners=False)  # if resnet
         elif self.backcoder == "cvgg":
             att_pool = att_out  # if vgg
         else:

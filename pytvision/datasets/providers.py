@@ -3,10 +3,8 @@ import os
 import numpy as np
 import PIL.Image
 
-from . import utility as utl
 
-
-class dataProvide(object):
+class dataProvider(object):
     def __init__(self):
         self.index = 0
         self.data = []
@@ -53,13 +51,13 @@ class dataProvide(object):
         return image
 
 
-class imageProvide(dataProvide):
+class imageProvider(dataProvider):
     """
     Management the image resources
     """
 
     def __init__(self, path, ext="jpg", fn_image=""):
-        super(imageProvide, self).__init__()
+        super(imageProvider, self).__init__()
 
         if os.path.isdir(path) is not True:
             raise ValueError("Path {} is not directory".format(path))

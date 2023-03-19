@@ -22,7 +22,6 @@ class CyclicLR(_LRScheduler):
     def get_lr(self):
         epoch_in_cycle = self.last_epoch % self.num_epochs_per_cycle
         return [
-            self.init_lr
-            * (self.lr_decay_factor ** (epoch_in_cycle // self.cycle_epochs_decay))
+            self.init_lr * (self.lr_decay_factor ** (epoch_in_cycle // self.cycle_epochs_decay))
             for base_lr in self.base_lrs
         ]

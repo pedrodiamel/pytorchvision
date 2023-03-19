@@ -90,11 +90,7 @@ def boxdimension(bbox):
 
 def isboxtruncate(box, imsize):
     "Is box truncate for the image"
-    return (
-        np.any(box < 0)
-        or np.any(box[:, 0] >= imsize[1])
-        or np.any(box[:, 1] >= imsize[0])
-    )
+    return np.any(box < 0) or np.any(box[:, 0] >= imsize[1]) or np.any(box[:, 1] >= imsize[0])
 
 
 def isboxocclude(bbox1, bbox2):

@@ -1,9 +1,7 @@
 import os
 
-import h5py
 import numpy as np
 import scipy.io
-import torch
 import torch.utils.data as data
 from PIL import Image
 
@@ -86,9 +84,7 @@ class Cars196(data.Dataset):
     filename_testims = "cars_ims_test.tgz"
     tgz_md5_testims = "4ce7ebf6a94d07f1952d94dd34c4d501"
 
-    url_testanno = (
-        "http://imagenet.stanford.edu/internal/car196/cars_test_annos_withlabels.mat"
-    )
+    url_testanno = "http://imagenet.stanford.edu/internal/car196/cars_test_annos_withlabels.mat"
     filename_testanno = "cars_test_annos_withlabels.mat"
     mat_md5_testanno = "b0a2b23655a3edd16d84508592a98d10"
 
@@ -117,11 +113,7 @@ class Cars196(data.Dataset):
         classes = []
 
         if train:
-            f = scipy.io.loadmat(
-                os.path.join(
-                    self.root, self.base_folder_devkit, self.filename_trainanno
-                )
-            )
+            f = scipy.io.loadmat(os.path.join(self.root, self.base_folder_devkit, self.filename_trainanno))
             base_folder_image = self.base_folder_trainims
         else:
             f = scipy.io.loadmat(os.path.join(self.root, self.filename_testanno))
@@ -204,13 +196,9 @@ class Cars196(data.Dataset):
         # filename_testanno
         # mat_md5_testanno
 
-        for url, base_folders, filename, tgz_md5 in zip(
-            urls, base_folders, filenames, tgz_md5s
-        ):
+        for url, base_folders, filename, tgz_md5 in zip(urls, base_folders, filenames, tgz_md5s):
             download_url(url, root, filename, tgz_md5)
-        download_url(
-            self.url_testanno, root, self.filename_testanno, self.mat_md5_testanno
-        )
+        download_url(self.url_testanno, root, self.filename_testanno, self.mat_md5_testanno)
 
         # extract file
         cwd = os.getcwd()
@@ -246,15 +234,11 @@ class Cars196MetricLearning(Cars196):
         train_images = []
         train_classes = []
 
-        f = scipy.io.loadmat(
-            os.path.join(self.root, self.base_folder_devkit, self.filename_trainanno)
-        )
+        f = scipy.io.loadmat(os.path.join(self.root, self.base_folder_devkit, self.filename_trainanno))
         for ant in f["annotations"][0]:
             name = ant[-1][0]
             idn = int(ant[-2])
-            train_images.append(
-                os.path.join(self.root, self.base_folder_trainims, name)
-            )
+            train_images.append(os.path.join(self.root, self.base_folder_trainims, name))
             train_classes.append(str(idn))
 
         test_images = []
@@ -285,18 +269,12 @@ class Cars196MetricLearning(Cars196):
         classes = (
             self.classes[: self.num_training_classes]
             if train
-            else self.classes[
-                self.num_training_classes : (
-                    self.num_training_classes + self.num_training_classes
-                )
-            ]
+            else self.classes[self.num_training_classes : (self.num_training_classes + self.num_training_classes)]
         )
 
         index = np.array([], dtype=int)
         for c in classes:
-            index = np.append(
-                index, np.where(self.targets == self.class_to_idx[c])[0], axis=0
-            )
+            index = np.append(index, np.where(self.targets == self.class_to_idx[c])[0], axis=0)
 
         class_to_idx = {classes[i]: i for i in range(len(classes))}
         samples = []

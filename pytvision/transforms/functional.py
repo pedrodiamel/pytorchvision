@@ -1,19 +1,15 @@
 import itertools
 
 import math
-import os
 import random
-import sys
 
 import cv2
 import numpy as np
 import PIL.Image
-import scipy.misc
 
 import torch
 
 from scipy import ndimage
-
 from scipy.interpolate import griddata
 from torch.autograd import Variable
 
@@ -40,7 +36,7 @@ def relabel(mask):
             relabel_dict[k] = 0
         else:
             relabel_dict[k] = i
-    for i, j in product(range(h), range(w)):
+    for i, j in itertools.product(range(h), range(w)):
         mask[i, j] = relabel_dict[mask[i, j]]
     return mask
 
@@ -62,9 +58,7 @@ def scale(image, factor, mode, padding_mode):
     padyB = int(np.ceil(borderX))
 
     if factor < 1:
-        img = cv2.copyMakeBorder(
-            img, padxL, padxR, padyT, padyB, borderType=padding_mode
-        )
+        img = cv2.copyMakeBorder(img, padxL, padxR, padyT, padyB, borderType=padding_mode)
     else:
         img = img[padyT : padyT + h, padxL : padxL + w, :]
 
@@ -105,12 +99,7 @@ def transpose(x):
 
 
 def is_box_inside(img, box):
-    return (
-        box[0] < 0
-        or box[1] < 0
-        or box[2] + box[0] >= img.shape[1]
-        or box[3] + box[1] >= img.shape[0]
-    )
+    return box[0] < 0 or box[1] < 0 or box[2] + box[0] >= img.shape[1] or box[3] + box[1] >= img.shape[0]
 
 
 def pad_img_to_fit_bbox(image, box, padding_mode):
@@ -239,9 +228,7 @@ def get_elastic_transform(shape, size_grid, deform):
             noise = np.array([noisex, noisey])
             if i == 0 or j == 0 or i == int(m / size_grid) or j == int(n / size_grid):
                 noise = np.array([0, 0])
-            destination = destination + [
-                np.array([i * size_grid, j * size_grid]) + noise
-            ]
+            destination = destination + [np.array([i * size_grid, j * size_grid]) + noise]
 
     source = np.vstack(source)
     destination = np.vstack(destination)
@@ -276,9 +263,7 @@ def get_tensor_elastic_transform(shape, size_grid, deform):
         )
     )
 
-    source_control_points = target_control_points + torch.Tensor(
-        target_control_points.size()
-    ).uniform_(-deform, deform)
+    source_control_points = target_control_points + torch.Tensor(target_control_points.size()).uniform_(-deform, deform)
     tps = TPSGridGen(target_height, target_width, target_control_points)
     source_coordinate = tps(Variable(torch.unsqueeze(source_control_points, 0)))
     grid = source_coordinate.view(1, target_height, target_width, 2)
@@ -328,19 +313,11 @@ def get_geometric_random_transform(imsize, degree, translation, warp):
     return rotation_mat, translation_mat, warp_mat
 
 
-def applay_geometrical_transform(
-    image, mat_r, mat_t, mat_w, interpolate_mode, padding_mode
-):
+def applay_geometrical_transform(image, mat_r, mat_t, mat_w, interpolate_mode, padding_mode):
     h, w = image.shape[:2]
-    image = cv2.warpAffine(
-        image, mat_r, (w, h), flags=interpolate_mode, borderMode=padding_mode
-    )
-    image = cv2.warpAffine(
-        image, mat_t, (w, h), flags=interpolate_mode, borderMode=padding_mode
-    )
-    image = cv2.warpAffine(
-        image, mat_w, (w, h), flags=interpolate_mode, borderMode=padding_mode
-    )
+    image = cv2.warpAffine(image, mat_r, (w, h), flags=interpolate_mode, borderMode=padding_mode)
+    image = cv2.warpAffine(image, mat_t, (w, h), flags=interpolate_mode, borderMode=padding_mode)
+    image = cv2.warpAffine(image, mat_w, (w, h), flags=interpolate_mode, borderMode=padding_mode)
     image = cunsqueeze(image)
     return image
 
@@ -360,9 +337,7 @@ def square_resize(img, newsize, interpolate_mode, padding_mode):
         padyT = int(np.floor((h - w) / 2.0))
         padyB = int(np.ceil((h - w) / 2.0))
 
-    image = cv2.copyMakeBorder(
-        image, padxL, padxR, padyT, padyB, borderType=padding_mode
-    )
+    image = cv2.copyMakeBorder(image, padxL, padxR, padyT, padyB, borderType=padding_mode)
     image = cv2.resize(image, (newsize, newsize), interpolation=interpolate_mode)
 
     image = cunsqueeze(image)
@@ -426,9 +401,7 @@ def resize_unet_transform(img, size, interpolate_mode, padding_mode):
     padyB = int(np.ceil(borderX))
 
     # image = square_resize(image, input_size, interpolate_mode, padding_mode)
-    image = cv2.copyMakeBorder(
-        image, padxL, padxR, padyT, padyB, borderType=padding_mode
-    )
+    image = cv2.copyMakeBorder(image, padxL, padxR, padyT, padyB, borderType=padding_mode)
     image = cv2.resize(image, (input_size, input_size), interpolation=interpolate_mode)
     image = cunsqueeze(image)
 
@@ -494,9 +467,7 @@ def image_to_array(image, channels=None):
             if image.ndim != 2:
                 if image.ndim == 3 and image.shape[2] in [3, 4]:
                     # color to grayscale. throw away alpha
-                    image = np.dot(image[:, :, :3], [0.299, 0.587, 0.114]).astype(
-                        np.uint8
-                    )
+                    image = np.dot(image[:, :, :3], [0.299, 0.587, 0.114]).astype(np.uint8)
                 else:
                     raise ValueError("invalid image shape: %s" % (image.shape,))
         elif channels == 3:
@@ -515,9 +486,7 @@ def image_to_array(image, channels=None):
                 image[:, :, 3] = 255
             elif image.shape[2] == 3:
                 # add alpha
-                image = np.append(
-                    image, np.zeros(image.shape[:2] + (1,), dtype="uint8"), axis=2
-                )
+                image = np.append(image, np.zeros(image.shape[:2] + (1,), dtype="uint8"), axis=2)
                 image[:, :, 3] = 255
             elif image.shape[2] != 4:
                 raise ValueError("invalid image shape: %s" % (image.shape,))
@@ -580,9 +549,7 @@ def resize_image(
         else:
             resize_width = width
             resize_height = int(round(image.shape[0] / width_ratio))
-        image = cv2.resize(
-            image, (resize_width, resize_height), interpolation=interpolate_mode
-        )
+        image = cv2.resize(image, (resize_width, resize_height), interpolation=interpolate_mode)
         image = cunsqueeze(image)
         return image
 
@@ -599,9 +566,7 @@ def resize_image(
             padyT = int(np.floor((h - w) / 2.0))
             padyB = int(np.ceil((h - w) / 2.0))
 
-        image = cv2.copyMakeBorder(
-            image, padyT, padyB, padxL, padxR, borderType=padding_mode
-        )
+        image = cv2.copyMakeBorder(image, padyT, padyB, padxL, padxR, borderType=padding_mode)
         image = cv2.resize(image, (width, height), interpolation=interpolate_mode)
         image = cunsqueeze(image)
         return image
@@ -614,9 +579,7 @@ def resize_image(
         else:
             resize_width = width
             resize_height = int(round(image.shape[0] / width_ratio))
-        image = cv2.resize(
-            image, (resize_width, resize_height), interpolation=interpolate_mode
-        )
+        image = cv2.resize(image, (resize_width, resize_height), interpolation=interpolate_mode)
         image = cunsqueeze(image)
 
         # chop off ends of dimension that is still too long
@@ -639,9 +602,7 @@ def resize_image(
                 resize_width = int(round(image.shape[1] / height_ratio))
                 if (width - resize_width) % 2 == 1:
                     resize_width += 1
-            image = cv2.resize(
-                image, (resize_width, resize_height), interpolation=interpolate_mode
-            )
+            image = cv2.resize(image, (resize_width, resize_height), interpolation=interpolate_mode)
             image = cunsqueeze(image)
 
         elif resize_mode == "half_crop":
@@ -653,9 +614,7 @@ def resize_image(
                 resize_height += 1
             elif width_ratio < height_ratio and (width - resize_width) % 2 == 1:
                 resize_width += 1
-            image = cv2.resize(
-                image, (resize_width, resize_height), interpolation=interpolate_mode
-            )
+            image = cv2.resize(image, (resize_width, resize_height), interpolation=interpolate_mode)
             image = cunsqueeze(image)
 
             # chop off ends of dimension that is still too long
@@ -738,22 +697,22 @@ def distort_img(
     max_skew,
     flip=True,
 ):
-    shift_y = out_height * max_shift * rnd.uniform(-1.0, 1.0)
-    shift_x = out_width * max_shift * rnd.uniform(-1.0, 1.0)
+    shift_y = out_height * max_shift * random.uniform(-1.0, 1.0)
+    shift_x = out_width * max_shift * random.uniform(-1.0, 1.0)
 
     # rotation angle
-    angle = max_angle * rnd.uniform(-1.0, 1.0)
+    angle = max_angle * random.uniform(-1.0, 1.0)
 
     # skew
-    sk_y = max_skew * rnd.uniform(-1.0, 1.0)
-    sk_x = max_skew * rnd.uniform(-1.0, 1.0)
+    sk_y = max_skew * random.uniform(-1.0, 1.0)
+    sk_x = max_skew * random.uniform(-1.0, 1.0)
 
     # scale
-    scale_y = rnd.uniform(1.0, max_scale)
-    if rnd.choice([True, False]):
+    scale_y = random.uniform(1.0, max_scale)
+    if random.choice([True, False]):
         scale_y = 1.0 / scale_y
-    scale_x = rnd.uniform(1.0, max_scale)
-    if rnd.choice([True, False]):
+    scale_x = random.uniform(1.0, max_scale)
+    if random.choice([True, False]):
         scale_x = 1.0 / scale_x
     T_im = crop_img(
         img,
@@ -768,7 +727,7 @@ def distort_img(
         sk_x,
         sk_y,
     )
-    if flip and rnd.choice([True, False]):
+    if flip and random.choice([True, False]):
         T_im = np.fliplr(T_im)
     return T_im
 
@@ -896,9 +855,7 @@ def resize_image_box(
                 padyB = int(np.ceil((h - w) / 2.0))
                 fx = fy
 
-            image = cv2.copyMakeBorder(
-                image, padxL, padxR, padyT, padyB, borderType=padding_mode
-            )
+            image = cv2.copyMakeBorder(image, padxL, padxR, padyT, padyB, borderType=padding_mode)
             image = cv2.resize(image, (width, height), interpolation=interpolate_mode)
             image = cunsqueeze(image)
 
@@ -915,9 +872,7 @@ def resize_image_box(
             resize_width = width
             resize_height = int(round(image.shape[0] / fx))
 
-        image = cv2.resize(
-            image, (resize_width, resize_height), interpolation=interpolate_mode
-        )
+        image = cv2.resize(image, (resize_width, resize_height), interpolation=interpolate_mode)
         image = cunsqueeze(image)
 
         # chop off ends of dimension that is still too long
@@ -925,16 +880,12 @@ def resize_image_box(
             fx = float(w) / resize_width
             fy = float(h) / resize_height
             start = int(round((resize_width - width) / 2.0))
-            return image[:, start : start + width], resize_box(
-                box, 1 / fx, 1 / fy, -start, 0
-            )
+            return image[:, start : start + width], resize_box(box, 1 / fx, 1 / fy, -start, 0)
         else:
             fx = float(w) / resize_width
             fy = float(h) / resize_height
             start = int(round((resize_height - height) / 2.0))
-            return image[start : start + height, :], resize_box(
-                box, 1 / fx, 1 / fy, 0, -start
-            )
+            return image[start : start + height, :], resize_box(box, 1 / fx, 1 / fy, 0, -start)
 
     else:
         raise Exception('unrecognized resize_mode "%s"' % resize_mode)
