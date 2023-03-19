@@ -11,10 +11,26 @@ def albunet(pretrained=False, **kwargs):
     """ "AlbuNet model architecture"""
     model = AlbuNet(pretrained=pretrained, **kwargs)
 
-    if pretrained == True:
+    if pretrained:
         # model.load_state_dict(state['model'])
         pass
     return model
+
+
+def conv3x3(in_, out):
+    return nn.Conv2d(in_, out, 3, padding=1)
+
+
+class ConvRelu(nn.Module):
+    def __init__(self, in_, out):
+        super().__init__()
+        self.conv = conv3x3(in_, out)
+        self.activation = nn.ReLU(inplace=True)
+
+    def forward(self, x):
+        x = self.conv(x)
+        x = self.activation(x)
+        return x
 
 
 class DecoderBlockV2(nn.Module):
@@ -85,25 +101,13 @@ class AlbuNet(nn.Module):
         self.conv4 = self.encoder.layer3
         self.conv5 = self.encoder.layer4
 
-        self.center = DecoderBlockV2(
-            512, num_filters * 8 * 2, num_filters * 8, is_deconv
-        )
+        self.center = DecoderBlockV2(512, num_filters * 8 * 2, num_filters * 8, is_deconv)
 
-        self.dec5 = DecoderBlockV2(
-            512 + num_filters * 8, num_filters * 8 * 2, num_filters * 8, is_deconv
-        )
-        self.dec4 = DecoderBlockV2(
-            256 + num_filters * 8, num_filters * 8 * 2, num_filters * 8, is_deconv
-        )
-        self.dec3 = DecoderBlockV2(
-            128 + num_filters * 8, num_filters * 4 * 2, num_filters * 2, is_deconv
-        )
-        self.dec2 = DecoderBlockV2(
-            64 + num_filters * 2, num_filters * 2 * 2, num_filters * 2 * 2, is_deconv
-        )
-        self.dec1 = DecoderBlockV2(
-            num_filters * 2 * 2, num_filters * 2 * 2, num_filters, is_deconv
-        )
+        self.dec5 = DecoderBlockV2(512 + num_filters * 8, num_filters * 8 * 2, num_filters * 8, is_deconv)
+        self.dec4 = DecoderBlockV2(256 + num_filters * 8, num_filters * 8 * 2, num_filters * 8, is_deconv)
+        self.dec3 = DecoderBlockV2(128 + num_filters * 8, num_filters * 4 * 2, num_filters * 2, is_deconv)
+        self.dec2 = DecoderBlockV2(64 + num_filters * 2, num_filters * 2 * 2, num_filters * 2 * 2, is_deconv)
+        self.dec1 = DecoderBlockV2(num_filters * 2 * 2, num_filters * 2 * 2, num_filters, is_deconv)
         self.dec0 = ConvRelu(num_filters, num_filters)
         self.final = nn.Conv2d(num_filters, num_classes, kernel_size=1)
 

@@ -24,9 +24,7 @@ class dataProvide(object):
                 image = PIL.Image.open(pathname)
                 image.load()
             except IOError as e:
-                raise ValueError(
-                    'IOError: Trying to load "%s": %s' % (pathname, e.message)
-                )
+                raise ValueError('IOError: Trying to load "%s": %s' % (pathname, e.message))
         else:
             raise ValueError('"%s" not found' % pathname)
 
@@ -71,9 +69,7 @@ class imageProvide(dataProvide):
         self.pathimage = os.path.join(path, fn_image)
 
         # self.files = os.listdir(self.pathimage);
-        self.data = [
-            f for f in sorted(os.listdir(self.pathimage)) if f.split(".")[-1] == ext
-        ]
+        self.data = [f for f in sorted(os.listdir(self.pathimage)) if f.split(".")[-1] == ext]
         assert len(self.data)
         self.ext = ext
 

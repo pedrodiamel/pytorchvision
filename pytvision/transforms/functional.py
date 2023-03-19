@@ -1,19 +1,15 @@
 import itertools
 
 import math
-import os
 import random
-import sys
 
 import cv2
 import numpy as np
 import PIL.Image
-import scipy.misc
 
 import torch
 
 from scipy import ndimage
-
 from scipy.interpolate import griddata
 from torch.autograd import Variable
 
@@ -40,7 +36,7 @@ def relabel(mask):
             relabel_dict[k] = 0
         else:
             relabel_dict[k] = i
-    for i, j in product(range(h), range(w)):
+    for i, j in itertools.product(range(h), range(w)):
         mask[i, j] = relabel_dict[mask[i, j]]
     return mask
 
@@ -471,9 +467,7 @@ def image_to_array(image, channels=None):
             if image.ndim != 2:
                 if image.ndim == 3 and image.shape[2] in [3, 4]:
                     # color to grayscale. throw away alpha
-                    image = np.dot(image[:, :, :3], [0.299, 0.587, 0.114]).astype(
-                        np.uint8
-                    )
+                    image = np.dot(image[:, :, :3], [0.299, 0.587, 0.114]).astype(np.uint8)
                 else:
                     raise ValueError("invalid image shape: %s" % (image.shape,))
         elif channels == 3:

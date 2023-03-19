@@ -34,9 +34,7 @@ class TPSGridGen(nn.Module):
 
         # create padded kernel matrix
         forward_kernel = torch.zeros(N + 3, N + 3)
-        target_control_partial_repr = compute_partial_repr(
-            target_control_points, target_control_points
-        )
+        target_control_partial_repr = compute_partial_repr(target_control_points, target_control_points)
         forward_kernel[:N, :N].copy_(target_control_partial_repr)
         forward_kernel[:N, -3].fill_(1)
         forward_kernel[-3, :N].fill_(1)
@@ -78,7 +76,5 @@ class TPSGridGen(nn.Module):
             1,
         )
         mapping_matrix = torch.matmul(Variable(self.inverse_kernel), Y)
-        source_coordinate = torch.matmul(
-            Variable(self.target_coordinate_repr), mapping_matrix
-        )
+        source_coordinate = torch.matmul(Variable(self.target_coordinate_repr), mapping_matrix)
         return source_coordinate

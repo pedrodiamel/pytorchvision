@@ -1,28 +1,13 @@
 import torch
-import torchvision
 from torch import nn
-from torch.nn import functional as F
 from torchvision import models
-
-"""
-This script has been taken (and modified) from :
-https://github.com/ternaus/TernausNet
-
-@ARTICLE{arXiv:1801.05746,
-         author = {V. Iglovikov and A. Shvets},
-          title = {TernausNet: U-Net with VGG11 Encoder Pre-Trained on ImageNet for Image Segmentation},
-        journal = {ArXiv e-prints},
-         eprint = {1801.05746}, 
-           year = 2018
-        }
-"""
 
 
 __all__ = ["UNet11", "unet11"]
 
 
 def unet11(pretrained=False, **kwargs):
-    """ "UNet11 model architecture
+    """UNet11 model architecture
     pretrained:
             False - no pre-trained network is used
             True  - encoder is pre-trained with VGG11
@@ -105,21 +90,11 @@ class UNet11(nn.Module):
         self.conv5s = self.encoder[16]
         self.conv5 = self.encoder[18]
 
-        self.center = DecoderBlock(
-            num_filters * 8 * 2, num_filters * 8 * 2, num_filters * 8
-        )
-        self.dec5 = DecoderBlock(
-            num_filters * (16 + 8), num_filters * 8 * 2, num_filters * 8
-        )
-        self.dec4 = DecoderBlock(
-            num_filters * (16 + 8), num_filters * 8 * 2, num_filters * 4
-        )
-        self.dec3 = DecoderBlock(
-            num_filters * (8 + 4), num_filters * 4 * 2, num_filters * 2
-        )
-        self.dec2 = DecoderBlock(
-            num_filters * (4 + 2), num_filters * 2 * 2, num_filters
-        )
+        self.center = DecoderBlock(num_filters * 8 * 2, num_filters * 8 * 2, num_filters * 8)
+        self.dec5 = DecoderBlock(num_filters * (16 + 8), num_filters * 8 * 2, num_filters * 8)
+        self.dec4 = DecoderBlock(num_filters * (16 + 8), num_filters * 8 * 2, num_filters * 4)
+        self.dec3 = DecoderBlock(num_filters * (8 + 4), num_filters * 4 * 2, num_filters * 2)
+        self.dec2 = DecoderBlock(num_filters * (4 + 2), num_filters * 2 * 2, num_filters)
         self.dec1 = ConvRelu(num_filters * (2 + 1), num_filters)
 
         self.final = nn.Conv2d(num_filters, num_classes, kernel_size=1)

@@ -93,7 +93,7 @@ class BlurRender(object):
         texp = self.texp
 
         # create trajectoria 2d
-        x, l = self._trajetory_2d(trajSize=pSFsize, anxiety=anxiety, numT=numT, maxTotalLength=maxTotalLength)
+        x, len = self._trajetory_2d(trajSize=pSFsize, anxiety=anxiety, numT=numT, maxTotalLength=maxTotalLength)
         # create kernel
         psf, power = self._motionnolinealkernel(x, texp=texp, pSFsize=pSFsize)
         # blur
@@ -105,11 +105,9 @@ class BlurRender(object):
         psnr = self._psnr(image, imnoise)
 
         # coneficient
-        coef = (l * power) / (l + power)
+        coef = (len * power) / (len + power)
 
         return imnoise, psnr, coef
-
-    ## motion blur
 
     # Motion linear kernel
     def _motionlinalkernel(self, length=9, angle=0):
@@ -195,11 +193,13 @@ class BlurRender(object):
 
         return PSF, power
 
-    ## Trajetory
-    # http://home.deib.polimi.it/boracchi/Projects/PSFGeneration.html
-    # https://github.com/handong1587/PSF_generation
-    # http://home.deib.polimi.it/boracchi/docs/2012_03_Boracchi-Foi-TIP_Modeling.pdf
-    # https://arxiv.org/pdf/1612.02583.pdf
+    """
+    Trajetory
+    http://home.deib.polimi.it/boracchi/Projects/PSFGeneration.html
+    https://github.com/handong1587/PSF_generation
+    http://home.deib.polimi.it/boracchi/docs/2012_03_Boracchi-Foi-TIP_Modeling.pdf
+    https://arxiv.org/pdf/1612.02583.pdf
+    """
 
     def _trajetory_2d(self, trajSize=64, anxiety=0.1, numT=2000, maxTotalLength=60):
         """
@@ -240,9 +240,7 @@ class BlurRender(object):
             # determine if there is an abrupt (impulsive) shake
             if random.random() < freqBigShakes * anxiety:
                 # if yes, determine the next direction which is likely to be opposite to the previous one
-                nextDirection = (
-                    2 * v * (np.exp(1j * (np.pi + (np.random.rand(1) - 0.5))))
-                )
+                nextDirection = 2 * v * (np.exp(1j * (np.pi + (np.random.rand(1) - 0.5))))
                 abruptShakesCounter = abruptShakesCounter + 1
             else:
                 nextDirection = 0
@@ -268,7 +266,7 @@ class BlurRender(object):
 
         return x, length
 
-    ## metrics
+    """Metrics"""
 
     def _desviation(self, X, texp):
         """
@@ -298,7 +296,7 @@ class BlurRender(object):
         return np.maximum(Cl, Cs)
         # Cs
 
-    ## metricas referenciales
+    """Reference metrics"""
 
     def _isnr(self, original, noisy, restore):
         """

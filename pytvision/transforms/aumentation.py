@@ -20,16 +20,16 @@ class ObjectTransform(object):
     def size(self):
         pass
 
-    # pytorch transform
     def to_tensor(self):
+        """pytorch transform to tensor"""
         pass
 
-    ##interface of dict output
     def to_dict(self):
+        """interface of dict output"""
         pass
 
-    ##interface of value/tupla output
     def to_value(self):
+        """interface of value/tupla output"""
         pass
 
 
@@ -39,49 +39,66 @@ class ObjectRegressionTransform(ObjectTransform):
         self.y = y
 
     def size(self):
-        return x.shape[0]
+        return self.x.shape[0]
 
-    # pytorch transform
     def to_tensor(self):
+        """pytorch transform"""
         x = np.array(self.x)
         y = np.array(self.y)
         self.x = torch.from_numpy(x).float()
         self.y = torch.from_numpy(y).float()
 
-    ##interface of dict output
     def to_dict(self):
-        return {"x": x, "y": y}
+        """interface of dict output"""
+        return {"x": self.x, "y": self.y}
 
-    ##interface of value/tupla output
     def to_value(self):
+        """interface of value/tupla output"""
         return self.x, self.y
 
 
 class ObjectImageTransform(ObjectTransform):
     def __init__(self, image):
+        """
+        Object Image Transform
+        Arguments:
+            image (nparray): original image
+        """
         self.image = image
 
     def size(self):
         return self.image.shape
 
-    # blur transforms
-
-    ### lineal blur transform
     def lineal_blur(self, gen):
+        """
+        lineal blur transform
+        Arguments:
+            gen (object): linear blur generator
+        """
         self.image, _ = gen.generatelineal(self.image)
 
-    ### motion blur transform
     def motion_blur(self, gen):
+        """
+        motion blur transform
+        Arguments:
+            gen (object): motion blur generator
+        """
         self.image, _, _ = gen.generatecurve(self.image)
 
-    ### gaussian blur
     def gaussian_blur(self, wnd):
+        """
+        gaussian blur transform
+        Arguments:
+            gen (object): gaussian blur generator
+        """
         self.image = cv2.GaussianBlur(self.image, (wnd, wnd), 0)
 
-    # colors transforms
-
-    ### add noice
     def add_noise(self, noise):
+        """
+        add noice
+        Arguments:
+            noise (nparray): noise image
+        """
         image = self.image
         assert np.any(image.shape[:2] == noise.shape)
 
@@ -97,7 +114,6 @@ class ObjectImageTransform(ObjectTransform):
         image = cv2.cvtColor(lab, cv2.COLOR_LAB2RGB)
         self.image = image
 
-    ### brightness
     def brightness(self, alpha):
         img = np.copy(self.image)
         maxval = np.max(img[..., :3])
@@ -105,7 +121,6 @@ class ObjectImageTransform(ObjectTransform):
         img[..., :3] = F.clip(alpha * img[..., :3].astype(np.float32), dtype, maxval)
         self.image = img
 
-    ### brightness shift
     def brightness_shift(self, alpha, scale_value):
         img = np.copy(self.image)
         maxval = np.max(img[..., :3])
@@ -113,20 +128,15 @@ class ObjectImageTransform(ObjectTransform):
         img[..., :3] = F.clip(alpha * scale_value + img[..., :3].astype(np.float32), dtype, maxval)
         self.image = img
 
-    ### contrast
     def contrast(self, alpha):
         img = np.copy(self.image)
         gray = cv2.cvtColor(img[:, :, :3], cv2.COLOR_RGB2GRAY).astype(np.float32)
         gray = (3.0 * (1.0 - alpha) / gray.size) * np.sum(gray)
         maxval = np.max(img[..., :3])
         dtype = img.dtype
-        img[:, :, :3] = F.clip(
-            alpha * img[:, :, :3].astype(np.float32) + gray, dtype, maxval
-        )
+        img[:, :, :3] = F.clip(alpha * img[:, :, :3].astype(np.float32) + gray, dtype, maxval)
         self.image = img
 
-    ### saturation
-    # REVIEW!!!!
     def saturation(self, alpha):
         img = np.copy(self.image)
         maxval = np.max(img[..., :3])
@@ -137,7 +147,6 @@ class ObjectImageTransform(ObjectTransform):
         img[..., :3] = F.clip(img[..., :3], dtype, maxval)
         self.image = img
 
-    ### hue saturation shift
     def hue_saturation_shift(self, alpha):
         image = np.copy(self.image)
         h = int(alpha * 180)
@@ -146,7 +155,6 @@ class ObjectImageTransform(ObjectTransform):
         image = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
         self.image = image
 
-    ### hue saturation
     def hue_saturation(self, hue_shift, sat_shift, val_shift):
         image = np.copy(self.image)
         image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
@@ -158,7 +166,6 @@ class ObjectImageTransform(ObjectTransform):
         image = cv2.cvtColor(image, cv2.COLOR_HSV2RGB)
         self.image = image
 
-    ### rgb shift
     def rgbshift(self, r_shift, g_shift, b_shift):
         image = np.copy(self.image)
         r, g, b = cv2.split(image)
@@ -168,38 +175,38 @@ class ObjectImageTransform(ObjectTransform):
         image = cv2.merge((r, g, b))
         self.image = image
 
-    ### gamma correction
     def gamma_correction(self, gamma):
         image = np.copy(self.image)
         table = np.array([((i / 255.0) ** (1.0 / gamma)) * 255 for i in np.arange(0, 256)]).astype("uint8")
-        image = cv2.LUT(image, table)  # apply gamma correction using the lookup table
+        # apply gamma correction using the lookup table
+        image = cv2.LUT(image, table)
         self.image = image
 
-    ### to gray
     def to_gray(self):
         image = np.copy(self.image)
         grayimage = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
         self.image = cv2.cvtColor(grayimage, cv2.COLOR_GRAY2RGB)
 
-    ### to negative
     def to_negative(self):
         image = np.copy(self.image)
         self.image = 255 - image
 
-    ### rgb chanels permutation
     def rgbpermutation(self, indexs):
         image = np.copy(self.image)
         self.image = image[:, :, indexs]
 
-    ### histogram ecualization
     def clahe(self, clipLimit, tileGridSize):
+        """
+        histogram ecualization clahe
+        Reference:
+        https://docs.opencv.org/4.x/d5/daf/tutorial_py_histogram_equalization.html
+        """
         im = np.copy(self.image)
         img_yuv = cv2.cvtColor(im, cv2.COLOR_RGB2YUV)
         clahe = cv2.createCLAHE(clipLimit=clipLimit, tileGridSize=tileGridSize)
         img_yuv[:, :, 0] = clahe.apply(img_yuv[:, :, 0])
         self.image = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2RGB)
 
-    ### mean normalization
     def mean_normalization(self, mean, std):
         tensor = self.image.float() / 255.0
         result_tensor = []
@@ -207,7 +214,6 @@ class ObjectImageTransform(ObjectTransform):
             result_tensor.append(t.sub_(m).div_(s))
         self.image = torch.stack(result_tensor, 0)
 
-    ### white normalization
     def white_normalization(self):
         tensor = self.image.float()
         new_tensor = []
@@ -217,15 +223,15 @@ class ObjectImageTransform(ObjectTransform):
             new_tensor.append(t)
         self.image = torch.stack(new_tensor, 0)
 
-    ### normalization
     def normalization(self):
         self.image = self.image.float() / 255.0
 
-    ### equalization
     def eq_normalization(self, A, A_pinv):
         self.image = F.equalization(self.image, A, A_pinv)
 
-    # Geometric transforms
+    """
+    Geometric transforms
+    """
 
     def crop(self, box, padding_mode):
         """Crop: return if validate crop"""
@@ -266,7 +272,6 @@ class ObjectImageTransform(ObjectTransform):
         tensor = torch.unsqueeze(self.image, dim=0)
         self.image = grid_sample(tensor, grid).data[0, ...]
 
-    ### resize
     def resize(self, imsize, resize_mode, padding_mode):
         self.image = F.resize_image(
             self.image,
@@ -277,11 +282,9 @@ class ObjectImageTransform(ObjectTransform):
             interpolate_mode=interpolate_image_mode,
         )
 
-    ### resize unet input
     def resize_unet_input(self, fov_size=388, padding_mode=cv2.BORDER_CONSTANT):
         self.image = F.resize_unet_transform(self.image, fov_size, interpolate_image_mode, padding_mode)
 
-    # pytorch transform
     def to_tensor(self):
         image = self.image
         # swap color axis because
@@ -291,15 +294,12 @@ class ObjectImageTransform(ObjectTransform):
         image = torch.from_numpy(image).float()
         self.image = image
 
-    ##interface of dict output
     def to_dict(self):
         return {"image": self.image}
 
-    ##interface of value/tupla output
     def to_value(self):
         return self.image
 
-    # Aux function for debug
     def _draw_grid(self, grid_size=50, color=(255, 0, 0), thickness=1):
         image = np.copy(self.image)
         self.image = F.draw_grid(image, grid_size, color, thickness)
@@ -308,14 +308,13 @@ class ObjectImageTransform(ObjectTransform):
 class ObjectImageMetadataTransform(ObjectImageTransform):
     def __init__(self, image, meta):
         """
-        Arg:
-            @image
-            @meta
+        Object Image Metadata Transform
+        Arguments:
+            image (nparray): original image
         """
         super(ObjectImageMetadataTransform, self).__init__(image)
         self.meta = meta
 
-    # pytorch transform
     def to_tensor(self):
         image = self.image
         meta = self.meta
@@ -330,7 +329,6 @@ class ObjectImageMetadataTransform(ObjectImageTransform):
         self.image = image
         self.meta = meta
 
-    ##interface of output
     def to_dict(self):
         return {
             "image": self.image,
@@ -344,16 +342,16 @@ class ObjectImageMetadataTransform(ObjectImageTransform):
 class ObjectImageAndAnnotations(ObjectImageTransform):
     def __init__(self, image, annotations, labels):
         """
-        Arg:
-            @image
-            @annotations
-            @labels
+        Object Image and Annotation Transform
+        Arguments:
+            image (nparray): original image
+            annotations
+            labels
         """
         super(ObjectImageAndAnnotations, self).__init__(image)
         self.annotations = annotations
         self.labels = labels
 
-    ### resize
     def resize(self, imsize, resize_mode, padding_mode):
         self.image, self.annotations = F.resize_image_box(
             self.image,
@@ -365,7 +363,6 @@ class ObjectImageAndAnnotations(ObjectImageTransform):
             interpolate_mode=interpolate_image_mode,
         )
 
-    # pytorch transform
     def to_tensor(self):
         image = self.image
         annotations = self.annotations
@@ -383,7 +380,6 @@ class ObjectImageAndAnnotations(ObjectImageTransform):
         self.annotations = annotations
         self.labels = labels
 
-    ##interface of output
     def to_dict(self):
         return {
             "image": self.image,
@@ -392,20 +388,19 @@ class ObjectImageAndAnnotations(ObjectImageTransform):
         }
 
     def to_value(self):
-        return self.image, self.annotations, labels
+        return self.image, self.annotations, self.labels
 
 
 class ObjectImageAndLabelTransform(ObjectImageTransform):
     def __init__(self, image, label):
         """
-        Arg:
-            @image
-            @label
+        Object Image Label Transform
+        Arguments:
+            image (nparray): original image
         """
         super(ObjectImageAndLabelTransform, self).__init__(image)
         self.label = label
 
-    # pytorch transform
     def to_tensor(self):
         image = self.image
         label = self.label
@@ -420,7 +415,6 @@ class ObjectImageAndLabelTransform(ObjectImageTransform):
         self.image = image
         self.label = label
 
-    ##interface of output
     def to_dict(self):
         return {"image": self.image, "label": self.label}
 
@@ -438,7 +432,6 @@ class ObjectImageAndMaskTransform(ObjectImageTransform):
         super(ObjectImageAndMaskTransform, self).__init__(image)
         self.mask = mask
 
-    # Geometric transforms
     def crop(self, box, padding_mode):
         """Crop: return if validate crop"""
 
@@ -495,7 +488,6 @@ class ObjectImageAndMaskTransform(ObjectImageTransform):
         self.image = grid_sample(torch.unsqueeze(self.image, dim=0), grid).data[0, ...]
         self.mask = grid_sample(torch.unsqueeze(self.mask, dim=0), grid).round().data[0, ...]
 
-    # pytorch transform
     def to_tensor(self):
         image = self.image
         mask = self.mask
@@ -508,7 +500,6 @@ class ObjectImageAndMaskTransform(ObjectImageTransform):
         self.image = torch.from_numpy(image).float()
         self.mask = torch.from_numpy(mask).float()
 
-    ### resize
     def resize(self, imsize, resize_mode, padding_mode):
         self.image = F.resize_image(
             self.image,
@@ -527,12 +518,10 @@ class ObjectImageAndMaskTransform(ObjectImageTransform):
             interpolate_mode=interpolate_mask_mode,
         )
 
-    # geometric transformation
     def resize_unet_input(self, fov_size=388, padding_mode=cv2.BORDER_CONSTANT):
         self.image = F.resize_unet_transform(self.image, fov_size, interpolate_image_mode, padding_mode)
         self.mask = F.resize_unet_transform(self.mask, fov_size, interpolate_mask_mode, padding_mode)
 
-    ##interface of output
     def to_dict(self):
         return {"image": self.image, "label": self.mask}
 
@@ -551,7 +540,6 @@ class ObjectImageAndMaskMetadataTransform(ObjectImageAndMaskTransform):
         super(ObjectImageAndMaskMetadataTransform, self).__init__(image, mask)
         self.metadata = metadata
 
-    # pytorch transform
     def to_tensor(self):
         image = self.image
         mask = self.mask
@@ -566,7 +554,6 @@ class ObjectImageAndMaskMetadataTransform(ObjectImageAndMaskTransform):
         self.mask = torch.from_numpy(mask).float()
         self.metadata = torch.from_numpy(meta).float()
 
-    ##interface of output
     def to_dict(self):
         return {"image": self.image, "label": self.mask, "metadata": self.metadata}
 
@@ -585,7 +572,6 @@ class ObjectImageMaskAndWeightTransform(ObjectImageAndMaskTransform):
         super(ObjectImageMaskAndWeightTransform, self).__init__(image, mask)
         self.weight = weight
 
-    # pytorch transform
     def to_tensor(self):
         image = self.image
         mask = self.mask
@@ -602,7 +588,9 @@ class ObjectImageMaskAndWeightTransform(ObjectImageAndMaskTransform):
         self.mask = torch.from_numpy(mask).float()
         self.weight = torch.from_numpy(weight).float()
 
-    # Geometric transformation
+    """
+    Geometric transformation
+    """
 
     def crop(self, box, padding_mode):
         """Crop: return if validate crop"""
@@ -681,7 +669,6 @@ class ObjectImageMaskAndWeightTransform(ObjectImageAndMaskTransform):
         self.mask = grid_sample(torch.unsqueeze(self.mask, dim=0), grid).round().data[0, ...]
         self.weight = grid_sample(torch.unsqueeze(self.weight, dim=0), grid).data[0, ...]
 
-    ### resize
     def resize(self, imsize, resize_mode, padding_mode):
         self.image = F.resize_image(
             self.image,
@@ -712,7 +699,6 @@ class ObjectImageMaskAndWeightTransform(ObjectImageAndMaskTransform):
         super(ObjectImageMaskAndWeightTransform, self).resize_unet_input(fov_size, padding_mode)
         self.weight = F.resize_unet_transform(self.weight, fov_size, interpolate_weight_mode, padding_mode)
 
-    ##interface of output
     def to_dict(self):
         return {
             "image": self.image,
@@ -733,12 +719,9 @@ class ObjectImageMaskMetadataAndWeightTransform(ObjectImageMaskAndWeightTransfor
             @weight
             @metadata
         """
-        super(ObjectImageMaskMetadataAndWeightTransform, self).__init__(
-            image, mask, weight
-        )
+        super(ObjectImageMaskMetadataAndWeightTransform, self).__init__(image, mask, weight)
         self.metadata = metadata
 
-    # pytorch transform
     def to_tensor(self):
         image = self.image
         mask = self.mask
@@ -757,7 +740,6 @@ class ObjectImageMaskMetadataAndWeightTransform(ObjectImageMaskAndWeightTransfor
         self.weight = torch.from_numpy(weight).float()
         self.metadata = torch.from_numpy(meta).float()
 
-    ##interface of output
     def to_dict(self):
         return {
             "image": self.image,
@@ -778,9 +760,10 @@ class ObjectImage2ImageTransform(ObjectTransform):
     def size(self):
         return [self.x.shape[1], self.x.shape[2], self.x.shape[0]]
 
-    # blur transforms
+    """
+    Blur transforms
+    """
 
-    ### lineal blur transform
     def lineal_blur(self, gen):
         xnew = []
         for i, e in enumerate(self.x):
@@ -788,7 +771,6 @@ class ObjectImage2ImageTransform(ObjectTransform):
             xnew.append(e)
         self.x = np.stack(xnew, axis=0)
 
-    ### motion blur transform
     def motion_blur(self, gen):
         xnew = []
         for i, e in enumerate(self.x):
@@ -796,7 +778,6 @@ class ObjectImage2ImageTransform(ObjectTransform):
             xnew.append(e[:, :, 0])
         self.x = np.stack(xnew, axis=0)
 
-    ### gaussian blur
     def gaussian_blur(self, wnd):
         xnew = []
         for i, e in enumerate(self.x):
@@ -804,7 +785,9 @@ class ObjectImage2ImageTransform(ObjectTransform):
             xnew.append(e[:, :, 0])
         self.x = np.stack(xnew, axis=0)
 
-    # Geometric transformation
+    """
+    Geometric transformation
+    """
 
     def crop(self, box, padding_mode):
         """Crop: return if validate crop"""
@@ -896,9 +879,10 @@ class ObjectImage2ImageTransform(ObjectTransform):
         self.x = np.stack(xnew, axis=0)
         self.y = F.resize_unet_transform(self.y, fov_size, interpolate_image_mode, padding_mode)
 
-    # normalization
+    """
+    Normalization
+    """
 
-    ### mean
     def mean_normalization(self, mean, std):
         tensor = self.x
         result_tensor = []
@@ -906,7 +890,6 @@ class ObjectImage2ImageTransform(ObjectTransform):
             result_tensor.append(t.sub_(m).div_(s))
         self.x = torch.stack(result_tensor, 0)
 
-    ### white
     def white_normalization(self):
         tensor = self.x.float()
         new_tensor = []
@@ -916,7 +899,6 @@ class ObjectImage2ImageTransform(ObjectTransform):
             new_tensor.append(t)
         self.x = torch.stack(new_tensor, 0)
 
-    # pytorch transform
     def to_tensor(self):
         x = np.array(self.x)
         y = np.array(self.y).transpose((2, 0, 1)).astype(np.float)
@@ -924,10 +906,8 @@ class ObjectImage2ImageTransform(ObjectTransform):
         self.x = torch.from_numpy(x).float()
         self.y = torch.from_numpy(y).float()
 
-    ##interface of dict output
     def to_dict(self):
         return {"x": self.x, "y": self.y}
 
-    ##interface of value/tupla output
     def to_value(self):
         return self.x, self.y
