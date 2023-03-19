@@ -11,11 +11,13 @@ from io import BytesIO
 
 import cv2
 import numpy as np
+
+import PIL
 import requests
 import skfmm
 import skimage.morphology as morph
-import urllib3
 
+import urllib3
 from PIL import Image
 from scipy import ndimage
 
@@ -78,13 +80,13 @@ def get_label_mask(mask_img, border_img, seed_ths, threshold, seed_size=8, obj_s
     img_copy[m <= seed_ths] = 0
     img_copy[m > seed_ths] = 1
     img_copy = img_copy.astype(np.bool)
-    img_copy = remove_small_objects(img_copy, seed_size).astype(np.uint8)
+    img_copy = morph.remove_small_objects(img_copy, seed_size).astype(np.uint8)
     mask_img[mask_img <= threshold] = 0
     mask_img[mask_img > threshold] = 1
     mask_img = mask_img.astype(np.bool)
-    mask_img = remove_small_objects(mask_img, obj_size).astype(np.uint8)
+    mask_img = morph.remove_small_objects(mask_img, obj_size).astype(np.uint8)
     markers = ndimage.label(img_copy, output=np.uint32)[0]
-    labels = watershed(mask_img, markers, mask=mask_img, watershed_line=True)
+    labels = morph.watershed(mask_img, markers, mask=mask_img, watershed_line=True)
     return labels
 
 
@@ -219,10 +221,7 @@ def download_url(url, root, filename, md5):
         except:
             if url[:5] == "https":
                 url = url.replace("https:", "http:")
-                print(
-                    "Failed download. Trying https -> http instead."
-                    " Downloading " + url + " to " + fpath
-                )
+                print("Failed download. Trying https -> http instead." " Downloading " + url + " to " + fpath)
                 urllib.request.urlretrieve(url, fpath)
 
 
@@ -235,9 +234,7 @@ def list_dir(root, prefix=False):
             only returns the name of the directories found
     """
     root = os.path.expanduser(root)
-    directories = list(
-        filter(lambda p: os.path.isdir(os.path.join(root, p)), os.listdir(root))
-    )
+    directories = list(filter(lambda p: os.path.isdir(os.path.join(root, p)), os.listdir(root)))
 
     if prefix is True:
         directories = [os.path.join(root, d) for d in directories]

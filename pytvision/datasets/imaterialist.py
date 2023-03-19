@@ -8,7 +8,7 @@ from torchvision import datasets
 from ..transforms.aumentation import ObjectImageTransform
 
 from .datasets import utility
-from .imageutl import imageProvide
+from .providers import imageProvider
 
 
 class IMaterialistDatset(object):
@@ -29,7 +29,7 @@ class IMaterialistDatset(object):
 
 class IMaterialistImageDataset(object):
     def __init__(self, pathname, ext, num_channels=1, transform=None):
-        self.data = imageProvide(pathname, ext)
+        self.data = imageProvider(pathname, ext)
         self.transform = transform
         self.num_channels = num_channels
 
@@ -54,7 +54,7 @@ class IMaterialistImageDataset(object):
         return self.data.getid(i)
 
 
-class IMaterialist(imageProvide):
+class IMaterialist(imageProvider):
     """
     Management dataset <images, labes>
     """
@@ -62,9 +62,7 @@ class IMaterialist(imageProvide):
     def __init__(self, path, subset="train"):
         super(IMaterialist, self).__init__(path, "jpg", subset)
 
-        self.labels_orgs = np.array(
-            [int(y.split(".")[0].split("_")[-1]) for y in self.data]
-        )
+        self.labels_orgs = np.array([int(y.split(".")[0].split("_")[-1]) for y in self.data])
         self.classes_orgs = np.unique(self.labels_orgs)
 
         # retificate class

@@ -102,9 +102,7 @@ class StanfordOnlineProducts(data.Dataset):
                 data["class_id"],
                 data["super_class_id"],
             )
-            samples = np.stack(
-                [path_train, class_id_train, super_class_id_train], axis=1
-            )
+            samples = np.stack([path_train, class_id_train, super_class_id_train], axis=1)
         else:
             data = pd.read_csv(os.path.join(self.root, "Ebay_test.txt"), sep=" ")
             path_test, class_id_test, super_class_id_test = (
@@ -117,9 +115,7 @@ class StanfordOnlineProducts(data.Dataset):
         classes = np.array([int(s[1]) for s in samples])
         classes_name = np.unique(classes)
         class_to_idx = {classes_name[i]: i for i in range(len(classes_name))}
-        samples = np.array(
-            [(path, class_to_idx[ids], suid) for path, ids, suid in samples]
-        )
+        samples = np.array([(path, class_to_idx[ids], suid) for path, ids, suid in samples])
 
         classes = np.array([int(s[1]) for s in samples])
         classes_name = np.unique(classes)

@@ -23,9 +23,7 @@ class Fire(nn.Module):
         self.squeeze_activation = nn.ReLU(inplace=True)
         self.expand1x1 = nn.Conv2d(squeeze_planes, expand1x1_planes, kernel_size=1)
         self.expand1x1_activation = nn.ReLU(inplace=True)
-        self.expand3x3 = nn.Conv2d(
-            squeeze_planes, expand3x3_planes, kernel_size=3, padding=1
-        )
+        self.expand3x3 = nn.Conv2d(squeeze_planes, expand3x3_planes, kernel_size=3, padding=1)
         self.expand3x3_activation = nn.ReLU(inplace=True)
 
     def forward(self, x):
@@ -43,10 +41,7 @@ class SqueezeNet(nn.Module):
     def __init__(self, version=1.0, num_classes=1000, num_channels=3):
         super(SqueezeNet, self).__init__()
         if version not in [1.0, 1.1]:
-            raise ValueError(
-                "Unsupported SqueezeNet version {version}:"
-                "1.0 or 1.1 expected".format(version=version)
-            )
+            raise ValueError("Unsupported SqueezeNet version {version}:" "1.0 or 1.1 expected".format(version=version))
 
         self.num_classes = num_classes
         self.num_channels = num_channels

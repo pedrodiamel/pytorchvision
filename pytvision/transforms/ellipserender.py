@@ -84,12 +84,8 @@ class CircleRender(Render):
 
         k = 0
         for i in range(cnt):
-            mask, center, r, h = CircleRender().generatecircle(
-                n, m, cnt, rmin, rmax, border, sigma
-            )
-            if btouch and Render().istouch(
-                centers[: k + 1, :], radios[: k + 1], center, r
-            ):
+            mask, center, r, h = CircleRender().generatecircle(n, m, cnt, rmin, rmax, border, sigma)
+            if btouch and Render().istouch(centers[: k + 1, :], radios[: k + 1], center, r):
                 continue
 
             images[mask == 1] = h
@@ -155,12 +151,8 @@ class EllipseRender(Render):
 
         k = 0
         for i in range(cnt):
-            mask, center, axis, h = EllipseRender().generateellipse(
-                n, m, cnt, rmin, rmax, border, sigma
-            )
-            if btouch and Render().istouch(
-                centers[: k + 1, :], axiss[: k + 1, 1], center, axis[1]
-            ):
+            mask, center, axis, h = EllipseRender().generateellipse(n, m, cnt, rmin, rmax, border, sigma)
+            if btouch and Render().istouch(centers[: k + 1, :], axiss[: k + 1, 1], center, axis[1]):
                 continue
 
             images[mask == 1] = h

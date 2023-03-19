@@ -1,9 +1,5 @@
 # STD MODULES
-import math
 import os
-import shutil
-
-import numpy as np
 
 # TORCH MODULES
 import torch
@@ -129,9 +125,7 @@ class NeuralNetAbstract(object):
         # create visual visdom plot
         self.plotter = gph.VisdomLinePlotter(env_name=self.nameproject)
 
-        self._create_model(
-            arch, num_output_channels, num_input_channels, pretrained, **cfg_model
-        )
+        self._create_model(arch, num_output_channels, num_input_channels, pretrained, **cfg_model)
         self._create_loss(loss, **cfg_loss)
         self._create_optimizer(optimizer, lr, **cfg_opt)
         self._create_scheduler_lr(lrsch, **cfg_scheduler)
@@ -164,11 +158,7 @@ class NeuralNetAbstract(object):
                 self.adjust_learning_rate(epoch)
                 self.training(train_loader, epoch)
 
-                print(
-                    "\nEpoch: {}/{} ({}%)".format(
-                        epoch, epochs, int((float(epoch) / epochs) * 100)
-                    )
-                )
+                print("\nEpoch: {}/{} ({}%)".format(epoch, epochs, int((float(epoch) / epochs) * 100)))
                 print("-" * 25)
 
                 prec = self.evaluate(val_loader, epoch + 1)
@@ -177,9 +167,7 @@ class NeuralNetAbstract(object):
                 is_best = prec > best_prec
                 best_prec = max(prec, best_prec)
                 if epoch % snapshot == 0 or is_best or epoch == (epochs - 1):
-                    self.save(
-                        epoch, best_prec, is_best, "chk{:06d}.pth.tar".format(epoch)
-                    )
+                    self.save(epoch, best_prec, is_best, "chk{:06d}.pth.tar".format(epoch))
 
                 self._to_end_epoch(epoch, epochs, train_loader, val_loader)
 
@@ -228,13 +216,9 @@ class NeuralNetAbstract(object):
 
         # create optimizer
         if optimizer == "adam":
-            self.optimizer = torch.optim.Adam(
-                self.net.parameters(), lr=lr, amsgrad=True
-            )
+            self.optimizer = torch.optim.Adam(self.net.parameters(), lr=lr, amsgrad=True)
         elif optimizer == "sgd":
-            self.optimizer = torch.optim.SGD(
-                self.net.parameters(), lr=lr, **kwargs
-            )  # momentum=0.9, weight_decay=5e-4
+            self.optimizer = torch.optim.SGD(self.net.parameters(), lr=lr, **kwargs)  # momentum=0.9, weight_decay=5e-4
         elif optimizer == "rprop":
             self.optimizer = torch.optim.Rprop(self.net.parameters(), lr=lr)
         elif optimizer == "rmsprop":
@@ -255,15 +239,11 @@ class NeuralNetAbstract(object):
         if lrsch == "fixed":
             pass
         elif lrsch == "step":
-            self.lrscheduler = torch.optim.lr_scheduler.StepLR(
-                self.optimizer, **kwargs
-            )  # step_size=3, gamma=0.1
+            self.lrscheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, **kwargs)  # step_size=3, gamma=0.1
         elif lrsch == "cyclic":
             self.lrscheduler = netlearningrate.CyclicLR(self.optimizer, **kwargs)
         elif lrsch == "exp":
-            self.lrscheduler = torch.optim.lr_scheduler.ExponentialLR(
-                self.optimizer, **kwargs
-            )  # gamma=0.99
+            self.lrscheduler = torch.optim.lr_scheduler.ExponentialLR(self.optimizer, **kwargs)  # gamma=0.99
         elif lrsch == "plateau":
             self.lrscheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
                 self.optimizer, **kwargs
@@ -333,9 +313,7 @@ class NeuralNetAbstract(object):
                 checkpoint = (
                     torch.load(pathnamemodel)
                     if self.cuda
-                    else torch.load(
-                        pathnamemodel, map_location=lambda storage, loc: storage
-                    )
+                    else torch.load(pathnamemodel, map_location=lambda storage, loc: storage)
                 )
 
                 self._create_model(

@@ -30,9 +30,7 @@ class DecoderBlockV2(nn.Module):
 
             self.block = nn.Sequential(
                 ConvRelu(in_channels, middle_channels),
-                nn.ConvTranspose2d(
-                    middle_channels, out_channels, kernel_size=4, stride=2, padding=1
-                ),
+                nn.ConvTranspose2d(middle_channels, out_channels, kernel_size=4, stride=2, padding=1),
                 nn.ReLU(inplace=True),
             )
         else:
@@ -80,9 +78,7 @@ class AlbuNet(nn.Module):
         self.encoder = torchvision.models.resnet34(pretrained=pretrained)
 
         self.relu = nn.ReLU(inplace=True)
-        self.conv1 = nn.Sequential(
-            self.encoder.conv1, self.encoder.bn1, self.encoder.relu, self.pool
-        )
+        self.conv1 = nn.Sequential(self.encoder.conv1, self.encoder.bn1, self.encoder.relu, self.pool)
 
         self.conv2 = self.encoder.layer1
         self.conv3 = self.encoder.layer2

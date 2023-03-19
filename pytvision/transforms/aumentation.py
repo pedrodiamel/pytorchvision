@@ -110,9 +110,7 @@ class ObjectImageTransform(ObjectTransform):
         img = np.copy(self.image)
         maxval = np.max(img[..., :3])
         dtype = img.dtype
-        img[..., :3] = F.clip(
-            alpha * scale_value + img[..., :3].astype(np.float32), dtype, maxval
-        )
+        img[..., :3] = F.clip(alpha * scale_value + img[..., :3].astype(np.float32), dtype, maxval)
         self.image = img
 
     ### contrast
@@ -173,9 +171,7 @@ class ObjectImageTransform(ObjectTransform):
     ### gamma correction
     def gamma_correction(self, gamma):
         image = np.copy(self.image)
-        table = np.array(
-            [((i / 255.0) ** (1.0 / gamma)) * 255 for i in np.arange(0, 256)]
-        ).astype("uint8")
+        table = np.array([((i / 255.0) ** (1.0 / gamma)) * 255 for i in np.arange(0, 256)]).astype("uint8")
         image = cv2.LUT(image, table)  # apply gamma correction using the lookup table
         self.image = image
 
@@ -257,18 +253,14 @@ class ObjectImageTransform(ObjectTransform):
     def rotate270(self):
         self.image = F.rotate270(self.image)
 
-    def applay_geometrical_transform(
-        self, mat_r, mat_t, mat_w, padding_mode=cv2.BORDER_CONSTANT
-    ):
+    def applay_geometrical_transform(self, mat_r, mat_t, mat_w, padding_mode=cv2.BORDER_CONSTANT):
         self.image = F.applay_geometrical_transform(
             self.image, mat_r, mat_t, mat_w, interpolate_image_mode, padding_mode
         )
         return True
 
     def applay_elastic_transform(self, mapx, mapy, padding_mode=cv2.BORDER_CONSTANT):
-        self.image = cv2.remap(
-            self.image, mapx, mapy, interpolate_image_mode, borderMode=padding_mode
-        )
+        self.image = cv2.remap(self.image, mapx, mapy, interpolate_image_mode, borderMode=padding_mode)
 
     def applay_elastic_tensor_transform(self, grid):
         tensor = torch.unsqueeze(self.image, dim=0)
@@ -287,9 +279,7 @@ class ObjectImageTransform(ObjectTransform):
 
     ### resize unet input
     def resize_unet_input(self, fov_size=388, padding_mode=cv2.BORDER_CONSTANT):
-        self.image = F.resize_unet_transform(
-            self.image, fov_size, interpolate_image_mode, padding_mode
-        )
+        self.image = F.resize_unet_transform(self.image, fov_size, interpolate_image_mode, padding_mode)
 
     # pytorch transform
     def to_tensor(self):
@@ -490,30 +480,20 @@ class ObjectImageAndMaskTransform(ObjectImageTransform):
         self.image = F.rotate270(self.image)
         self.mask = F.rotate270(self.mask)
 
-    def applay_geometrical_transform(
-        self, mat_r, mat_t, mat_w, padding_mode=cv2.BORDER_CONSTANT
-    ):
+    def applay_geometrical_transform(self, mat_r, mat_t, mat_w, padding_mode=cv2.BORDER_CONSTANT):
         self.image = F.applay_geometrical_transform(
             self.image, mat_r, mat_t, mat_w, interpolate_image_mode, padding_mode
         )
-        self.mask = F.applay_geometrical_transform(
-            self.mask, mat_r, mat_t, mat_w, interpolate_mask_mode, padding_mode
-        )
+        self.mask = F.applay_geometrical_transform(self.mask, mat_r, mat_t, mat_w, interpolate_mask_mode, padding_mode)
         return True
 
     def applay_elastic_transform(self, mapx, mapy, padding_mode=cv2.BORDER_CONSTANT):
-        self.image = cv2.remap(
-            self.image, mapx, mapy, interpolate_image_mode, borderMode=padding_mode
-        )
-        self.mask = cv2.remap(
-            self.mask, mapx, mapy, interpolate_mask_mode, borderMode=padding_mode
-        )
+        self.image = cv2.remap(self.image, mapx, mapy, interpolate_image_mode, borderMode=padding_mode)
+        self.mask = cv2.remap(self.mask, mapx, mapy, interpolate_mask_mode, borderMode=padding_mode)
 
     def applay_elastic_tensor_transform(self, grid):
         self.image = grid_sample(torch.unsqueeze(self.image, dim=0), grid).data[0, ...]
-        self.mask = (
-            grid_sample(torch.unsqueeze(self.mask, dim=0), grid).round().data[0, ...]
-        )
+        self.mask = grid_sample(torch.unsqueeze(self.mask, dim=0), grid).round().data[0, ...]
 
     # pytorch transform
     def to_tensor(self):
@@ -549,12 +529,8 @@ class ObjectImageAndMaskTransform(ObjectImageTransform):
 
     # geometric transformation
     def resize_unet_input(self, fov_size=388, padding_mode=cv2.BORDER_CONSTANT):
-        self.image = F.resize_unet_transform(
-            self.image, fov_size, interpolate_image_mode, padding_mode
-        )
-        self.mask = F.resize_unet_transform(
-            self.mask, fov_size, interpolate_mask_mode, padding_mode
-        )
+        self.image = F.resize_unet_transform(self.image, fov_size, interpolate_image_mode, padding_mode)
+        self.mask = F.resize_unet_transform(self.mask, fov_size, interpolate_mask_mode, padding_mode)
 
     ##interface of output
     def to_dict(self):
@@ -645,9 +621,7 @@ class ObjectImageMaskAndWeightTransform(ObjectImageAndMaskTransform):
     def scale(self, factor, padding_mode=cv2.BORDER_CONSTANT):
         self.image = F.scale(self.image, factor, interpolate_image_mode, padding_mode)
         self.mask = F.scale(self.mask, factor, interpolate_mask_mode, padding_mode)
-        self.weight = F.scale(
-            self.weight, factor, interpolate_weight_mode, padding_mode
-        )
+        self.weight = F.scale(self.weight, factor, interpolate_weight_mode, padding_mode)
 
     def pad(self, h_pad=2, w_pad=2, padding_mode=cv2.BORDER_CONSTANT):
         self.image = F.pad(self.image, h_pad, w_pad, padding_mode)
@@ -679,31 +653,19 @@ class ObjectImageMaskAndWeightTransform(ObjectImageAndMaskTransform):
         self.mask = F.rotate270(self.mask)
         self.weight = F.rotate270(self.weight)
 
-    def applay_geometrical_transform(
-        self, mat_r, mat_t, mat_w, padding_mode=cv2.BORDER_CONSTANT
-    ):
+    def applay_geometrical_transform(self, mat_r, mat_t, mat_w, padding_mode=cv2.BORDER_CONSTANT):
         self.image = F.applay_geometrical_transform(
             self.image, mat_r, mat_t, mat_w, interpolate_image_mode, padding_mode
         )
-        self.mask = F.applay_geometrical_transform(
-            self.mask, mat_r, mat_t, mat_w, interpolate_mask_mode, padding_mode
-        )
+        self.mask = F.applay_geometrical_transform(self.mask, mat_r, mat_t, mat_w, interpolate_mask_mode, padding_mode)
         self.weight = F.applay_geometrical_transform(
             self.weight, mat_r, mat_t, mat_w, interpolate_weight_mode, padding_mode
         )
         return True
 
     def applay_elastic_transform(self, mapx, mapy, padding_mode=cv2.BORDER_CONSTANT):
-        self.image = F.cunsqueeze(
-            cv2.remap(
-                self.image, mapx, mapy, interpolate_image_mode, borderMode=padding_mode
-            )
-        )
-        self.mask = F.cunsqueeze(
-            cv2.remap(
-                self.mask, mapx, mapy, interpolate_mask_mode, borderMode=padding_mode
-            )
-        )
+        self.image = F.cunsqueeze(cv2.remap(self.image, mapx, mapy, interpolate_image_mode, borderMode=padding_mode))
+        self.mask = F.cunsqueeze(cv2.remap(self.mask, mapx, mapy, interpolate_mask_mode, borderMode=padding_mode))
         self.weight = F.cunsqueeze(
             cv2.remap(
                 self.weight,
@@ -716,12 +678,8 @@ class ObjectImageMaskAndWeightTransform(ObjectImageAndMaskTransform):
 
     def applay_elastic_tensor_transform(self, grid):
         self.image = grid_sample(torch.unsqueeze(self.image, dim=0), grid).data[0, ...]
-        self.mask = (
-            grid_sample(torch.unsqueeze(self.mask, dim=0), grid).round().data[0, ...]
-        )
-        self.weight = grid_sample(torch.unsqueeze(self.weight, dim=0), grid).data[
-            0, ...
-        ]
+        self.mask = grid_sample(torch.unsqueeze(self.mask, dim=0), grid).round().data[0, ...]
+        self.weight = grid_sample(torch.unsqueeze(self.weight, dim=0), grid).data[0, ...]
 
     ### resize
     def resize(self, imsize, resize_mode, padding_mode):
@@ -751,12 +709,8 @@ class ObjectImageMaskAndWeightTransform(ObjectImageAndMaskTransform):
         )
 
     def resize_unet_input(self, fov_size=388, padding_mode=cv2.BORDER_CONSTANT):
-        super(ObjectImageMaskAndWeightTransform, self).resize_unet_input(
-            fov_size, padding_mode
-        )
-        self.weight = F.resize_unet_transform(
-            self.weight, fov_size, interpolate_weight_mode, padding_mode
-        )
+        super(ObjectImageMaskAndWeightTransform, self).resize_unet_input(fov_size, padding_mode)
+        self.weight = F.resize_unet_transform(self.weight, fov_size, interpolate_weight_mode, padding_mode)
 
     ##interface of output
     def to_dict(self):
@@ -864,11 +818,7 @@ class ObjectImage2ImageTransform(ObjectTransform):
     def scale(self, factor, padding_mode=cv2.BORDER_CONSTANT):
         xnew = []
         for i, e in enumerate(self.x):
-            xnew.append(
-                F.scale(F.cunsqueeze(e), factor, interpolate_image_mode, padding_mode)[
-                    :, :, 0
-                ]
-            )
+            xnew.append(F.scale(F.cunsqueeze(e), factor, interpolate_image_mode, padding_mode)[:, :, 0])
         self.x = np.stack(xnew, axis=0)
         self.y = F.scale(self.y, factor, interpolate_image_mode, padding_mode)
 
@@ -941,14 +891,10 @@ class ObjectImage2ImageTransform(ObjectTransform):
         xnew = []
         for i, e in enumerate(self.x):
             xnew.append(
-                F.resize_unet_transform(
-                    F.cunsqueeze(e), fov_size, interpolate_image_mode, padding_mode
-                )[:, :, 0]
+                F.resize_unet_transform(F.cunsqueeze(e), fov_size, interpolate_image_mode, padding_mode)[:, :, 0]
             )
         self.x = np.stack(xnew, axis=0)
-        self.y = F.resize_unet_transform(
-            self.y, fov_size, interpolate_image_mode, padding_mode
-        )
+        self.y = F.resize_unet_transform(self.y, fov_size, interpolate_image_mode, padding_mode)
 
     # normalization
 

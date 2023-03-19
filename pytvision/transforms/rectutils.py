@@ -146,10 +146,7 @@ class Rect(object):
     def overlaps(self, other):
         """Return true if a rectangle overlaps this rectangle."""
         return (
-            self.right > other.left
-            and self.left < other.right
-            and self.top < other.bottom
-            and self.bottom > other.top
+            self.right > other.left and self.left < other.right and self.top < other.bottom and self.bottom > other.top
         )
 
     def intersect(self, other):
@@ -190,9 +187,7 @@ class Rect(object):
 
     def mult(self, xmul, ymul):
         """Return a rectangle with all coordinates multipled by a number."""
-        return Rect(
-            (self.left * xmul, self.top * ymul, self.right * xmul, self.bottom * ymul)
-        )
+        return Rect((self.left * xmul, self.top * ymul, self.right * xmul, self.bottom * ymul))
 
     def scale(self, scale):
         """Return a scaled rectangle with identical center."""

@@ -1,16 +1,17 @@
 import os
 import sys
+
+import cv2
 import numpy as np
 import pytest
 
 import torch
-from torch.utils.data import Dataset, DataLoader
-from torchvision import transforms
-import cv2
+from pytvision import visualization as view
 
 from pytvision.datasets.ellipse_dataset import SyntethicCircleDataset
 from pytvision.transforms import transforms as mtrans
-from pytvision import visualization as view
+from torch.utils.data import DataLoader, Dataset
+from torchvision import transforms
 
 # Output parameters
 PATHOUT = "/workspace/pytv/out"
@@ -79,9 +80,7 @@ def test_circle_dataloader():
         ),
     )
 
-    dataloader = DataLoader(
-        data, batch_size=batch_size, shuffle=True, num_workers=num_workers
-    )
+    dataloader = DataLoader(data, batch_size=batch_size, shuffle=True, num_workers=num_workers)
 
     image_result_batched = []
     for i, x in enumerate(dataloader):

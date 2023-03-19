@@ -1,6 +1,5 @@
 import csv
 import os
-import random as rnd
 import shutil
 import sys
 from collections import namedtuple
@@ -9,13 +8,11 @@ from itertools import islice
 
 import numpy as np
 from PIL import Image
-from skimage import io, transform
-
 from tqdm import tqdm
 
 from ..transforms.rectutils import Rect
 
-from .imageutl import dataProvide
+from .providers import dataProvider
 from .utility import check_integrity, download_url
 
 train = ["FER2013Train"]
@@ -78,7 +75,7 @@ def generate_training_data(base_folder, fer_path, ferplus_path):
     print("generate ferp dataset done...")
 
 
-class FERPDataset(dataProvide):
+class FERPDataset(dataProvider):
     """
     FER PLUS dataset
     A custom reader for FER+ dataset that support multiple modes as described in:
@@ -134,9 +131,7 @@ class FERPDataset(dataProvide):
             self.download()
 
         self.load_folders()
-        self.labels = np.array(
-            [np.argmax(self.data[i][1]) for i in range(len(self.data))]
-        )
+        self.labels = np.array([np.argmax(self.data[i][1]) for i in range(len(self.data))])
 
         # not used
         self.training_mode = "majority"
@@ -212,9 +207,7 @@ class FERPDataset(dataProvide):
         elif self.training_mode == "multi_target":
             new_target = np.array(target)
             new_target[new_target > 0] = 1.0
-            epsilon = (
-                0.001  # add small epsilon in order to avoid ill-conditioned computation
-            )
+            epsilon = 0.001  # add small epsilon in order to avoid ill-conditioned computation
             return (1 - epsilon) * new_target + epsilon * np.ones_like(target)
 
     def _process_data(self, emotion_raw):
@@ -261,9 +254,7 @@ class FERPDataset(dataProvide):
                         count += 1
                         if i >= 8:  # unknown or non-face share same number of max votes
                             valid_emotion = False
-                            if (
-                                sum(emotion) > maxval
-                            ):  # there have been other emotions ahead of unknown or non-face
+                            if sum(emotion) > maxval:  # there have been other emotions ahead of unknown or non-face
                                 emotion[i] = 0
                                 count -= 1
                             break
@@ -276,9 +267,7 @@ class FERPDataset(dataProvide):
             for i in range(size):
                 if emotion_raw[i] >= threshold * sum_list:
                     emotion[i] = emotion_raw[i]
-            if (
-                sum(emotion) <= 0.5 * sum_list
-            ):  # less than 50% of the votes are integrated, we discard this example
+            if sum(emotion) <= 0.5 * sum_list:  # less than 50% of the votes are integrated, we discard this example
                 emotion = emotion_unknown  # set as unknown
 
         return [float(i) / sum(emotion) for i in emotion]
@@ -294,11 +283,7 @@ class FERPDataset(dataProvide):
         ferplus_path = os.path.join(root, self.file_fernew)
 
         # wget
-        os.system(
-            "wget --output-document={} {}".format(
-                os.path.join(root, self.filename), self.url
-            )
-        )
+        os.system("wget --output-document={} {}".format(os.path.join(root, self.filename), self.url))
 
         # extract file
         cwd = os.getcwd()

@@ -14,8 +14,4 @@ def load_state_dict(state_dict_des, state_dict_src):
             try:
                 own_state[name].copy_(param)
             except Exception:
-                print(
-                    "{} dim model {} vs dim checkpoint{}".format(
-                        name, own_state[name].size(), param.size()
-                    )
-                )
+                print("{} dim model {} vs dim checkpoint{}".format(name, own_state[name].size(), param.size()))

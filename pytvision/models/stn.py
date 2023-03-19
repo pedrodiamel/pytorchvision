@@ -20,9 +20,7 @@ class STN(nn.Module):
         )
 
         # Regressor for the 3 * 2 affine matrix
-        self.fc_loc = nn.Sequential(
-            nn.Linear(10 * 12 * 12, 32), nn.ReLU(True), nn.Linear(32, 3 * 2)
-        )
+        self.fc_loc = nn.Sequential(nn.Linear(10 * 12 * 12, 32), nn.ReLU(True), nn.Linear(32, 3 * 2))
 
         # Initialize the weights/bias with identity transformation
         self.fc_loc[2].weight.data.zero_()

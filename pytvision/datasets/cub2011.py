@@ -1,7 +1,6 @@
 import os
 
 import numpy as np
-import torch
 import torch.utils.data as data
 from PIL import Image
 
@@ -96,14 +95,10 @@ class CUB2011(data.Dataset):
         samples = make_dataset(pathimage, class_to_idx, extensions)
 
         if len(samples) == 0:
-            raise RuntimeError(
-                "Dataset not found or corrupted. You can use download=True to download it"
-            )
+            raise RuntimeError("Dataset not found or corrupted. You can use download=True to download it")
 
         ids, train_index = np.loadtxt(
-            os.path.join(
-                self.root, self.base_folder, "{}.txt".format(self.train_test_split)
-            ),
+            os.path.join(self.root, self.base_folder, "{}.txt".format(self.train_test_split)),
             unpack=True,
         )
         self.index = np.where(train_index == train)[0]
@@ -196,18 +191,12 @@ class CUB2011MetricLearning(CUB2011):
         classes = (
             self.classes[: self.num_training_classes]
             if train
-            else self.classes[
-                self.num_training_classes : (
-                    self.num_training_classes + self.num_training_classes
-                )
-            ]
+            else self.classes[self.num_training_classes : (self.num_training_classes + self.num_training_classes)]
         )
 
         index = np.array([], dtype=int)
         for c in classes:
-            index = np.append(
-                index, np.where(self.targets == self.class_to_idx[c])[0], axis=0
-            )
+            index = np.append(index, np.where(self.targets == self.class_to_idx[c])[0], axis=0)
 
         class_to_idx = {classes[i]: i for i in range(len(classes))}
         samples = []

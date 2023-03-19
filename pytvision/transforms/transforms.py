@@ -635,9 +635,7 @@ class Rotate270(ToTransform):
 class RandomGeometricalTransform(ToTransform):
     """Random Geometrical Transform"""
 
-    def __init__(
-        self, angle=360, translation=0.2, warp=0.0, padding_mode=cv2.BORDER_CONSTANT
-    ):
+    def __init__(self, angle=360, translation=0.2, warp=0.0, padding_mode=cv2.BORDER_CONSTANT):
         """Initialization
         Args:
             @angle: ratate angle
@@ -652,9 +650,7 @@ class RandomGeometricalTransform(ToTransform):
     def __call__(self, obj):
         imsize = obj.size()[:2]
         for _ in range(10):
-            mat_r, mat_t, mat_w = F.get_geometric_random_transform(
-                imsize, self.angle, self.translation, self.warp
-            )
+            mat_r, mat_t, mat_w = F.get_geometric_random_transform(imsize, self.angle, self.translation, self.warp)
             if obj.applay_geometrical_transform(mat_r, mat_t, mat_w, self.padding_mode):
                 return obj
         return obj
@@ -694,8 +690,6 @@ class RandomElasticTensorDistort(object):
 
     def __call__(self, obj):
         width, height = obj.image.size(1), obj.image.size(2)
-        grid = F.get_tensor_elastic_transform(
-            (height, width), self.size_grid, self.deform
-        )
+        grid = F.get_tensor_elastic_transform((height, width), self.size_grid, self.deform)
         obj.applay_elastic_tensor_transform(grid)
         return obj

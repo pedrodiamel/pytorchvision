@@ -174,9 +174,7 @@ def vgg11_bn(pretrained=False, in_channels=3, **kwargs):
     model = VGG(make_layers(cfg["A"], in_channels, batch_norm=True), **kwargs)
     if pretrained:
         # model.load_state_dict(model_zoo.load_url(model_urls['vgg11_bn']))
-        utl.load_state_dict(
-            model.state_dict(), model_zoo.load_url(model_urls["vgg11_bn"])
-        )
+        utl.load_state_dict(model.state_dict(), model_zoo.load_url(model_urls["vgg11_bn"]))
     return model
 
 
@@ -206,9 +204,7 @@ def vgg13_bn(pretrained=False, in_channels=3, **kwargs):
     model = VGG(make_layers(cfg["B"], in_channels, batch_norm=True), **kwargs)
     if pretrained:
         # model.load_state_dict(model_zoo.load_url(model_urls['vgg13_bn']))
-        utl.load_state_dict(
-            model.state_dict(), model_zoo.load_url(model_urls["vgg13_bn"])
-        )
+        utl.load_state_dict(model.state_dict(), model_zoo.load_url(model_urls["vgg13_bn"]))
     return model
 
 
@@ -238,9 +234,7 @@ def vgg16_bn(pretrained=False, in_channels=3, **kwargs):
     model = VGG(make_layers(cfg["D"], in_channels, batch_norm=True), **kwargs)
     if pretrained:
         # model.load_state_dict(model_zoo.load_url(model_urls['vgg16_bn']))
-        utl.load_state_dict(
-            model.state_dict(), model_zoo.load_url(model_urls["vgg16_bn"])
-        )
+        utl.load_state_dict(model.state_dict(), model_zoo.load_url(model_urls["vgg16_bn"]))
     return model
 
 
@@ -270,7 +264,5 @@ def vgg19_bn(pretrained=False, in_channels=3, **kwargs):
     model = VGG(make_layers(cfg["E"], in_channels, batch_norm=True), **kwargs)
     if pretrained:
         # model.load_state_dict(model_zoo.load_url(model_urls['vgg19_bn']))
-        utl.load_state_dict(
-            model.state_dict(), model_zoo.load_url(model_urls["vgg19_bn"])
-        )
+        utl.load_state_dict(model.state_dict(), model_zoo.load_url(model_urls["vgg19_bn"]))
     return model

@@ -66,9 +66,7 @@ class DecoderBlockV2(nn.Module):
 
             self.block = nn.Sequential(
                 ConvRelu(in_channels, middle_channels),
-                nn.ConvTranspose2d(
-                    middle_channels, out_channels, kernel_size=4, stride=2, padding=1
-                ),
+                nn.ConvTranspose2d(middle_channels, out_channels, kernel_size=4, stride=2, padding=1),
                 nn.ReLU(inplace=True),
             )
         else:
@@ -129,17 +127,13 @@ class UNetResNet(nn.Module):
             self.encoder = torchvision.models.resnet152(pretrained=pretrained)
             bottom_channel_nr = 2048
         else:
-            raise NotImplementedError(
-                "only 34, 101, 152 version of Resnet are implemented"
-            )
+            raise NotImplementedError("only 34, 101, 152 version of Resnet are implemented")
 
         self.pool = nn.MaxPool2d(2, 2)
 
         self.relu = nn.ReLU(inplace=True)
 
-        self.conv1 = nn.Sequential(
-            self.encoder.conv1, self.encoder.bn1, self.encoder.relu, self.pool
-        )
+        self.conv1 = nn.Sequential(self.encoder.conv1, self.encoder.bn1, self.encoder.relu, self.pool)
 
         self.conv2 = self.encoder.layer1
 
@@ -149,9 +143,7 @@ class UNetResNet(nn.Module):
 
         self.conv5 = self.encoder.layer4
 
-        self.center = DecoderBlockV2(
-            bottom_channel_nr, num_filters * 8 * 2, num_filters * 8, is_deconv
-        )
+        self.center = DecoderBlockV2(bottom_channel_nr, num_filters * 8 * 2, num_filters * 8, is_deconv)
         self.dec5 = DecoderBlockV2(
             bottom_channel_nr + num_filters * 8,
             num_filters * 8 * 2,
@@ -176,9 +168,7 @@ class UNetResNet(nn.Module):
             num_filters * 2 * 2,
             is_deconv,
         )
-        self.dec1 = DecoderBlockV2(
-            num_filters * 2 * 2, num_filters * 2 * 2, num_filters, is_deconv
-        )
+        self.dec1 = DecoderBlockV2(num_filters * 2 * 2, num_filters * 2 * 2, num_filters, is_deconv)
         self.dec0 = ConvRelu(num_filters, num_filters)
         self.final = nn.Conv2d(num_filters, num_classes, kernel_size=1)
 

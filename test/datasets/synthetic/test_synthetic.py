@@ -1,5 +1,4 @@
 import os
-import sys
 import cv2
 import numpy as np
 import pytest
@@ -25,9 +24,7 @@ def test_ellipse_render():
     sigma = 0.2
 
     # Execute render
-    img, label, meta = EllipseRender.generate(
-        width, height, cnt, rmin, rmax, border, sigma, True
-    )
+    img, label, meta = EllipseRender.generate(width, height, cnt, rmin, rmax, border, sigma, True)
 
     h, w, _ = img.shape
     assert h == height
@@ -42,9 +39,7 @@ def test_ellipse_render():
         os.makedirs(PATHOUT)
 
     # Save result
-    label_transform = np.tile(
-        label.sum(axis=0, keepdims=True).transpose((1, 2, 0)), (1, 1, 3)
-    )
+    label_transform = np.tile(label.sum(axis=0, keepdims=True).transpose((1, 2, 0)), (1, 1, 3))
     print(label_transform.shape)
 
     img_result = np.concatenate(
@@ -72,9 +67,7 @@ def test_circle_render():
     border = 90
     sigma = 0.2
 
-    img, label, meta = CircleRender.generate(
-        width, height, cnt, rmin, rmax, border, sigma, True
-    )
+    img, label, meta = CircleRender.generate(width, height, cnt, rmin, rmax, border, sigma, True)
 
     h, w, _ = img.shape
     assert h == height
@@ -90,9 +83,7 @@ def test_circle_render():
 
     # Save result
     # TODO February 12, 2023: change this for view function
-    label_transform = np.tile(
-        label.sum(axis=0, keepdims=True).transpose((1, 2, 0)), (1, 1, 3)
-    )
+    label_transform = np.tile(label.sum(axis=0, keepdims=True).transpose((1, 2, 0)), (1, 1, 3))
     print(label_transform.shape)
 
     img_result = np.concatenate(

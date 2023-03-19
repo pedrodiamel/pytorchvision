@@ -3,101 +3,23 @@ import math
 import torch
 import torch.nn as nn
 import torch.nn.init as init
-from torch.autograd import Variable
 
 
-__all__ = ["DUNet", "dunet"]
+__all__ = ["UNet", "unet"]
 
 
-def dunet(pretrained=False, **kwargs):
+def unet(pretrained=False, **kwargs):
     r"""UNet model architecture"""
-    model = DUNet(**kwargs)
+    model = UNet(**kwargs)
     if pretrained:
         pass
         # model.load_state_dict(model_zoo.load_url(model_urls['unet']))
     return model
 
 
-class Conv2D(nn.Module):
-    def __init__(
-        self, filtersin, filtersout, kernel_size=(3, 3), s=1, pad=0, is_batchnorm=False
-    ):
-        super(Conv2D, self).__init__()
-        if is_batchnorm:
-            self.conv = nn.Sequential(
-                nn.Conv2d(filtersin, filtersout, kernel_size, s, pad),
-                nn.BatchNorm2d(filtersout),
-                nn.ReLU(),
-            )
-        else:
-            self.conv = nn.Sequential(
-                nn.Conv2d(filtersin, filtersout, kernel_size, s, pad),
-                nn.ReLU(),
-            )
-
-    def forward(self, x):
-        x = self.conv(x)
-        return x
-
-
-class DilateCenter(nn.Module):
-    def __init__(
-        self, in_size, out_size, kernel_size=3, is_batchnorm=False, cuda=False
-    ):
-        super(DilateCenter, self).__init__()
-        self.cuda = cuda
-        self.in_size = in_size
-        self.out_size = out_size
-        self.conv_init = Conv2D(
-            in_size, out_size, kernel_size, s=1, pad=0, is_batchnorm=is_batchnorm
-        )
-        self.conv_d1 = nn.Conv2d(
-            out_size, out_size, kernel_size, 1, kernel_size // 2 + 0, dilation=1
-        )
-        self.conv_d2 = nn.Conv2d(
-            out_size, out_size, kernel_size, 1, kernel_size // 2 + 1, dilation=2
-        )
-        self.conv_d3 = nn.Conv2d(
-            out_size, out_size, kernel_size, 1, kernel_size // 2 + 2, dilation=3
-        )
-        self.conv_d4 = nn.Conv2d(
-            out_size, out_size, kernel_size, 1, kernel_size // 2 + 3, dilation=4
-        )
-        self.relu = nn.ReLU()
-        self.conv_end = Conv2D(
-            out_size, out_size, kernel_size, s=1, pad=0, is_batchnorm=is_batchnorm
-        )
-
-    def _tovar(self, x):
-        return Variable(x.cuda()) if self.cuda else Variable(x)
-
-    def forward(self, x):
-        skip = self._tovar(
-            torch.zeros(x.shape[0], self.out_size, x.shape[2] - 2, x.shape[3] - 2)
-        )
-
-        x1 = self.conv_init(x)
-        skip += x1
-        x2 = self.conv_d1(x1)
-        skip += x2
-        x3 = self.conv_d2(x2)
-        skip += x3
-        x4 = self.conv_d3(x3)
-        skip += x4
-        x5 = self.conv_d4(x4)
-        skip += x5
-        x6 = self.relu(skip)
-
-        y = self.conv_end(x6)
-
-        return y
-
-
-class DUNet(nn.Module):
-    def __init__(
-        self, num_classes=3, is_deconv=False, in_channels=3, is_batchnorm=False
-    ):
-        super(DUNet, self).__init__()
+class UNet(nn.Module):
+    def __init__(self, num_classes=1, in_channels=3, is_deconv=False, is_batchnorm=False):
+        super(UNet, self).__init__()
         self.is_deconv = is_deconv
         self.in_channels = in_channels
         self.is_batchnorm = is_batchnorm
@@ -109,7 +31,7 @@ class DUNet(nn.Module):
         self.down3 = unetDown(filters[1], filters[2], self.is_batchnorm)
         self.down4 = unetDown(filters[2], filters[3], self.is_batchnorm)
 
-        self.center = DilateCenter(filters[3], filters[4], 3, self.is_batchnorm)
+        self.center = unetConv2(filters[3], filters[4], self.is_batchnorm)
 
         self.up4 = unetUp(filters[4], filters[3], self.is_deconv)
         self.up3 = unetUp(filters[3], filters[2], self.is_deconv)
