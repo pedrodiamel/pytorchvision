@@ -3,6 +3,7 @@ version: '3.9'
 services:
   pytorchvision:
     tty: true
+    ipc: host
     container_name: pytv-dev
     image: pytv
     build:
