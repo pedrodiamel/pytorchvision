@@ -8,7 +8,6 @@ import sys
 import setuptools
 from setuptools import setup, find_packages
 from setuptools.extension import Extension
-import numpy as np
 
 
 def read(*names, **kwargs):
